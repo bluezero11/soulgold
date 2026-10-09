@@ -20,6 +20,7 @@
 #include "item_icon.h"
 #include "constants/field_specials.h"
 #include "constants/items.h"
+#include "constants/species.h"
 #include "constants/script_menu.h"
 #include "constants/songs.h"
 
