@@ -221,8 +221,88 @@ NewBarkTown_Lab_EventScript_ChoseStarter::
 	waitmessage
     closemessage
 	removefieldmugshot
+	call NewBarkTown_Lab_EventScript_OfferSecondStarter
 	release
 	end
+
+NewBarkTown_Lab_EventScript_OfferSecondStarter::
+	msgbox NewBarkTown_Lab_Text_SecondStarterOffer, MSGBOX_DEFAULT
+	dynmultipush NewBarkTown_Lab_Text_SecondStarterNoThanks, SPECIES_NONE
+	setvar VAR_TEMP_1, SPECIES_BULBASAUR
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_CHARMANDER
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_SQUIRTLE
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_CHIKORITA
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_CYNDAQUIL
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_TOTODILE
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_TREECKO
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_TORCHIC
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_MUDKIP
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_TURTWIG
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_CHIMCHAR
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_PIPLUP
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_SNIVY
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_TEPIG
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_OSHAWOTT
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_CHESPIN
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_FENNEKIN
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_FROAKIE
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_ROWLET
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_LITTEN
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_POPPLIO
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_GROOKEY
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_SCORBUNNY
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_SOBBLE
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_SPRIGATITO
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_FUECOCO
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	setvar VAR_TEMP_1, SPECIES_QUAXLY
+	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
+	dynmultistack 0, 0, TRUE, 6, FALSE, SPECIES_NONE, DYN_MULTICHOICE_CB_NONE
+	copyvar VAR_TEMP_1, VAR_RESULT
+	goto_if_eq VAR_TEMP_1, SPECIES_NONE, NewBarkTown_Lab_EventScript_SecondStarterDeclined
+	bufferspeciesname STR_VAR_1, VAR_TEMP_1
+	givemon VAR_TEMP_1, 5
+	showgivemonpic 10, 3
+	call Common_EventScript_GiftMon
+	hidemonpic
+	msgbox NewBarkTown_Lab_Text_SecondStarterReceived, MSGBOX_DEFAULT
+	return
+
+NewBarkTown_Lab_EventScript_SecondStarterDeclined::
+	msgbox NewBarkTown_Lab_Text_SecondStarterDeclined, MSGBOX_DEFAULT
+	return
+
+NewBarkTown_Lab_EventScript_AddSecondStarterChoice::
+	goto_if_eq VAR_TEMP_1, VAR_PLAYER_STARTER_SPECIES, NewBarkTown_Lab_EventScript_AddSecondStarterChoice_Return
+	bufferspeciesname STR_VAR_1, VAR_TEMP_1
+	dynmultipush NewBarkTown_Lab_Text_SecondStarterSpeciesName, VAR_TEMP_1
+NewBarkTown_Lab_EventScript_AddSecondStarterChoice_Return::
+	return
 
 NewBarkTown_Lab_EventScript_ChoseStarter2::
     moveobjecttocoords OBJ_EVENT_ID_PLAYER, 6, 4, DIR_NORTH
@@ -740,6 +820,26 @@ NewBarkTown_Lab_Text_DidntChooseStarter:
 NewBarkTown_Lab_Text_ChoseStarter:
 	.string "Elm: I think that's a great\n"
 	.string "Pokémon too!$"
+
+NewBarkTown_Lab_Text_SecondStarterOffer:
+	.string "Elm: Many trainers favour Double\n"
+	.string "Battles.\p"
+	.string "Would you like to pick a second\n"
+	.string "Pokémon?$"
+
+NewBarkTown_Lab_Text_SecondStarterNoThanks:
+	.string "No thanks!$"
+
+NewBarkTown_Lab_Text_SecondStarterSpeciesName:
+	.string "{STR_VAR_1}$"
+
+NewBarkTown_Lab_Text_SecondStarterReceived:
+	.string "Elm: Great choice! Take good care of\n"
+	.string "{STR_VAR_1}, too!$"
+
+NewBarkTown_Lab_Text_SecondStarterDeclined:
+	.string "Elm: All right! One partner is plenty\n"
+	.string "to start with.$"
 
 NewBarkTown_Lab_Text_ReceivedStarter:
 	.string "{PLAYER} received {STR_VAR_1}!$"
