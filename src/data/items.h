@@ -8006,7 +8006,7 @@ const struct ItemInfo gItemsInfo[] =
     [itemId] =                                                \
     {                                                         \
         .name = ITEM_NAME(itemName),                          \
-        .price = 0,                                           \
+        .price = 60000,                                       \
         .notConsumed = TRUE,                                  \
         .holdEffect = HOLD_EFFECT_MEGA_STONE,                 \
         .description = COMPOUND_STRING(                       \
@@ -8047,7 +8047,7 @@ const struct ItemInfo gItemsInfo[] =
     [ITEM_BONDSTONE] =
     {
         .name = ITEM_NAME("Bondstone"),
-        .price = 0,
+        .price = 60000,
         .holdEffect = HOLD_EFFECT_MEGA_STONE,
         .description = COMPOUND_STRING(
             "A stone that lets\n"
