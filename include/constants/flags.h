@@ -711,7 +711,7 @@
 #define FLAG_WONDERTRADE2  0x298 // Unused Flag
 #define FLAG_WONDERTRADE3  0x299 // Unused Flag
 #define FLAG_VISITED_BATTLE_FRONTIER  0x29A // Unused Flag
-#define FLAG_RECEIVED_VIOLET_ACADEMY_GIFT  0x29B
+#define FLAG_FRONTIER_SECOND_CLERK  0x29B // Unused Flag
 #define FLAG_ALLOW_SOUTH_JOHTO_PASS  0x29C
 #define FLAG_SYS_BUG_CONTEST_MODE  0x29D
 #define FLAG_AERODACTYLITE      0x29E
@@ -1185,7 +1185,7 @@
 #define FLAG_ITEM_ROUTE13_CALCIUM                                   0x46A
 #define FLAG_ITEM_ROUTE15_PP_UP                                     0x46B
 #define FLAG_ITEM_ROUTE2_CARBOS                                     0x46C
-#define FLAG_ITEM_ROUTE2_NUGGET                                     0x46D // Unused Flag, leftover from R/S. HM08 is given to the player directly in Emerald
+#define FLAG_RECEIVED_VIOLET_ACADEMY_GIFT                          0x46D
 #define FLAG_ITEM_VIRIDIANFOREST_MAX_POTION                         0x46E
 #define FLAG_ITEM_VIRIDIANFOREST_DIRE_HIT                           0x46F
 #define FLAG_CAUGHT_CELEBI                                          0x470
