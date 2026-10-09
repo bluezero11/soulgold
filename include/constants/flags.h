@@ -1185,7 +1185,7 @@
 #define FLAG_ITEM_ROUTE13_CALCIUM                                   0x46A
 #define FLAG_ITEM_ROUTE15_PP_UP                                     0x46B
 #define FLAG_ITEM_ROUTE2_CARBOS                                     0x46C
-#define FLAG_RECEIVED_VIOLET_ACADEMY_GIFT                          0x46D
+#define FLAG_ITEM_ROUTE2_NUGGET                                     0x46D // Unused Flag, leftover from R/S. HM08 is given to the player directly in Emerald
 #define FLAG_ITEM_VIRIDIANFOREST_MAX_POTION                         0x46E
 #define FLAG_ITEM_VIRIDIANFOREST_DIRE_HIT                           0x46F
 #define FLAG_CAUGHT_CELEBI                                          0x470
@@ -1747,6 +1747,7 @@
 #define FLAG_ROUTE47_EXPERT_QUALIFIED               0x103B
 #define FLAG_ROUTE27_EXPERT_QUALIFIED               0x103C
 #define FLAG_TM_PICKUP_MIGRATION_COMPLETE           0x103D
+#define FLAG_RECEIVED_VIOLET_ACADEMY_GIFT           0x103E
 
 #define FLAG_PYRAMID_ACHIEVEMENT_MIGRATION_COMPLETE 0x1041
 #define CUSTOM_FLAGS_END                            FLAG_PYRAMID_ACHIEVEMENT_MIGRATION_COMPLETE
