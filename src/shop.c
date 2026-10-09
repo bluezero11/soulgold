@@ -358,7 +358,6 @@ static const u16 sShopInventory_OneBadge_PC[] = {
     ITEM_GREAT_BALL,
     ITEM_POTION,
     ITEM_SUPER_POTION,
-
     ITEM_ANTIDOTE,
     ITEM_BURN_HEAL,
     ITEM_ICE_HEAL,
@@ -514,7 +513,6 @@ static const u16 sShopInventory_EightBadges_PC[] = {
     ITEM_HYPER_POTION,
     ITEM_MAX_POTION,
     ITEM_FULL_RESTORE,
-
     ITEM_MAX_ETHER,
     ITEM_ELIXIR,
     ITEM_MAX_ELIXIR,
