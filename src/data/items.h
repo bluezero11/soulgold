@@ -855,7 +855,7 @@ const struct ItemInfo gItemsInfo[] =
     [ITEM_REVIVE] =
     {
         .name = ITEM_NAME("Revive"),
-        .price = (I_PRICE >= GEN_7) ? 2000 : 1500,
+        .price = 1000,
         .description = COMPOUND_STRING(
             "Revives a fainted\n"
             "Pokémon with half\n"
@@ -875,7 +875,7 @@ const struct ItemInfo gItemsInfo[] =
     [ITEM_MAX_REVIVE] =
     {
         .name = ITEM_NAME("Max Revive"),
-        .price = 4000,
+        .price = 2000,
         .description = sMaxReviveDesc,
         .pocket = POCKET_MEDICINE,
         .sortType = ITEM_TYPE_HEALTH_RECOVERY,
@@ -1206,7 +1206,7 @@ const struct ItemInfo gItemsInfo[] =
     [ITEM_ETHER] =
     {
         .name = ITEM_NAME("Ether"),
-        .price = 3000,
+        .price = 1500,
         .holdEffectParam = 10,
         .description = COMPOUND_STRING(
             "Restores the PP\n"
