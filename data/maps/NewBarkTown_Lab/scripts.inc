@@ -282,7 +282,7 @@ NewBarkTown_Lab_EventScript_OfferSecondStarter::
 	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
 	setvar VAR_TEMP_1, SPECIES_QUAXLY
 	call NewBarkTown_Lab_EventScript_AddSecondStarterChoice
-	dynmultistack 0, 0, TRUE, 6, FALSE, SPECIES_NONE, DYN_MULTICHOICE_CB_NONE
+	dynmultistack 0, 0, TRUE, 6, FALSE, SPECIES_NONE, DYN_MULTICHOICE_CB_SHOW_POKEMON
 	copyvar VAR_TEMP_1, VAR_RESULT
 	goto_if_eq VAR_TEMP_1, SPECIES_NONE, NewBarkTown_Lab_EventScript_SecondStarterDeclined
 	bufferspeciesname STR_VAR_1, VAR_TEMP_1
