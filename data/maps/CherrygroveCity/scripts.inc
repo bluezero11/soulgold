@@ -689,10 +689,13 @@ Cherrygrove_FriendlyTrader_2:
 
 Cherrygrove_FriendlyTrader_7:
 	msgbox Cherrygrove_FriendlyTrader_Text_1
-	dynmultichoice 0, 0, FALSE, 3, 0, DYN_MULTICHOICE_CB_NONE, Cherrygrove_FriendlyTrader_Text_2, Cherrygrove_FriendlyTrader_Text_3, Cherrygrove_FriendlyTrader_Text_4
+	dynmultipush Cherrygrove_FriendlyTrader_Text_2, SPECIES_SINISTEA_PHONY
+	dynmultipush Cherrygrove_FriendlyTrader_Text_3, SPECIES_POLTCHAGEIST_COUNTERFEIT
+	dynmultipush Cherrygrove_FriendlyTrader_Text_4, SPECIES_NONE
+	dynmultistack 0, 0, FALSE, 3, FALSE, SPECIES_SINISTEA_PHONY, DYN_MULTICHOICE_CB_SHOW_POKEMON
 	switch VAR_RESULT
-	case 0, Cherrygrove_FriendlyTrader_11
-	case 1, Cherrygrove_FriendlyTrader_12
+	case SPECIES_SINISTEA_PHONY, Cherrygrove_FriendlyTrader_11
+	case SPECIES_POLTCHAGEIST_COUNTERFEIT, Cherrygrove_FriendlyTrader_12
 	msgbox Cherrygrove_FriendlyTrader_Text_6
 	release
 	end
