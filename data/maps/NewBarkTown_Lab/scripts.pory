@@ -52,9 +52,18 @@ NewBarkTown_EventScript_Aide1::
 NewBarkTown_EventScript_Aide2::
 	lock
 	faceplayer
+	compare VAR_NEWBARKTOWN_LABSTATE, 8
+	goto_if_ge NewBarkTown_EventScript_Aide2MegaStones
 	goto_if_eq VAR_NEWBARKTOWN_LABSTATE, 5, NewBarkTown_EventScript_Aide2Testimony
 	msgbox NewBarkTown_Lab_Text_AideSave, MSGBOX_DEFAULT
 	closemessage
+	release
+	end
+
+NewBarkTown_EventScript_Aide2MegaStones::
+	msgbox NewBarkTown_Lab_Text_AideMegaStones, MSGBOX_DEFAULT
+	pokemart NewBarkTown_MegaStoneMart
+	msgbox NewBarkTown_Lab_Text_AideMegaThanks, MSGBOX_DEFAULT
 	release
 	end
 
@@ -63,6 +72,38 @@ NewBarkTown_EventScript_Aide2Testimony::
 	closemessage
 	release
 	end
+
+	.align 2
+NewBarkTown_MegaStoneMart:
+	.2byte ITEM_NORMALITE
+	.2byte ITEM_FIRETITE
+	.2byte ITEM_WATERTITE
+	.2byte ITEM_ELECTRITE
+	.2byte ITEM_GRASSTITE
+	.2byte ITEM_ICETITE
+	.2byte ITEM_FIGHTITE
+	.2byte ITEM_POISONTITE
+	.2byte ITEM_GROUNDITE
+	.2byte ITEM_FLYINGITE
+	.2byte ITEM_PSYCHITE
+	.2byte ITEM_BUGTITE
+	.2byte ITEM_ROCKTITE
+	.2byte ITEM_GHOSTITE
+	.2byte ITEM_DRAGOTITE
+	.2byte ITEM_DARKTITE
+	.2byte ITEM_STEELTITE
+	.2byte ITEM_FAIRYTITE
+	.2byte ITEM_BONDSTONE
+	.2byte ITEM_NONE
+
+NewBarkTown_Lab_Text_AideMegaStones:
+	.string "Our experiments have helped us create\n"
+	.string "some Mega Stones!\p"
+	.string "Would you like to buy one and help\n"
+	.string "fund our research?$"
+
+NewBarkTown_Lab_Text_AideMegaThanks:
+	.string "Thanks for supporting our research!$"
 
 NewBarkTown_Lab_EventScript_Elm::
 	lock
