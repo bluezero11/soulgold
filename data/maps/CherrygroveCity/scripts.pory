@@ -679,9 +679,12 @@ script Cherrygrove_FriendlyTrader {
                 
 				I'm sure either one would love to go on
                 an adventure with you!")
-        dynmultichoice(0,0, FALSE, 3, 0, DYN_MULTICHOICE_CB_NONE, "Sinistea", "Poltchageist", "No thanks")
+        dynmultipush("Sinistea", SPECIES_SINISTEA_PHONY)
+        dynmultipush("Poltchageist", SPECIES_POLTCHAGEIST_COUNTERFEIT)
+        dynmultipush("No thanks", SPECIES_NONE)
+        dynmultistack(0, 0, FALSE, 3, FALSE, SPECIES_SINISTEA_PHONY, DYN_MULTICHOICE_CB_SHOW_POKEMON)
         switch(var(VAR_RESULT)) {
-            case 0:
+            case SPECIES_SINISTEA_PHONY:
                 setvar(VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_SINISTEA_PHONY)
 	            bufferspeciesname(STR_VAR_1, SPECIES_SINISTEA_PHONY)
             	givemon(SPECIES_SINISTEA_PHONY, 5)
@@ -696,7 +699,7 @@ script Cherrygrove_FriendlyTrader {
                         ever visiting the Safari Zone!")
                 release
                 end
-            case 1:
+            case SPECIES_POLTCHAGEIST_COUNTERFEIT:
                 setvar(VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_POLTCHAGEIST_COUNTERFEIT)
 	            bufferspeciesname(STR_VAR_1, SPECIES_POLTCHAGEIST_COUNTERFEIT)
             	givemon(SPECIES_POLTCHAGEIST_COUNTERFEIT, 5)
