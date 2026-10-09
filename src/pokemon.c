@@ -1053,10 +1053,10 @@ u32 GetShinyGenerationOdds(void)
 {
     switch (GetShinyRateOption())
     {
-    case SHINY_RATE_256: return 256;
+    case SHINY_RATE_256: return 1024;
     case SHINY_RATE_512: return 128;
     case SHINY_RATE_1024: return 64;
-    default: return 256;
+    default: return 1024;
     }
 }
 
