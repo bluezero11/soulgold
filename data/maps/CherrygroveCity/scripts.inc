@@ -654,7 +654,7 @@ Cherrygrove_Littlegirl_2:
 Cherrygrove_Zigzagoon::
 	lock
 	faceplayer
-	playmoncry SPECIES_ZIGZAGOON_GALAR, CRY_MODE_NORMAL
+	playmoncry SPECIES_SINISTEA_PHONY, CRY_MODE_NORMAL
 	msgbox Cherrygrove_Zigzagoon_Text_0
 	release
 	end
@@ -663,7 +663,7 @@ Cherrygrove_Zigzagoon::
 Cherrygrove_Rattata::
 	lock
 	faceplayer
-	playmoncry SPECIES_RATTATA_ALOLA, CRY_MODE_NORMAL
+	playmoncry SPECIES_POLTCHAGEIST_COUNTERFEIT, CRY_MODE_NORMAL
 	msgbox Cherrygrove_Rattata_Text_0
 	release
 	end
@@ -698,27 +698,27 @@ Cherrygrove_FriendlyTrader_7:
 	end
 
 Cherrygrove_FriendlyTrader_11:
-	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_ZIGZAGOON_GALAR
-	bufferspeciesname STR_VAR_1, SPECIES_ZIGZAGOON_GALAR
-	givemon SPECIES_ZIGZAGOON_GALAR, 5
+	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_SINISTEA_PHONY
+	bufferspeciesname STR_VAR_1, SPECIES_SINISTEA_PHONY
+	givemon SPECIES_SINISTEA_PHONY, 5
 	showgivemonpic 10, 3
 	removeobject LOCALID_CHERRY_ZIGZAGOON
 	call Common_EventScript_GiftMon
 	hidemonpic
-	bufferspeciesname STR_VAR_1, SPECIES_ZIGZAGOON_GALAR
+	bufferspeciesname STR_VAR_1, SPECIES_SINISTEA_PHONY
 	msgbox Cherrygrove_FriendlyTrader_Text_5
 	release
 	end
 
 Cherrygrove_FriendlyTrader_12:
-	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_RATTATA_ALOLA
-	bufferspeciesname STR_VAR_1, SPECIES_RATTATA_ALOLA
-	givemon SPECIES_RATTATA_ALOLA, 5
+	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_POLTCHAGEIST_COUNTERFEIT
+	bufferspeciesname STR_VAR_1, SPECIES_POLTCHAGEIST_COUNTERFEIT
+	givemon SPECIES_POLTCHAGEIST_COUNTERFEIT, 5
 	showgivemonpic 10, 3
 	removeobject LOCALID_CHERRY_RATTATA
 	call Common_EventScript_GiftMon
 	hidemonpic
-	bufferspeciesname STR_VAR_1, SPECIES_RATTATA_ALOLA
+	bufferspeciesname STR_VAR_1, SPECIES_POLTCHAGEIST_COUNTERFEIT
 	msgbox Cherrygrove_FriendlyTrader_Text_5
 	release
 	end
@@ -767,10 +767,10 @@ Cherrygrove_Littlegirl_Text_1:
 	.string "abandoned even in her youth.$"
 
 Cherrygrove_Zigzagoon_Text_0:
-	.string "Zig!$"
+	.string "Sini!$"
 
 Cherrygrove_Rattata_Text_0:
-	.string "Rat!$"
+	.string "Poltcha!$"
 
 Cherrygrove_FriendlyTrader_Text_0:
 	.string "Hi! Has my Pokémon been helpful?$"
@@ -786,10 +786,10 @@ Cherrygrove_FriendlyTrader_Text_1:
 	.string "an adventure with you!$"
 
 Cherrygrove_FriendlyTrader_Text_2:
-	.string "Zigzagoon$"
+	.string "Sinistea$"
 
 Cherrygrove_FriendlyTrader_Text_3:
-	.string "Rattata$"
+	.string "Poltchageist$"
 
 Cherrygrove_FriendlyTrader_Text_4:
 	.string "No thanks$"
