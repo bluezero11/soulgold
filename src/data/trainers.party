@@ -14078,6 +14078,13 @@ IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 - Pound
 - Tail Whip
 
+Mareep
+Level: 4
+Ability: Static
+IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+- Tackle
+- Growl
+
 === TRAINER_RIVALGOLD1 ===
 Name: Gold
 Pic: Brendan
@@ -14093,6 +14100,13 @@ Ability: Thick Fat
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 - Pound
 - Tail Whip
+
+Mareep
+Level: 4
+Ability: Static
+IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+- Tackle
+- Growl
 
 === TRAINER_RIVALCRYSTAL2 ===
 Name: Crystal
@@ -14110,6 +14124,15 @@ IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 Oricorio Sensu
 Level: 22
 IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
+
+Flaaffy
+Level: 22
+Ability: Static
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
+- Thunder Shock
+- Cotton Spore
+- Charge
+- Take Down
 
 Azumarill
 Level: 23
@@ -14132,6 +14155,15 @@ IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 Oricorio Sensu
 Level: 22
 IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
+
+Flaaffy
+Level: 22
+Ability: Static
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
+- Thunder Shock
+- Cotton Spore
+- Charge
+- Take Down
 
 Azumarill
 Level: 22
