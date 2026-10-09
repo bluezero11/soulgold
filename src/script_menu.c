@@ -251,8 +251,8 @@ static void MultichoiceDynamicEventShowPokemon_OnSelectionChanged(struct Dynamic
     if (eventArgs->selectedItem != SPECIES_NONE)
     {
         sPokemonSpriteId = CreateMonSprite_PicBoxShiny(eventArgs->selectedItem, FALSE, 0x8000,
-                                                       template->tilemapLeft * 8 + 40,
-                                                       template->tilemapTop * 8 + 40, 0);
+                                                       template->tilemapLeft * 8 + 32,
+                                                       template->tilemapTop * 8 + 32, 0);
         gSprites[sPokemonSpriteId].callback = SpriteCallbackDummy;
         gSprites[sPokemonSpriteId].oam.priority = 0;
     }
