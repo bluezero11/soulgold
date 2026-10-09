@@ -11678,6 +11678,10 @@ static u32 ComputeCaptureOdds(u32 wildMonBattler, u32 playerBattler, enum Item b
     if (catchRate <= 0)
         catchRate = catchRate + ball.flatBonus;
 
+    catchRate *= 8;
+    if (catchRate > 255)
+        catchRate = 255;
+
     odds = odds * catchRate / (battleMon->maxHP * 3);
     odds = odds * ball.multiplier / ball.divider;
 
