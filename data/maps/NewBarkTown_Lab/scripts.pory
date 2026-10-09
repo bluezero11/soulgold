@@ -485,7 +485,7 @@ NewBarkTown_Lab_EventScript_TriggerAideGiveBalls::
 	turnobject OBJ_EVENT_ID_PLAYER, DIR_WEST
 	msgbox NewBarkTown_Lab_Text_AideGiveBalls, MSGBOX_DEFAULT
 	closemessage
-	giveitem ITEM_POKE_BALL, 10
+	giveitem ITEM_POKE_BALL, 90
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
 	setflag FLAG_RECEIVED_FIRST_BALLS
 	setvar VAR_NEWBARKTOWN_LABSTATE, 6
