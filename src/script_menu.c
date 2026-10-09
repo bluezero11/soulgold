@@ -68,6 +68,9 @@ static void MultichoiceDynamicEventDebug_OnDestroy(struct DynamicListMenuEventAr
 static void MultichoiceDynamicEventShowItem_OnInit(struct DynamicListMenuEventArgs *eventArgs);
 static void MultichoiceDynamicEventShowItem_OnSelectionChanged(struct DynamicListMenuEventArgs *eventArgs);
 static void MultichoiceDynamicEventShowItem_OnDestroy(struct DynamicListMenuEventArgs *eventArgs);
+static void MultichoiceDynamicEventShowPokemon_OnInit(struct DynamicListMenuEventArgs *eventArgs);
+static void MultichoiceDynamicEventShowPokemon_OnSelectionChanged(struct DynamicListMenuEventArgs *eventArgs);
+static void MultichoiceDynamicEventShowPokemon_OnDestroy(struct DynamicListMenuEventArgs *eventArgs);
 
 static const struct DynamicListMenuEventCollection sDynamicListMenuEventCollections[] =
 {
@@ -82,6 +85,12 @@ static const struct DynamicListMenuEventCollection sDynamicListMenuEventCollecti
         .OnInit = MultichoiceDynamicEventShowItem_OnInit,
         .OnSelectionChanged = MultichoiceDynamicEventShowItem_OnSelectionChanged,
         .OnDestroy = MultichoiceDynamicEventShowItem_OnDestroy
+    },
+    [DYN_MULTICHOICE_CB_SHOW_POKEMON] =
+    {
+        .OnInit = MultichoiceDynamicEventShowPokemon_OnInit,
+        .OnSelectionChanged = MultichoiceDynamicEventShowPokemon_OnSelectionChanged,
+        .OnDestroy = MultichoiceDynamicEventShowPokemon_OnDestroy
     }
 };
 
@@ -210,6 +219,58 @@ static void MultichoiceDynamicEventShowItem_OnDestroy(struct DynamicListMenuEven
 #undef sAuxWindowId
 #undef sItemSpriteId
 #undef TAG_CB_ITEM_ICON
+
+#define sPokemonAuxWindowId sDynamicMenuEventScratchPad[0]
+#define sPokemonSpriteId sDynamicMenuEventScratchPad[1]
+
+static void MultichoiceDynamicEventShowPokemon_OnInit(struct DynamicListMenuEventArgs *eventArgs)
+{
+    struct WindowTemplate *template = &gWindows[eventArgs->windowId].window;
+    u32 baseBlock = template->baseBlock + template->width * template->height;
+    struct WindowTemplate auxTemplate = CreateWindowTemplate(0, template->tilemapLeft + template->width + 2, template->tilemapTop, 8, 8, 15, baseBlock);
+    u32 auxWindowId = AddWindow(&auxTemplate);
+
+    SetStandardWindowBorderStyle(auxWindowId, FALSE);
+    FillWindowPixelBuffer(auxWindowId, 0x11);
+    CopyWindowToVram(auxWindowId, COPYWIN_FULL);
+    sPokemonAuxWindowId = auxWindowId;
+    sPokemonSpriteId = MAX_SPRITES;
+}
+
+static void MultichoiceDynamicEventShowPokemon_OnSelectionChanged(struct DynamicListMenuEventArgs *eventArgs)
+{
+    struct WindowTemplate *template = &gWindows[sPokemonAuxWindowId].window;
+
+    if (sPokemonSpriteId != MAX_SPRITES)
+    {
+        FreeResourcesAndDestroySprite(&gSprites[sPokemonSpriteId], sPokemonSpriteId);
+        sPokemonSpriteId = MAX_SPRITES;
+    }
+
+    if (eventArgs->selectedItem != SPECIES_NONE)
+    {
+        sPokemonSpriteId = CreateMonSprite_PicBoxShiny(eventArgs->selectedItem, FALSE, 0x8000,
+                                                       template->tilemapLeft * 8 + 40,
+                                                       template->tilemapTop * 8 + 40, 0);
+        gSprites[sPokemonSpriteId].callback = SpriteCallbackDummy;
+        gSprites[sPokemonSpriteId].oam.priority = 0;
+    }
+}
+
+static void MultichoiceDynamicEventShowPokemon_OnDestroy(struct DynamicListMenuEventArgs *eventArgs)
+{
+    ClearStdWindowAndFrame(sPokemonAuxWindowId, TRUE);
+    RemoveWindow(sPokemonAuxWindowId);
+
+    if (sPokemonSpriteId != MAX_SPRITES)
+    {
+        FreeResourcesAndDestroySprite(&gSprites[sPokemonSpriteId], sPokemonSpriteId);
+        sPokemonSpriteId = MAX_SPRITES;
+    }
+}
+
+#undef sPokemonAuxWindowId
+#undef sPokemonSpriteId
 
 static void FreeListMenuItems(struct ListMenuItem *items, u32 count)
 {
