@@ -261,7 +261,7 @@ static const u8 gText_IntroSlideOff[]      = _("{COLOR GREEN}{SHADOW LIGHT_GREEN
 static const u8 gText_BattleUiLight[]      = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}Light");
 static const u8 gText_BattleUiDark[]       = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}Dark");
 static const u8 *const sShinyRateLabels[SHINY_RATE_COUNT] = {
-        [SHINY_RATE_256] = COMPOUND_STRING("{COLOR GREEN}{SHADOW LIGHT_GREEN}<1/256>"),
+        [SHINY_RATE_256] = COMPOUND_STRING("{COLOR GREEN}{SHADOW LIGHT_GREEN}<1/64>"),
         [SHINY_RATE_512] = COMPOUND_STRING("{COLOR GREEN}{SHADOW LIGHT_GREEN}<1/512>"),
         [SHINY_RATE_1024] = COMPOUND_STRING("{COLOR GREEN}{SHADOW LIGHT_GREEN}<1/1024>"),
     };
