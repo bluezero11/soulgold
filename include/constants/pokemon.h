@@ -101,8 +101,8 @@ enum __attribute__((packed)) Stat
 #define MAX_STAT_STAGE    12
 
 // Shiny odds
-#define SHINY_ODDS 512 // playtest odds. Actual probability is SHINY_ODDS/65536.
-#define RELEASE_SHINY_ODDS 256
+#define SHINY_ODDS 1024 // playtest odds. Actual probability is SHINY_ODDS/65536.
+#define RELEASE_SHINY_ODDS 1024
 
 enum ShinyRateOption
 {
