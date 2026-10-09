@@ -129,12 +129,17 @@ VioletCity_EventScript_Boy::
 	faceplayer
 	goto_if_set FLAG_RECEIVED_VIOLET_ACADEMY_GIFT, VioletCity_EventScript_Boy_AfterGift
 	msgbox VioletCity_Text_BoyGiftIntro, MSGBOX_DEFAULT
-	dynmultichoice 0, 0, FALSE, 5, 0, DYN_MULTICHOICE_CB_NONE, VioletCity_Text_BoyGiftSneasel, VioletCity_Text_BoyGiftSneaselHisui, VioletCity_Text_BoyGiftMienfoo, VioletCity_Text_BoyGiftRufflet, VioletCity_Text_BoyGiftDecline
+	dynmultipush VioletCity_Text_BoyGiftSneasel, SPECIES_SNEASEL
+	dynmultipush VioletCity_Text_BoyGiftSneaselHisui, SPECIES_SNEASEL_HISUI
+	dynmultipush VioletCity_Text_BoyGiftMienfoo, SPECIES_MIENFOO
+	dynmultipush VioletCity_Text_BoyGiftRufflet, SPECIES_RUFFLET
+	dynmultipush VioletCity_Text_BoyGiftDecline, SPECIES_NONE
+	dynmultistack 0, 0, FALSE, 5, FALSE, SPECIES_SNEASEL, DYN_MULTICHOICE_CB_SHOW_POKEMON
 	switch VAR_RESULT
-	case 0, VioletCity_EventScript_Boy_GiveSneasel
-	case 1, VioletCity_EventScript_Boy_GiveSneaselHisui
-	case 2, VioletCity_EventScript_Boy_GiveMienfoo
-	case 3, VioletCity_EventScript_Boy_GiveRufflet
+	case SPECIES_SNEASEL, VioletCity_EventScript_Boy_GiveSneasel
+	case SPECIES_SNEASEL_HISUI, VioletCity_EventScript_Boy_GiveSneaselHisui
+	case SPECIES_MIENFOO, VioletCity_EventScript_Boy_GiveMienfoo
+	case SPECIES_RUFFLET, VioletCity_EventScript_Boy_GiveRufflet
 	msgbox VioletCity_Text_BoyGiftNoProblem, MSGBOX_DEFAULT
 	release
 	end
