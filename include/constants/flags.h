@@ -707,7 +707,7 @@
 #define FLAG_VISITED_ROUTE10  0x294
 #define FLAG_MET_STEVEN  0x295 // Kitakami flags
 #define FLAG_EXP_SHARE_OPTION  0x296 // exp. share
-#define FLAG_WONDERTRADE1  0x297 // Unused Flag
+#define FLAG_RECEIVED_VIOLET_ACADEMY_GIFT  0x297
 #define FLAG_WONDERTRADE2  0x298 // Unused Flag
 #define FLAG_WONDERTRADE3  0x299 // Unused Flag
 #define FLAG_VISITED_BATTLE_FRONTIER  0x29A // Unused Flag
