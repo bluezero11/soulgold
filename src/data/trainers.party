@@ -3669,6 +3669,13 @@ IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 - Scratch
 - Leer
 
+Starly
+Level: 5
+IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+- Tackle
+- Growl
+- Quick Attack
+
 === TRAINER_RIVAL_TOTODILE_2 ===
 Name: {RIVAL}
 Class: Rival
@@ -3696,13 +3703,13 @@ IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 - Torment
 - Leer
 
-Pidgeotto
+Staravia
 Level: 21
 IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
-- Wing Attack
 - Quick Attack
+- Wing Attack
 - Featherdance
-- Mud-Slap
+- Helping Hand
 
 Croconaw
 Level: 21
@@ -4598,6 +4605,13 @@ IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 - Tackle
 - Growl
 
+Starly
+Level: 5
+IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+- Tackle
+- Growl
+- Quick Attack
+
 === TRAINER_RIVAL_CHIKORITA_3 ===
 Name: {RIVAL}
 Class: Rival
@@ -4655,13 +4669,13 @@ IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 - Torment
 - Leer
 
-Pidgeotto
+Staravia
 Level: 21
 IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
-- Wing Attack
 - Quick Attack
+- Wing Attack
 - Featherdance
-- Mud-Slap
+- Helping Hand
 
 Bayleef
 Level: 21
@@ -6839,13 +6853,13 @@ IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 - Torment
 - Leer
 
-Pidgeotto
+Staravia
 Level: 21
 IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
-- Wing Attack
 - Quick Attack
+- Wing Attack
 - Featherdance
-- Mud-Slap
+- Helping Hand
 
 Quilava
 Level: 22
@@ -12041,6 +12055,13 @@ Level: 5
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 - Tackle
 - Leer
+
+Starly
+Level: 5
+IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+- Tackle
+- Growl
+- Quick Attack
 
 === TRAINER_RIVAL_CYNDAQUIL_3 ===
 Name: {RIVAL}
