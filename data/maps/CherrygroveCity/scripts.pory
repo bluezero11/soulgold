@@ -644,8 +644,8 @@ script Cherrygrove_Littlegirl {
 script Cherrygrove_Zigzagoon {
     lock
     faceplayer
-    playmoncry(SPECIES_ZIGZAGOON_GALAR, CRY_MODE_NORMAL)
-    msgbox("Zig!")
+    playmoncry(SPECIES_SINISTEA_PHONY, CRY_MODE_NORMAL)
+    msgbox("Sini!")
     release
     end
 }
@@ -653,8 +653,8 @@ script Cherrygrove_Zigzagoon {
 script Cherrygrove_Rattata {
     lock
     faceplayer
-    playmoncry(SPECIES_RATTATA_ALOLA, CRY_MODE_NORMAL)
-    msgbox("Rat!")
+    playmoncry(SPECIES_POLTCHAGEIST_COUNTERFEIT, CRY_MODE_NORMAL)
+    msgbox("Poltcha!")
     release
     end
 }
@@ -679,17 +679,17 @@ script Cherrygrove_FriendlyTrader {
                 
 				I'm sure either one would love to go on
                 an adventure with you!")
-        dynmultichoice(0,0, FALSE, 3, 0, DYN_MULTICHOICE_CB_NONE, "Zigzagoon", "Rattata", "No thanks")
+        dynmultichoice(0,0, FALSE, 3, 0, DYN_MULTICHOICE_CB_NONE, "Sinistea", "Poltchageist", "No thanks")
         switch(var(VAR_RESULT)) {
             case 0:
-                setvar(VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_ZIGZAGOON_GALAR)
-	            bufferspeciesname(STR_VAR_1, SPECIES_ZIGZAGOON_GALAR)
-            	givemon(SPECIES_ZIGZAGOON_GALAR, 5)
+                setvar(VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_SINISTEA_PHONY)
+	            bufferspeciesname(STR_VAR_1, SPECIES_SINISTEA_PHONY)
+            	givemon(SPECIES_SINISTEA_PHONY, 5)
                 showgivemonpic(10, 3)
                 removeobject(LOCALID_CHERRY_ZIGZAGOON)
 	            call(Common_EventScript_GiftMon)
                 hidemonpic
-                bufferspeciesname(STR_VAR_1, SPECIES_ZIGZAGOON_GALAR)
+                bufferspeciesname(STR_VAR_1, SPECIES_SINISTEA_PHONY)
                 msgbox("Take good care of my {STR_VAR_1}!
 
                         Say hi to my uncle, Baoba if you are
@@ -697,14 +697,14 @@ script Cherrygrove_FriendlyTrader {
                 release
                 end
             case 1:
-                setvar(VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_RATTATA_ALOLA)
-	            bufferspeciesname(STR_VAR_1, SPECIES_RATTATA_ALOLA)
-            	givemon(SPECIES_RATTATA_ALOLA, 5)
+                setvar(VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_POLTCHAGEIST_COUNTERFEIT)
+	            bufferspeciesname(STR_VAR_1, SPECIES_POLTCHAGEIST_COUNTERFEIT)
+            	givemon(SPECIES_POLTCHAGEIST_COUNTERFEIT, 5)
                 showgivemonpic(10, 3)
                 removeobject(LOCALID_CHERRY_RATTATA)
 	            call(Common_EventScript_GiftMon)
                 hidemonpic
-                bufferspeciesname(STR_VAR_1, SPECIES_RATTATA_ALOLA)
+                bufferspeciesname(STR_VAR_1, SPECIES_POLTCHAGEIST_COUNTERFEIT)
                 msgbox("Take good care of my {STR_VAR_1}!
 
                         Say hi to my uncle, Baoba if you are
