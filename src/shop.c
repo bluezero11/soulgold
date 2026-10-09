@@ -358,7 +358,7 @@ static const u16 sShopInventory_OneBadge_PC[] = {
     ITEM_GREAT_BALL,
     ITEM_POTION,
     ITEM_SUPER_POTION,
-    ITEM_ETHER,
+
     ITEM_ANTIDOTE,
     ITEM_BURN_HEAL,
     ITEM_ICE_HEAL,
@@ -366,6 +366,7 @@ static const u16 sShopInventory_OneBadge_PC[] = {
     ITEM_PARALYZE_HEAL,
     ITEM_REPEL,
     ITEM_ESCAPE_ROPE,
+    ITEM_ETHER,
     ITEM_NONE
 };
 
@@ -374,7 +375,7 @@ static const u16 sShopInventory_TwoBadges_PC[] = {
     ITEM_GREAT_BALL,
     ITEM_POTION,
     ITEM_SUPER_POTION,
-    ITEM_ETHER,
+
     ITEM_ELIXIR,
     ITEM_ANTIDOTE,
     ITEM_BURN_HEAL,
@@ -384,6 +385,7 @@ static const u16 sShopInventory_TwoBadges_PC[] = {
     ITEM_REPEL,
     ITEM_FLUFFY_TAIL,
     ITEM_ESCAPE_ROPE,
+    ITEM_ETHER,
     ITEM_NONE
 };
 
@@ -392,7 +394,7 @@ static const u16 sShopInventory_ThreeBadges_PC[] = {
     ITEM_GREAT_BALL,
     ITEM_POTION,
     ITEM_SUPER_POTION,
-    ITEM_ETHER,
+
     ITEM_ELIXIR,
     ITEM_ANTIDOTE,
     ITEM_BURN_HEAL,
@@ -403,6 +405,7 @@ static const u16 sShopInventory_ThreeBadges_PC[] = {
     ITEM_SUPER_REPEL,
     ITEM_FLUFFY_TAIL,
     ITEM_ESCAPE_ROPE,
+    ITEM_ETHER,
     ITEM_NONE
 };
 
@@ -411,7 +414,7 @@ static const u16 sShopInventory_FourBadges_PC[] = {
     ITEM_GREAT_BALL,
     ITEM_POTION,
     ITEM_SUPER_POTION,
-    ITEM_ETHER,
+
     ITEM_ELIXIR,
     ITEM_ANTIDOTE,
     ITEM_BURN_HEAL,
@@ -422,6 +425,7 @@ static const u16 sShopInventory_FourBadges_PC[] = {
     ITEM_SUPER_REPEL,
     ITEM_FLUFFY_TAIL,
     ITEM_ESCAPE_ROPE,
+    ITEM_ETHER,
     ITEM_NONE
 };
 
@@ -432,7 +436,7 @@ static const u16 sShopInventory_FiveBadges_PC[] = {
     ITEM_POTION,
     ITEM_SUPER_POTION,
     ITEM_HYPER_POTION,
-    ITEM_ETHER,
+
     ITEM_MAX_ETHER,
     ITEM_ELIXIR,
     ITEM_ANTIDOTE,
@@ -445,6 +449,7 @@ static const u16 sShopInventory_FiveBadges_PC[] = {
     ITEM_SUPER_REPEL,
     ITEM_FLUFFY_TAIL,
     ITEM_ESCAPE_ROPE,
+    ITEM_ETHER,
     ITEM_NONE
 };
 
@@ -455,7 +460,7 @@ static const u16 sShopInventory_SixBadges_PC[] = {
     ITEM_POTION,
     ITEM_SUPER_POTION,
     ITEM_HYPER_POTION,
-    ITEM_ETHER,
+
     ITEM_MAX_ETHER,
     ITEM_ELIXIR,
     ITEM_FULL_HEAL,
@@ -469,6 +474,7 @@ static const u16 sShopInventory_SixBadges_PC[] = {
     ITEM_SUPER_REPEL,
     ITEM_FLUFFY_TAIL,
     ITEM_ESCAPE_ROPE,
+    ITEM_ETHER,
     ITEM_NONE
 };
 
@@ -480,7 +486,7 @@ static const u16 sShopInventory_SevenBadges_PC[] = {
     ITEM_SUPER_POTION,
     ITEM_HYPER_POTION,
     ITEM_MAX_POTION,
-    ITEM_ETHER,
+
     ITEM_MAX_ETHER,
     ITEM_ELIXIR,
     ITEM_FULL_HEAL,
@@ -495,6 +501,7 @@ static const u16 sShopInventory_SevenBadges_PC[] = {
     ITEM_MAX_REPEL,
     ITEM_FLUFFY_TAIL,
     ITEM_ESCAPE_ROPE,
+    ITEM_ETHER,
     ITEM_NONE
 };
 
@@ -507,7 +514,7 @@ static const u16 sShopInventory_EightBadges_PC[] = {
     ITEM_HYPER_POTION,
     ITEM_MAX_POTION,
     ITEM_FULL_RESTORE,
-    ITEM_ETHER,
+
     ITEM_MAX_ETHER,
     ITEM_ELIXIR,
     ITEM_MAX_ELIXIR,
@@ -523,6 +530,7 @@ static const u16 sShopInventory_EightBadges_PC[] = {
     ITEM_MAX_REPEL,
     ITEM_FLUFFY_TAIL,
     ITEM_ESCAPE_ROPE,
+    ITEM_ETHER,
     ITEM_NONE
 };
 
