@@ -127,8 +127,68 @@ VioletCity_EventScript_Youngster::
 VioletCity_EventScript_Boy::
 	lock
 	faceplayer
-	msgbox VioletCity_Text_Boy, MSGBOX_DEFAULT
-	closemessage
+	goto_if_set FLAG_RECEIVED_VIOLET_ACADEMY_GIFT, VioletCity_EventScript_Boy_AfterGift
+	msgbox VioletCity_Text_BoyGiftIntro, MSGBOX_DEFAULT
+	dynmultichoice 0, 0, FALSE, 5, 0, DYN_MULTICHOICE_CB_NONE, VioletCity_Text_BoyGiftSneasel, VioletCity_Text_BoyGiftSneaselHisui, VioletCity_Text_BoyGiftMienfoo, VioletCity_Text_BoyGiftRufflet, VioletCity_Text_BoyGiftDecline
+	switch VAR_RESULT
+	case 0, VioletCity_EventScript_Boy_GiveSneasel
+	case 1, VioletCity_EventScript_Boy_GiveSneaselHisui
+	case 2, VioletCity_EventScript_Boy_GiveMienfoo
+	case 3, VioletCity_EventScript_Boy_GiveRufflet
+	msgbox VioletCity_Text_BoyGiftNoProblem, MSGBOX_DEFAULT
+	release
+	end
+
+VioletCity_EventScript_Boy_GiveSneasel::
+	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_SNEASEL
+	bufferspeciesname STR_VAR_1, SPECIES_SNEASEL
+	givemon SPECIES_SNEASEL, 5
+	showgivemonpic 10, 3
+	call Common_EventScript_GiftMon
+	hidemonpic
+	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
+	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
+	release
+	end
+
+VioletCity_EventScript_Boy_GiveSneaselHisui::
+	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_SNEASEL_HISUI
+	bufferspeciesname STR_VAR_1, SPECIES_SNEASEL_HISUI
+	givemon SPECIES_SNEASEL_HISUI, 5
+	showgivemonpic 10, 3
+	call Common_EventScript_GiftMon
+	hidemonpic
+	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
+	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
+	release
+	end
+
+VioletCity_EventScript_Boy_GiveMienfoo::
+	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_MIENFOO
+	bufferspeciesname STR_VAR_1, SPECIES_MIENFOO
+	givemon SPECIES_MIENFOO, 5
+	showgivemonpic 10, 3
+	call Common_EventScript_GiftMon
+	hidemonpic
+	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
+	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
+	release
+	end
+
+VioletCity_EventScript_Boy_GiveRufflet::
+	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_RUFFLET
+	bufferspeciesname STR_VAR_1, SPECIES_RUFFLET
+	givemon SPECIES_RUFFLET, 5
+	showgivemonpic 10, 3
+	call Common_EventScript_GiftMon
+	hidemonpic
+	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
+	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
+	release
+	end
+
+VioletCity_EventScript_Boy_AfterGift::
+	msgbox VioletCity_Text_BoyGiftAlreadyReceived, MSGBOX_DEFAULT
 	release
 	end
 
@@ -424,10 +484,40 @@ VioletCity_Text_Lass:
 	.string "of tough Pokémon like Onix\n"
 	.string "and Geodude.$"
 
-VioletCity_Text_Boy:
+VioletCity_Text_BoyGiftIntro:
 	.string "Hey, you're a Pokémon trainer?\p"
-	.string "If you head to the Academy,\n"
-	.string "you might learn something new!$"
+	.string "The Academy has a few Pokémon for\n"
+	.string "new trainers, and I was asked to\l"
+	.string "help find homes for them.\p"
+	.string "Would you like to take one with you?$"
+
+VioletCity_Text_BoyGiftSneasel:
+	.string "Sneasel$"
+
+VioletCity_Text_BoyGiftSneaselHisui:
+	.string "Hisuian Sneasel$"
+
+VioletCity_Text_BoyGiftMienfoo:
+	.string "Mienfoo$"
+
+VioletCity_Text_BoyGiftRufflet:
+	.string "Rufflet$"
+
+VioletCity_Text_BoyGiftDecline:
+	.string "No thanks$"
+
+VioletCity_Text_BoyGiftAfter:
+	.string "Take good care of {STR_VAR_1}!\p"
+	.string "You'll learn a lot together.$"
+
+VioletCity_Text_BoyGiftNoProblem:
+	.string "No problem! They'll be here if you\n"
+	.string "change your mind.$"
+
+VioletCity_Text_BoyGiftAlreadyReceived:
+	.string "How's your new partner doing?\p"
+	.string "The Academy teaches trainers as much\n"
+	.string "as it teaches Pokémon!$"
 
 VioletCity_Text_Gramps:
 	.string "Falkner, from the Violet\n"
