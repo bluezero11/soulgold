@@ -56,6 +56,8 @@ EventScript_PokeVial_HasCapacity::
 	checkitem ITEM_POKE_VIAL, 1
 	goto_if_eq VAR_RESULT, TRUE, EventScript_PokeVial_Done
 	giveitem ITEM_POKE_VIAL, 1
+	goto_if_eq VAR_RESULT, FALSE, EventScript_PokeVial_Done
+	msgbox gText_PokeVialInstructions, MSGBOX_DEFAULT
 EventScript_PokeVial_Done::
 	return
 

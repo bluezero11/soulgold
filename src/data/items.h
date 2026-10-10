@@ -15461,7 +15461,7 @@ const struct ItemInfo gItemsInfo[] =
         .price = 0,
         .description = COMPOUND_STRING(
             "A refillable vial\n"
-            "that heals the whole\n"
+            "that heals the\n"
             "party's HP and PP."),
         .importance = 1,
         .pocket = POCKET_KEY_ITEMS,

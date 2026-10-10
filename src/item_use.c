@@ -106,7 +106,8 @@ static const u8 sText_ItemFinderOnTop[] = _("Oh!\nThe ITEMFINDER's shaking wildl
 static const u8 sText_ItemFinderNothing[] = _("… … … …Nope!\nThere's no response.{PAUSE_UNTIL_PRESS}");
 static const u8 sText_CoinCase[] = _("Your coins:\n{STR_VAR_1}{PAUSE_UNTIL_PRESS}");
 static const u8 sText_PowderQty[] = _("Powder qty: {STR_VAR_1}{PAUSE_UNTIL_PRESS}");
-static const u8 sText_PokeVialHealed[] = _("Your party was fully healed!\n{STR_VAR_1} doses remain.{PAUSE_UNTIL_PRESS}");
+static const u8 sText_PokeVialHealed[] = _("Your party was fully healed!\n{STR_VAR_1} heals remaining.{PAUSE_UNTIL_PRESS}");
+static const u8 sText_PokeVialHealedOne[] = _("Your party was fully healed!\n1 heal remaining.{PAUSE_UNTIL_PRESS}");
 static const u8 sText_PokeVialConfirm[] = _("{STR_VAR_1} heals remaining.\nContinue to use?");
 static const u8 sText_PokeVialConfirmOne[] = _("1 heal remaining.\nContinue to use?");
 static const u8 sText_PokeVialEmpty[] = _("0 heals remaining.\nRefill at a Pokémon Center.{PAUSE_UNTIL_PRESS}");
@@ -1902,7 +1903,7 @@ static void PokeVial_PrintResult(u8 taskId, bool8 fromField)
     if (PokeVial_Use())
     {
         ConvertIntToDecimalStringN(gStringVar1, PokeVial_GetCharges(), STR_CONV_MODE_LEFT_ALIGN, 2);
-        StringExpandPlaceholders(gStringVar4, sText_PokeVialHealed);
+        StringExpandPlaceholders(gStringVar4, PokeVial_GetCharges() == 1 ? sText_PokeVialHealedOne : sText_PokeVialHealed);
         message = gStringVar4;
     }
 
