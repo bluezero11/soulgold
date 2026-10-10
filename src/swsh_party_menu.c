@@ -4575,6 +4575,13 @@ static void SwitchPartyMon(void)
     *mon1 = *mon2;
     *mon2 = *monBuffer;
     Free(monBuffer);
+
+    // The follower preference belongs to the Pokémon, not its previous slot.
+    if (gSaveBlock2Ptr->followerSlot == gPartyMenu.slotId + 1)
+        gSaveBlock2Ptr->followerSlot = gPartyMenu.slotId2 + 1;
+    else if (gSaveBlock2Ptr->followerSlot == gPartyMenu.slotId2 + 1)
+        gSaveBlock2Ptr->followerSlot = gPartyMenu.slotId + 1;
+
     SwitchMenuBoxSprites(&menuBoxes[0]->pokeballSpriteId, &menuBoxes[1]->pokeballSpriteId);
     SwitchMenuBoxSprites(&menuBoxes[0]->itemSpriteId, &menuBoxes[1]->itemSpriteId);
     SwitchMenuBoxSprites(&menuBoxes[0]->monSpriteId, &menuBoxes[1]->monSpriteId);
