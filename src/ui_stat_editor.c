@@ -123,6 +123,7 @@ static void PrintMonStats(void);
 static void SelectorCallback(struct Sprite *sprite);
 static inline struct Pokemon *ReturnPartyMon();
 static void ChangeAndUpdateStats(void);
+static void ChangePartyPokemon(u8 taskId, s8 direction);
 static u8 CreateSelector(void);
 static void DestroySelector(void);
 static void SpriteCB_Pokemon(struct Sprite *);
@@ -921,11 +922,49 @@ static void Task_DelayedSpriteLoad(u8 taskId) // wait 4 frames after changing th
     }
 }
 
-static UNUSED void ReloadNewPokemon(u8 taskId)
+static void ChangePartyPokemon(u8 taskId, s8 direction)
 {
-    gSprites[sStatEditorDataPtr->monIconSpriteId].invisible = TRUE;
+    u8 i;
+    u8 nextPartyId = sStatEditorDataPtr->partyid;
+
+    // Keep edits made to the current Pokémon before moving to another one.
+    ChangeAndUpdateStats();
+
+    for (i = 0; i < gPlayerPartyCount; i++)
+    {
+        if (direction > 0)
+            nextPartyId = (nextPartyId + 1) % gPlayerPartyCount;
+        else
+            nextPartyId = (nextPartyId == 0) ? gPlayerPartyCount - 1 : nextPartyId - 1;
+
+        if (GetMonData(&gPlayerParty[nextPartyId], MON_DATA_SPECIES) != SPECIES_NONE
+         && !GetMonData(&gPlayerParty[nextPartyId], MON_DATA_IS_EGG))
+            break;
+    }
+
+    // If there is no other editable Pokémon, stay on the current one.
+    if (nextPartyId == sStatEditorDataPtr->partyid)
+        return;
+
+    StopPokemonAnimationDelayTask();
+
     FreeResourcesAndDestroySprite(&gSprites[sStatEditorDataPtr->monIconSpriteId], sStatEditorDataPtr->monIconSpriteId);
+    FreeResourcesAndDestroySprite(&gSprites[sStatEditorDataPtr->monIconShadowId], sStatEditorDataPtr->monIconShadowId);
+
+    sStatEditorDataPtr->partyid = nextPartyId;
     sStatEditorDataPtr->speciesID = GetMonData(ReturnPartyMon(), MON_DATA_SPECIES);
+    sStatEditorDataPtr->monAnimPlayed = FALSE;
+
+    for (i = 0; i < 6; i++)
+        sStatEditorDataPtr->newEVs[i] = GetMonData(ReturnPartyMon(), MON_DATA_HP_EV + i);
+
+    for (i = 0; i < 6; i++)
+        sStatEditorDataPtr->newIVs[i] = GetMonData(ReturnPartyMon(), MON_DATA_HP_IV + i);
+
+    sStatEditorDataPtr->inputMode = INPUT_SELECT_STAT;
+    StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 0);
+    PrintTitleToWindowMainState();
+
     gTasks[taskId].func = Task_DelayedSpriteLoad;
     gTasks[taskId].data[11] = 0;
 }
@@ -990,6 +1029,18 @@ static void ConvertEnumToFromArray(u16 selectedStat, enum GetOrSetStat getOrSet)
 
 static void Task_StatEditorMain(u8 taskId) // input control when first loaded into menu
 {
+    if (JOY_NEW(L_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        ChangePartyPokemon(taskId, -1);
+        return;
+    }
+    if (JOY_NEW(R_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        ChangePartyPokemon(taskId, 1);
+        return;
+    }
     if (JOY_NEW(A_BUTTON))
     {
         ConvertEnumToFromArray(sStatEditorDataPtr->selectedStat, GET_STAT);
@@ -1141,6 +1192,18 @@ static void HandleEditingStatInput(u32 input)
 
 static void Task_MenuEditingStat(u8 taskId) // This function should be refactored to not be a hot mess
 {
+    if (JOY_NEW(L_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        ChangePartyPokemon(taskId, -1);
+        return;
+    }
+    if (JOY_NEW(R_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        ChangePartyPokemon(taskId, 1);
+        return;
+    }
     if (JOY_NEW(B_BUTTON) || JOY_NEW(A_BUTTON)) // Change this so that pressing B returns the stat to original value
     {
         gTasks[taskId].func = Task_StatEditorMain;
@@ -1154,9 +1217,9 @@ static void Task_MenuEditingStat(u8 taskId) // This function should be refactore
         HandleEditingStatInput(EDIT_INPUT_DECREASE_STATE);
     else if (JOY_NEW(DPAD_RIGHT))
         HandleEditingStatInput(EDIT_INPUT_INCREASE_STATE);
-    else if (JOY_NEW(DPAD_UP) || JOY_NEW(R_BUTTON))
+    else if (JOY_NEW(DPAD_UP))
         HandleEditingStatInput(EDIT_INPUT_MAX_INCREASE_STATE);
-    else if (JOY_NEW(DPAD_DOWN) || JOY_NEW(L_BUTTON))
+    else if (JOY_NEW(DPAD_DOWN))
         HandleEditingStatInput(EDIT_INPUT_MAX_DECREASE_STATE);
 
 }
