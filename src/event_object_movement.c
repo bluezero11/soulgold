@@ -2121,23 +2121,35 @@ static u8 CreatePartyPhotoShadow(u8 parentSpriteId, const struct ObjectEventGrap
     return spriteId;
 }
 
-// Return address of first conscious party mon or NULL
+// A selected follower must satisfy the same restrictions as an automatic follower.
+static bool32 IsEligibleFollowerMon(struct Pokemon *mon)
+{
+    u32 species = GetMonData(mon, MON_DATA_SPECIES_OR_EGG);
+
+    if (species == SPECIES_NONE)
+        return FALSE;
+
+    if ((OW_FOLLOWERS_ALLOWED_SPECIES && species != VarGet(OW_FOLLOWERS_ALLOWED_SPECIES))
+     || (OW_FOLLOWERS_ALLOWED_MET_LVL && GetMonData(mon, MON_DATA_MET_LEVEL) != VarGet(OW_FOLLOWERS_ALLOWED_MET_LVL))
+     || (OW_FOLLOWERS_ALLOWED_MET_LOC && GetMonData(mon, MON_DATA_MET_LOCATION) != VarGet(OW_FOLLOWERS_ALLOWED_MET_LOC)))
+        return FALSE;
+
+    return mon->hp > 0 && !(mon->box.isEgg || mon->box.isBadEgg);
+}
+
+// Prefer the explicitly chosen party slot, falling back to the first eligible
+// Pokémon if it faints, becomes an Egg, or leaves the party.
 struct Pokemon *GetFirstLiveMon(void)
 {
     u32 i;
+    u32 chosen = gSaveBlock2Ptr->followerSlot;
+
+    if (chosen != 0 && chosen <= PARTY_SIZE && IsEligibleFollowerMon(&gPlayerParty[chosen - 1]))
+        return &gPlayerParty[chosen - 1];
+
     for (i = 0; i < PARTY_SIZE; i++)
     {
-        struct Pokemon *mon = &gPlayerParty[i];
-        u32 species = GetMonData(mon, MON_DATA_SPECIES_OR_EGG);
-        if (species == SPECIES_NONE)
-            continue;
-
-        if ((OW_FOLLOWERS_ALLOWED_SPECIES && species != VarGet(OW_FOLLOWERS_ALLOWED_SPECIES))
-         || (OW_FOLLOWERS_ALLOWED_MET_LVL && GetMonData(mon, MON_DATA_MET_LEVEL) != VarGet(OW_FOLLOWERS_ALLOWED_MET_LVL))
-         || (OW_FOLLOWERS_ALLOWED_MET_LOC && GetMonData(mon, MON_DATA_MET_LOCATION) != VarGet(OW_FOLLOWERS_ALLOWED_MET_LOC)))
-            continue;
-
-        if (gPlayerParty[i].hp > 0 && !(gPlayerParty[i].box.isEgg || gPlayerParty[i].box.isBadEgg))
+        if (IsEligibleFollowerMon(&gPlayerParty[i]))
             return &gPlayerParty[i];
     }
     return NULL;

@@ -133,6 +133,7 @@ enum {
     MENU_CHANGE_FORM,
     MENU_CHANGE_ABILITY,
     MENU_EDIT_STATS,
+    MENU_FOLLOW,
     MENU_FIELD_MOVES
 };
 
@@ -204,7 +205,7 @@ struct PartyMenuInternal
     u32 spriteIdCancelPokeball:7;
     u32 messageId:14;
     u8 windowId[3];
-    u8 actions[12];
+    u8 actions[16]; // Reserve space for field moves plus Follow, Edit stats and Cancel
     u8 numActions;
     // In vanilla Emerald, only the first 0xB0 hwords (0x160 bytes) are actually used.
     // However, a full 0x100 hwords (0x200 bytes) are allocated.
@@ -495,6 +496,7 @@ static void BlitBitmapToPartyWindow_RightColumn(u8, u8, u8, u8, u8, bool8);
 static void BlitBitmapToPartyWindow_Equal(u8, u8, u8, u8, u8, u8); //Custom party menu
 static void CursorCb_Summary(u8);
 static void CursorCb_EditStats(u8);
+static void CursorCb_Follow(u8);
 static void CB2_OpenStatEditor(void);
 static void CB2_ReturnToPartyMenuFromStatEditor(void);
 static void CursorCb_Switch(u8);
@@ -1442,10 +1444,18 @@ bool8 IsMultiBattle(void)
 static void SwapPartyPokemon(struct Pokemon *mon1, struct Pokemon *mon2)
 {
     struct Pokemon *temp = Alloc(sizeof(struct Pokemon));
+    u8 slot1 = mon1 - gPlayerParty + 1;
+    u8 slot2 = mon2 - gPlayerParty + 1;
 
     *temp = *mon1;
     *mon1 = *mon2;
     *mon2 = *temp;
+
+    // Keep the follower attached to the Pokémon when party slots are swapped.
+    if (gSaveBlock2Ptr->followerSlot == slot1)
+        gSaveBlock2Ptr->followerSlot = slot2;
+    else if (gSaveBlock2Ptr->followerSlot == slot2)
+        gSaveBlock2Ptr->followerSlot = slot1;
 
     Free(temp);
 }
@@ -2947,6 +2957,9 @@ static void SetPartyMonFieldSelectionActions(struct Pokemon *mons, u8 slotId)
             }
         }
     }
+    // Keep Follow immediately above Edit stats and Cancel on every field menu.
+    if (OW_FOLLOWERS_ENABLED && !GetMonData(&mons[slotId], MON_DATA_IS_EGG))
+        AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_FOLLOW);
     AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_EDIT_STATS);
     AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_CANCEL1);
 }
@@ -3119,6 +3132,32 @@ static void CursorCb_Summary(u8 taskId)
     PlaySE(SE_SELECT);
     sPartyMenuInternal->exitCallback = CB2_ShowPokemonSummaryScreen;
     Task_ClosePartyMenu(taskId);
+}
+
+static void CursorCb_Follow(u8 taskId)
+{
+    u8 chosenSlot = gPartyMenu.slotId + 1;
+
+    PlaySE(SE_SELECT);
+    PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[0]);
+    PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[1]);
+    gFollowerSteps = 0;
+
+    // Selecting the same Pokémon again restores automatic follower selection.
+    if (gSaveBlock2Ptr->followerSlot == chosenSlot)
+    {
+        gSaveBlock2Ptr->followerSlot = 0;
+        StringExpandPlaceholders(gStringVar4, COMPOUND_STRING("Your lead Pokémon will walk\\nwith you again."));
+    }
+    else
+    {
+        gSaveBlock2Ptr->followerSlot = chosenSlot;
+        GetMonNickname(&gPlayerParty[gPartyMenu.slotId], gStringVar1);
+        StringExpandPlaceholders(gStringVar4, COMPOUND_STRING("{STR_VAR_1} will walk with you!"));
+    }
+    StringAppend(gStringVar4, gText_PauseUntilPress);
+    DisplayPartyMenuMessage(gStringVar4, TRUE);
+    gTasks[taskId].func = Task_ReturnToChooseMonAfterText;
 }
 
 static void CursorCb_EditStats(u8 taskId)
