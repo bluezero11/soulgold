@@ -81,6 +81,7 @@
 #include "surfable.h"
 #include "trade.h"
 #include "union_room.h"
+#include "ui_stat_editor.h"
 #include "window.h"
 #include "constants/battle.h"
 #include "constants/battle_frontier.h"
@@ -131,6 +132,7 @@ enum {
     MENU_CATALOG_MOWER,
     MENU_CHANGE_FORM,
     MENU_CHANGE_ABILITY,
+    MENU_EDIT_STATS,
     MENU_FIELD_MOVES
 };
 
@@ -492,6 +494,9 @@ static void BlitBitmapToPartyWindow_LeftColumn(u8, u8, u8, u8, u8, bool8);
 static void BlitBitmapToPartyWindow_RightColumn(u8, u8, u8, u8, u8, bool8);
 static void BlitBitmapToPartyWindow_Equal(u8, u8, u8, u8, u8, u8); //Custom party menu
 static void CursorCb_Summary(u8);
+static void CursorCb_EditStats(u8);
+static void CB2_OpenStatEditor(void);
+static void CB2_ReturnToPartyMenuFromStatEditor(void);
 static void CursorCb_Switch(u8);
 static void CursorCb_Cancel1(u8);
 static void CursorCb_Item(u8);
@@ -2883,6 +2888,7 @@ static void SetPartyMonFieldSelectionActions(struct Pokemon *mons, u8 slotId)
 
     sPartyMenuInternal->numActions = 0;
     AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_SUMMARY);
+    AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_EDIT_STATS);
 
     if (P_PARTY_MOVE_RELEARNER
      && GetMonData(&mons[slotId], MON_DATA_SPECIES)
@@ -3113,6 +3119,24 @@ static void CursorCb_Summary(u8 taskId)
     PlaySE(SE_SELECT);
     sPartyMenuInternal->exitCallback = CB2_ShowPokemonSummaryScreen;
     Task_ClosePartyMenu(taskId);
+}
+
+static void CursorCb_EditStats(u8 taskId)
+{
+    PlaySE(SE_SELECT);
+    sPartyMenuInternal->exitCallback = CB2_OpenStatEditor;
+    Task_ClosePartyMenu(taskId);
+}
+
+static void CB2_OpenStatEditor(void)
+{
+    StatEditor_Init(CB2_ReturnToPartyMenuFromStatEditor, gPartyMenu.slotId);
+}
+
+static void CB2_ReturnToPartyMenuFromStatEditor(void)
+{
+    gPaletteFade.bufferTransferDisabled = TRUE;
+    InitPartyMenu(gPartyMenu.menuType, KEEP_PARTY_LAYOUT, gPartyMenu.action, TRUE, PARTY_MSG_DO_WHAT_WITH_MON, Task_TryCreateSelectionWindow, gPartyMenu.exitCallback);
 }
 
 static void CB2_ShowPokemonSummaryScreen(void)
