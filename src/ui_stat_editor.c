@@ -51,7 +51,6 @@ struct StatEditorResources
 {
     MainCallback savedCallback; // determines callback to run when we exit. e.g. where do we want to go after closing the menu
     u8 sBg1TilemapBuffer[BG_SCREEN_SIZE];
-    u8 sBg3TilemapBuffer[BG_SCREEN_SIZE];
     u8 gfxLoadState;
     u8 mode;
     u8 monIconSpriteId;
@@ -345,8 +344,6 @@ static void StatEditor_VBlankCB(void)
     LoadOam();
     ProcessSpriteCopyRequests();
     TransferPlttBuffer();
-    ChangeBgX(3, 64, BG_COORD_ADD);
-    ChangeBgY(3, 64, BG_COORD_ADD);
 }
 
 static bool8 StatEditor_DoGfxSetup(void)
@@ -354,7 +351,7 @@ static bool8 StatEditor_DoGfxSetup(void)
     switch (gMain.state)
     {
     case 0:
-        DmaClearLarge16(3, (void *)VRAM, VRAM_SIZE, 0x1000)
+        DmaClearLarge16(3, (void *)VRAM, VRAM_SIZE, 0x1000);
         SetVBlankHBlankCallbacksToNull();
         ResetVramOamAndBgCntRegs();
         ClearScheduledBgCopiesToVram();
@@ -462,17 +459,13 @@ static bool8 StatEditor_InitBgs(void)
     ResetBgsAndClearDma3BusyFlags(0);
     InitBgsFromTemplates(0, sStatEditorBgTemplates, NELEMS(sStatEditorBgTemplates));
     SetBgTilemapBuffer(1, sStatEditorDataPtr->sBg1TilemapBuffer);
-    memset(sStatEditorDataPtr->sBg3TilemapBuffer, 0, sizeof(sStatEditorDataPtr->sBg3TilemapBuffer));
-    SetBgTilemapBuffer(3, sStatEditorDataPtr->sBg3TilemapBuffer);
     ScheduleBgCopyTilemapToVram(1);
-    ScheduleBgCopyTilemapToVram(3);
     SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
     SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_BG3 | BLDCNT_TGT2_BG1 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT1_BG2 | BLDCNT_TGT1_BG1);
     SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(14, 6));
     ShowBg(0);
     ShowBg(1);
     ShowBg(2);
-    ShowBg(3);
     return TRUE;
 }
 
@@ -494,20 +487,7 @@ static bool8 StatEditor_LoadGraphics(void)
         break;
     case 2:
         LoadPalette(sStatEditorBgPalette, BG_PLTT_ID(0), PLTT_SIZE_4BPP);
-        LoadPalette(gScrollBgPalette, BG_PLTT_ID(2), PLTT_SIZE_4BPP);
         sStatEditorDataPtr->gfxLoadState++;
-        break;
-    case 3:
-        ResetTempTileDataBuffers();
-        DecompressAndCopyTileDataToVram(3, gScrollBgTiles, 0, 0, 0);
-        sStatEditorDataPtr->gfxLoadState++;
-        break;
-    case 4:
-        if (FreeTempTileDataBuffersIfPossible() != TRUE)
-        {
-            DecompressDataWithHeaderWram(gScrollBgTilemap, sStatEditorDataPtr->sBg3TilemapBuffer);
-            sStatEditorDataPtr->gfxLoadState++;
-        }
         break;
     default:
         sStatEditorDataPtr->gfxLoadState = 0;
