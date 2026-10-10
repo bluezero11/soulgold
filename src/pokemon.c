@@ -1046,17 +1046,19 @@ u32 GetCurrentShinyOdds(void)
 enum ShinyRateOption GetShinyRateOption(void)
 {
     u32 selection = VarGet(VAR_SHINY_RATE);
-    return selection >= SHINY_RATE_256 && selection < SHINY_RATE_COUNT ? selection : SHINY_RATE_256;
+    return selection >= SHINY_RATE_64 && selection < SHINY_RATE_COUNT ? selection : SHINY_RATE_128;
 }
 
 u32 GetShinyGenerationOdds(void)
 {
     switch (GetShinyRateOption())
     {
-    case SHINY_RATE_256: return 1024;
+    case SHINY_RATE_64: return 1024;
+    case SHINY_RATE_128: return 512;
+    case SHINY_RATE_256: return 256;
     case SHINY_RATE_512: return 128;
     case SHINY_RATE_1024: return 64;
-    default: return 1024;
+    default: return 512;
     }
 }
 
