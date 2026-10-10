@@ -107,9 +107,11 @@ enum __attribute__((packed)) Stat
 enum ShinyRateOption
 {
     SHINY_RATE_DEFAULT = 0, // Alpha saves
-    SHINY_RATE_256 = 1,
-    SHINY_RATE_512 = 2,
-    SHINY_RATE_1024 = 3,
+    SHINY_RATE_64 = 1,
+    SHINY_RATE_128 = 2,
+    SHINY_RATE_256 = 3,
+    SHINY_RATE_512 = 4,
+    SHINY_RATE_1024 = 5,
     SHINY_RATE_COUNT,
 };
 
