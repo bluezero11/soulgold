@@ -2,7 +2,7 @@
 #define GUARD_POKEVIAL_H
 
 // Pokémon World-style refillable whole-party healing using persistent vars.
-#define POKEVIAL_STARTING_CHARGES 2
+#define POKEVIAL_STARTING_CHARGES 5
 #define POKEVIAL_MAX_CHARGES 15
 
 u16 PokeVial_GetCharges(void);

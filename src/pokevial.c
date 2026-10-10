@@ -18,6 +18,16 @@ static void PokeVial_Init(void)
         return;
     }
 
+    // Upgrade saves made with the old two-charge implementation.
+    // Preserve doses already spent: e.g. 1/2 becomes 4/5, and 0/2 becomes 3/5.
+    if (capacity == 2)
+    {
+        capacity = POKEVIAL_STARTING_CHARGES;
+        charges = min(charges + (POKEVIAL_STARTING_CHARGES - 2), capacity);
+        VarSet(VAR_POKEVIAL_MAX_CHARGES, capacity);
+        VarSet(VAR_POKEVIAL_CHARGES, charges);
+    }
+
     if (capacity > POKEVIAL_MAX_CHARGES)
     {
         capacity = POKEVIAL_MAX_CHARGES;

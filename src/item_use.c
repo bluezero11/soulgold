@@ -67,7 +67,13 @@ static void PlayerFaceHiddenItem(enum Direction);
 static void CheckForHiddenItemsInMapConnection(u8);
 static void Task_OpenRegisteredPokeblockCase(u8);
 static void Task_AccessPokemonBoxLink(u8);
-static void Task_UsePokeVial(u8 taskId);
+static void PokeVial_ConfirmFromBag(u8 taskId);
+static void PokeVial_ConfirmFromField(u8 taskId);
+static void PokeVial_UseFromBag(u8 taskId);
+static void PokeVial_UseFromField(u8 taskId);
+static void PokeVial_FieldCancel(u8 taskId);
+static void Task_PokeVial_FieldChoice(u8 taskId);
+static void PokeVial_PrintResult(u8 taskId, bool8 fromField);
 static void ItemUseOnFieldCB_Bike(u8);
 static void ItemUseOnFieldCB_Rod(u8);
 static void ItemUseOnFieldCB_Itemfinder(u8);
@@ -101,7 +107,9 @@ static const u8 sText_ItemFinderNothing[] = _("… … … …Nope!\nThere's no 
 static const u8 sText_CoinCase[] = _("Your coins:\n{STR_VAR_1}{PAUSE_UNTIL_PRESS}");
 static const u8 sText_PowderQty[] = _("Powder qty: {STR_VAR_1}{PAUSE_UNTIL_PRESS}");
 static const u8 sText_PokeVialHealed[] = _("Your party was fully healed!\n{STR_VAR_1} doses remain.{PAUSE_UNTIL_PRESS}");
-static const u8 sText_PokeVialEmpty[] = _("The Poké Vial is empty.\nRefill it at a Pokémon Center.{PAUSE_UNTIL_PRESS}");
+static const u8 sText_PokeVialConfirm[] = _("{STR_VAR_1} heals remaining.\nContinue to use?");
+static const u8 sText_PokeVialConfirmOne[] = _("1 heal remaining.\nContinue to use?");
+static const u8 sText_PokeVialEmpty[] = _("0 heals remaining.\nRefill at a Pokémon Center.{PAUSE_UNTIL_PRESS}");
 static const u8 sText_CandyJarQty[] = _("Stored EXP: {STR_VAR_1}\nNext candy: {STR_VAR_2}{PAUSE_UNTIL_PRESS}");
 static const u8 sText_CandyJarMadeCandy[] = _("The Candy Jar created:\n{STR_VAR_1}{PAUSE_UNTIL_PRESS}");
 static const u8 sText_BootedUpTM[] = _("Booted up a TM.");
@@ -140,6 +148,12 @@ static const u8 sClockwiseDirections[] = {DIR_NORTH, DIR_EAST, DIR_SOUTH, DIR_WE
 static const struct YesNoFuncTable sUseTMHMYesNoFuncTable =
 {
     .yesFunc = UseTMHM,
+    .noFunc = CloseItemMessage,
+};
+
+static const struct YesNoFuncTable sPokeVialBagYesNoFuncs =
+{
+    .yesFunc = PokeVial_UseFromBag,
     .noFunc = CloseItemMessage,
 };
 
@@ -1816,33 +1830,96 @@ static void Task_OpenRegisteredRadio(u8 taskId)
     }
 }
 
-// Field-use key item adapted from Pokémon World's Pokévial.
-// The callback handles both Bag and registered-key-item use.
+// Whole-party healing key item adapted from Pokémon World's Pokévial.
+// Both use paths display remaining charges before any charge is consumed.
 void ItemUseOutOfBattle_PokeVial(u8 taskId)
 {
+    bool8 fromField = gTasks[taskId].tUsingRegisteredKeyItem;
+    u16 charges;
+
     if (MenuHelpers_IsLinkActive())
     {
-        DisplayDadsAdviceCannotUseItemMessage(taskId, gTasks[taskId].tUsingRegisteredKeyItem);
+        DisplayDadsAdviceCannotUseItemMessage(taskId, fromField);
         return;
     }
 
-    sItemUseOnFieldCB = Task_UsePokeVial;
-    SetUpItemUseOnFieldCallback(taskId);
+    charges = PokeVial_GetCharges();
+    if (charges == 0)
+    {
+        if (fromField)
+            DisplayItemMessageOnField(taskId, sText_PokeVialEmpty, PokeVial_FieldCancel);
+        else
+            DisplayItemMessage(taskId, FONT_NORMAL, sText_PokeVialEmpty, CloseItemMessage);
+        return;
+    }
+
+    ConvertIntToDecimalStringN(gStringVar1, charges, STR_CONV_MODE_LEFT_ALIGN, 2);
+    StringExpandPlaceholders(gStringVar4, charges == 1 ? sText_PokeVialConfirmOne : sText_PokeVialConfirm);
+
+    if (fromField)
+        DisplayItemMessageOnField(taskId, gStringVar4, PokeVial_ConfirmFromField);
+    else
+        DisplayItemMessage(taskId, FONT_NORMAL, gStringVar4, PokeVial_ConfirmFromBag);
 }
 
-static void Task_UsePokeVial(u8 taskId)
+static void PokeVial_ConfirmFromBag(u8 taskId)
 {
+    BagMenu_YesNo(taskId, ITEMWIN_YESNO_HIGH, &sPokeVialBagYesNoFuncs);
+}
+
+static void PokeVial_ConfirmFromField(u8 taskId)
+{
+    DisplayYesNoMenuDefaultYes();
+    gTasks[taskId].func = Task_PokeVial_FieldChoice;
+}
+
+static void Task_PokeVial_FieldChoice(u8 taskId)
+{
+    switch (Menu_ProcessInputNoWrapClearOnChoose())
+    {
+    case MENU_NOTHING_CHOSEN:
+        return;
+    case 0:
+        PokeVial_UseFromField(taskId);
+        break;
+    case MENU_B_PRESSED:
+    case 1:
+        PokeVial_FieldCancel(taskId);
+        break;
+    }
+}
+
+// No / B never calls PokeVial_Use(), so no charges are spent.
+static void PokeVial_FieldCancel(u8 taskId)
+{
+    Task_CloseCantUseKeyItemMessage(taskId);
+}
+
+static void PokeVial_PrintResult(u8 taskId, bool8 fromField)
+{
+    const u8 *message = sText_PokeVialEmpty;
+
     if (PokeVial_Use())
     {
         ConvertIntToDecimalStringN(gStringVar1, PokeVial_GetCharges(), STR_CONV_MODE_LEFT_ALIGN, 2);
         StringExpandPlaceholders(gStringVar4, sText_PokeVialHealed);
-    }
-    else
-    {
-        StringCopy(gStringVar4, sText_PokeVialEmpty);
+        message = gStringVar4;
     }
 
-    DisplayItemMessageOnField(taskId, gStringVar4, Task_CloseCantUseKeyItemMessage);
+    if (fromField)
+        DisplayItemMessageOnField(taskId, message, Task_CloseCantUseKeyItemMessage);
+    else
+        DisplayItemMessage(taskId, FONT_NORMAL, message, CloseItemMessage);
+}
+
+static void PokeVial_UseFromBag(u8 taskId)
+{
+    PokeVial_PrintResult(taskId, FALSE);
+}
+
+static void PokeVial_UseFromField(u8 taskId)
+{
+    PokeVial_PrintResult(taskId, TRUE);
 }
 
 void ItemUseOutOfBattle_BeckoningBell(u8 taskId)

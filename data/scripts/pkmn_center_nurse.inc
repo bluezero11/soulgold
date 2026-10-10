@@ -46,8 +46,11 @@ EventScript_PkmnCenterNurse_TakeAndHealPkmn::
 @ The first Pokémon Center visit grants this key item (including on old saves).
 @ Both values use existing save vars, avoiding any SaveBlock layout changes.
 EventScript_PokeVial_Refill::
-	goto_if_ne VAR_POKEVIAL_MAX_CHARGES, 0, EventScript_PokeVial_HasCapacity
-	setvar VAR_POKEVIAL_MAX_CHARGES, 2
+	goto_if_ne VAR_POKEVIAL_MAX_CHARGES, 0, EventScript_PokeVial_CheckLegacyCapacity
+	setvar VAR_POKEVIAL_MAX_CHARGES, 5
+EventScript_PokeVial_CheckLegacyCapacity::
+	goto_if_ne VAR_POKEVIAL_MAX_CHARGES, 2, EventScript_PokeVial_HasCapacity
+	setvar VAR_POKEVIAL_MAX_CHARGES, 5
 EventScript_PokeVial_HasCapacity::
 	copyvar VAR_POKEVIAL_CHARGES, VAR_POKEVIAL_MAX_CHARGES
 	checkitem ITEM_POKE_VIAL, 1
