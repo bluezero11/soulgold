@@ -205,15 +205,15 @@ static const u16 sStatEditorTextPalette[] =
 {
     RGB(0, 0, 0),       // transparent
     RGB(29, 29, 28),    // soft off-white
-    RGB(8, 8, 9),       // shadow
+    RGB(29, 29, 28),    // light button lettering
     RGB(5, 5, 6),       // dark charcoal
     RGB(12, 22, 31),    // male symbol
     RGB(5, 12, 20),     // male shadow
     RGB(31, 12, 20),    // female symbol
     RGB(20, 6, 12),     // female shadow
-    RGB(0, 0, 0),
-    RGB(0, 0, 0),
-    RGB(0, 0, 0),
+    RGB(29, 5, 22),     // magenta button outline
+    RGB(9, 24, 23),     // teal-green shadow for dark text
+    RGB(8, 8, 9),       // dark shadow for light text
     RGB(0, 0, 0),
     RGB(0, 0, 0),
     RGB(0, 0, 0),
@@ -223,8 +223,8 @@ static const u16 sStatEditorTextPalette[] =
 
 static const u8 sMenuWindowFontColors[][3] = 
 {
-    [FONT_BLACK]  = {TEXT_COLOR_TRANSPARENT, 3, 2},
-    [FONT_WHITE]  = {TEXT_COLOR_TRANSPARENT, 1, 2},
+    [FONT_BLACK]  = {TEXT_COLOR_TRANSPARENT, 3, 9},
+    [FONT_WHITE]  = {TEXT_COLOR_TRANSPARENT, 1, 10},
 };
 
 #define TAG_SELECTOR 30004
