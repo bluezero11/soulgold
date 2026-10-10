@@ -795,7 +795,7 @@ Cherrygrove_FriendlyTrader_Text_3:
 	.string "Poltchageist$"
 
 Cherrygrove_FriendlyTrader_Text_4:
-	.string "No thanks$"
+	.string "No thanks!$"
 
 Cherrygrove_FriendlyTrader_Text_5:
 	.string "Take good care of my {STR_VAR_1}!\p"
