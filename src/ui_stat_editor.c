@@ -201,10 +201,30 @@ enum Colors
     FONT_WHITE,
 };
 
+static const u16 sStatEditorTextPalette[] =
+{
+    RGB(0, 0, 0),       // transparent
+    RGB(29, 29, 28),    // soft off-white
+    RGB(8, 8, 9),       // shadow
+    RGB(5, 5, 6),       // dark charcoal
+    RGB(12, 22, 31),    // male symbol
+    RGB(5, 12, 20),     // male shadow
+    RGB(31, 12, 20),    // female symbol
+    RGB(20, 6, 12),     // female shadow
+    RGB(0, 0, 0),
+    RGB(0, 0, 0),
+    RGB(0, 0, 0),
+    RGB(0, 0, 0),
+    RGB(0, 0, 0),
+    RGB(0, 0, 0),
+    RGB(0, 0, 0),
+    RGB(0, 0, 0),
+};
+
 static const u8 sMenuWindowFontColors[][3] = 
 {
-    [FONT_BLACK]  = {TEXT_COLOR_TRANSPARENT,  2, 9},
-    [FONT_WHITE]  = {TEXT_COLOR_TRANSPARENT,  3, 1},
+    [FONT_BLACK]  = {TEXT_COLOR_TRANSPARENT, 3, 2},
+    [FONT_WHITE]  = {TEXT_COLOR_TRANSPARENT, 1, 2},
 };
 
 #define TAG_SELECTOR 30004
@@ -487,6 +507,7 @@ static bool8 StatEditor_LoadGraphics(void)
         break;
     case 2:
         LoadPalette(sStatEditorBgPalette, BG_PLTT_ID(0), PLTT_SIZE_4BPP);
+        LoadPalette(sStatEditorTextPalette, BG_PLTT_ID(2), PLTT_SIZE_4BPP);
         sStatEditorDataPtr->gfxLoadState++;
         break;
     default:
