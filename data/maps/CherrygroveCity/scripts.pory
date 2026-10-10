@@ -681,7 +681,7 @@ script Cherrygrove_FriendlyTrader {
                 an adventure with you!")
         dynmultipush("Sinistea", SPECIES_SINISTEA_PHONY)
         dynmultipush("Poltchageist", SPECIES_POLTCHAGEIST_COUNTERFEIT)
-        dynmultipush("No thanks", SPECIES_NONE)
+        dynmultipush("No thanks!", SPECIES_NONE)
         dynmultistack(0, 0, FALSE, 3, FALSE, SPECIES_SINISTEA_PHONY, DYN_MULTICHOICE_CB_SHOW_POKEMON)
         switch(var(VAR_RESULT)) {
             case SPECIES_SINISTEA_PHONY:
