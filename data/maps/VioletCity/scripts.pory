@@ -497,7 +497,7 @@ VioletCity_Text_BoyGiftIntro:
 	.string "Would you like to take one with you?$"
 
 VioletCity_Text_BoyGiftSneasel:
-	.string "Sneasel$"
+	.string "Johtonian Sneasel$"
 
 VioletCity_Text_BoyGiftSneaselHisui:
 	.string "Hisuian Sneasel$"
