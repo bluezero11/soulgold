@@ -212,7 +212,7 @@ static const u16 sStatEditorTextPalette[] =
     RGB(31, 12, 20),    // female symbol
     RGB(20, 6, 12),     // female shadow
     RGB(29, 5, 22),     // magenta button outline
-    RGB(9, 24, 23),     // teal-green shadow for dark text
+    RGB(24, 25, 27),    // light grey shadow for dark text
     RGB(8, 8, 9),       // dark shadow for light text
     RGB(0, 0, 0),
     RGB(0, 0, 0),
