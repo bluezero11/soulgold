@@ -445,10 +445,19 @@ static bool8 StatEditor_DoGfxSetup(void)
 #define POKEMON_SPRITE sStatEditorDataPtr->monIconSpriteId
 #define SHADOW_SPRITE sStatEditorDataPtr->monIconShadowId
 
+static void DestroyStatEditorMonSprite(u8 spriteId)
+{
+    // The foreground pic uses palette slot 0, reserved by LoadMonIconPalettes.
+    // FreeResourcesAndDestroySprite would release that reservation, allowing the
+    // shadow palette to claim slot 0 and turn the next Pokemon into a silhouette.
+    FreeSpriteOamMatrix(&gSprites[spriteId]);
+    FreeAndDestroyMonPicSpriteNoPalette(spriteId);
+}
+
 static void StatEditor_FreeResources(void)
 {
     DestroySelector();
-    FreeResourcesAndDestroySprite(&gSprites[POKEMON_SPRITE], POKEMON_SPRITE);
+    DestroyStatEditorMonSprite(POKEMON_SPRITE);
     FreeResourcesAndDestroySprite(&gSprites[SHADOW_SPRITE], SHADOW_SPRITE);
     try_free(sStatEditorDataPtr);
     FreeAllWindowBuffers();
@@ -948,7 +957,7 @@ static void ChangePartyPokemon(u8 taskId, s8 direction)
 
     StopPokemonAnimationDelayTask();
 
-    FreeResourcesAndDestroySprite(&gSprites[sStatEditorDataPtr->monIconSpriteId], sStatEditorDataPtr->monIconSpriteId);
+    DestroyStatEditorMonSprite(sStatEditorDataPtr->monIconSpriteId);
     FreeResourcesAndDestroySprite(&gSprites[sStatEditorDataPtr->monIconShadowId], sStatEditorDataPtr->monIconShadowId);
 
     sStatEditorDataPtr->partyid = nextPartyId;
