@@ -15455,6 +15455,23 @@ const struct ItemInfo gItemsInfo[] =
         .iconPalette = gItemIconPalette_PowderJar,
     },
 
+    [ITEM_POKE_VIAL] =
+    {
+        .name = ITEM_NAME("Poké Vial"),
+        .price = 0,
+        .description = COMPOUND_STRING(
+            "A refillable vial\n"
+            "that heals the\n"
+            "party's HP and PP."),
+        .importance = 1,
+        .pocket = POCKET_KEY_ITEMS,
+        .type = ITEM_USE_FIELD,
+        .fieldUseFunc = ItemUseOutOfBattle_PokeVial,
+        // Reuse a bottle icon pending import of the donor artwork.
+        .iconPic = gItemIcon_PowderJar,
+        .iconPalette = gItemIconPalette_PowderJar,
+    },
+
     [ITEM_CANDY_JAR] =
     {
         .name = ITEM_NAME("Candy Jar"),

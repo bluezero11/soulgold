@@ -50,3 +50,8 @@ gText_ThankYouForWaiting::
 gText_WeHopeToSeeYouAgain2::
 	.string "We hope to see you again!$"
 
+
+gText_PokeVialInstructions::
+	.string "Here's a vial to heal up\n"
+	.string "when out on journeys.\p"
+	.string "Refill it at Pokémon Centers!$"
