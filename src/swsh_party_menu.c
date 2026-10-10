@@ -244,6 +244,7 @@ struct PartyMenuInternal
     u8 promptWindowId;
     u8 actions[16]; // Reserve space for field moves plus Follow, Edit stats and Cancel
     u8 numActions;
+    u8 actionScroll; // First action shown when a field menu has more than 9 entries
     // In vanilla Emerald, only the first 0xB0 hwords (0x160 bytes) are actually used.
     // However, a full 0x100 hwords (0x200 bytes) are allocated.
     // It is likely that the 0x160 value used below is a constant defined by
@@ -3930,11 +3931,21 @@ static u8 DisplaySelectionWindow(u8 windowType)
     u8 cursorDimension;
     u8 letterSpacing;
     u8 i;
+    u8 visibleActions = sPartyMenuInternal->numActions;
+    u8 firstAction = 0;
+
+    // A GBA party action window can show nine 16-pixel rows. Scroll longer
+    // menus instead of positioning their window offscreen.
+    if (windowType == SELECTWINDOW_ACTIONS && visibleActions > 9)
+    {
+        visibleActions = 9;
+        firstAction = sPartyMenuInternal->actionScroll;
+    }
 
     switch (windowType)
     {
     case SELECTWINDOW_ACTIONS:
-        SetWindowTemplateFields(&window, 2, 19, 19 - (sPartyMenuInternal->numActions * 2), 10, sPartyMenuInternal->numActions * 2, 14, 0x2E9);
+        SetWindowTemplateFields(&window, 2, 19, 19 - (visibleActions * 2), 10, visibleActions * 2, 14, 0x2E9);
         break;
     case SELECTWINDOW_ITEM:
         window = sItemGiveTakeWindowTemplate;
@@ -3960,25 +3971,26 @@ static u8 DisplaySelectionWindow(u8 windowType)
     cursorDimension = GetMenuCursorDimensionByFont(FONT_NORMAL, 0);
     letterSpacing = GetFontAttribute(FONT_NORMAL, FONTATTR_LETTER_SPACING);
 
-    for (i = 0; i < sPartyMenuInternal->numActions; i++)
+    for (i = 0; i < visibleActions; i++)
     {
         const u8 *text;
+        u8 actionId = sPartyMenuInternal->actions[i + firstAction];
         u8 fontColorsId = 3;
 
-        if (sPartyMenuInternal->actions[i] >= MENU_FIELD_MOVES)
+        if (actionId >= MENU_FIELD_MOVES)
             fontColorsId = 4;
-        if (sPartyMenuInternal->actions[i] >= MENU_LEVEL_UP_MOVES && sPartyMenuInternal->actions[i] <= MENU_SUB_MOVES)
+        if (actionId >= MENU_LEVEL_UP_MOVES && actionId <= MENU_SUB_MOVES)
             fontColorsId = 6;
 
-        if (sPartyMenuInternal->actions[i] >= MENU_FIELD_MOVES)
-            text = GetMoveName(FieldMove_GetMoveId(sPartyMenuInternal->actions[i] - MENU_FIELD_MOVES));
+        if (actionId >= MENU_FIELD_MOVES)
+            text = GetMoveName(FieldMove_GetMoveId(actionId - MENU_FIELD_MOVES));
         else
-            text = sCursorOptions[sPartyMenuInternal->actions[i]].text;
+            text = sCursorOptions[actionId].text;
 
         AddTextPrinterParameterized4(sPartyMenuInternal->windowId[0], FONT_NORMAL, cursorDimension, (i * 16) + 1, letterSpacing, 0, sFontColorTable[fontColorsId], 0, text);
     }
 
-    InitMenuInUpperLeftCorner(sPartyMenuInternal->windowId[0], sPartyMenuInternal->numActions, 0, TRUE);
+    InitMenuInUpperLeftCorner(sPartyMenuInternal->windowId[0], visibleActions, 0, TRUE);
     ScheduleBgCopyTilemapToVram(2);
 
     return sPartyMenuInternal->windowId[0];
@@ -4018,6 +4030,7 @@ static void SetPartyMonSelectionActions(struct Pokemon *mons, u8 slotId, u8 acti
 {
     u8 i;
 
+    sPartyMenuInternal->actionScroll = 0;
     if (action == ACTIONS_NONE)
     {
         SetPartyMonFieldSelectionActions(mons, slotId);
@@ -4230,12 +4243,58 @@ static void Task_HandleSelectionMenuInput(u8 taskId)
         s8 input;
         s16 *data = gTasks[taskId].data;
 
+        if (sPartyMenuInternal->numActions > 9)
+        {
+            u8 cursor = Menu_GetCursorPos();
+            u8 nextCursor = cursor;
+            u8 lastScroll = sPartyMenuInternal->numActions - 9;
+            bool8 scrollChanged = FALSE;
+
+            if (JOY_REPEAT(DPAD_ANY) == DPAD_DOWN && cursor == 8)
+            {
+                if (sPartyMenuInternal->actionScroll < lastScroll)
+                {
+                    sPartyMenuInternal->actionScroll++;
+                    nextCursor = 8;
+                }
+                else
+                {
+                    sPartyMenuInternal->actionScroll = 0;
+                    nextCursor = 0;
+                }
+                scrollChanged = TRUE;
+            }
+            else if (JOY_REPEAT(DPAD_ANY) == DPAD_UP && cursor == 0)
+            {
+                if (sPartyMenuInternal->actionScroll > 0)
+                {
+                    sPartyMenuInternal->actionScroll--;
+                    nextCursor = 0;
+                }
+                else
+                {
+                    sPartyMenuInternal->actionScroll = lastScroll;
+                    nextCursor = 8;
+                }
+                scrollChanged = TRUE;
+            }
+
+            if (scrollChanged)
+            {
+                PlaySE(SE_SELECT);
+                PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[0]);
+                DisplaySelectionWindow(SELECTWINDOW_ACTIONS);
+                Menu_MoveCursor(nextCursor);
+                return;
+            }
+        }
+
         if (sPartyMenuInternal->numActions <= 3)
             input = Menu_ProcessInputNoWrapAround_other();
         else
             input = ProcessMenuInput_other();
 
-        data[0] = Menu_GetCursorPos();
+        data[0] = Menu_GetCursorPos() + sPartyMenuInternal->actionScroll;
         switch (input)
         {
         case MENU_NOTHING_CHOSEN:
@@ -4250,10 +4309,10 @@ static void Task_HandleSelectionMenuInput(u8 taskId)
             break;
         default:
             PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[2]);
-            if (sPartyMenuInternal->actions[input] >= MENU_FIELD_MOVES)
+            if (sPartyMenuInternal->actions[input + sPartyMenuInternal->actionScroll] >= MENU_FIELD_MOVES)
                 CursorCb_FieldMove(taskId);
             else
-                sCursorOptions[sPartyMenuInternal->actions[input]].func(taskId);
+                sCursorOptions[sPartyMenuInternal->actions[input + sPartyMenuInternal->actionScroll]].func(taskId);
             break;
         }
     }
@@ -5475,7 +5534,7 @@ static void Task_HandleSpinTradeYesNoInput(u8 taskId)
 
 static void CursorCb_FieldMove(u8 taskId)
 {
-    u8 fieldMove = sPartyMenuInternal->actions[Menu_GetCursorPos()] - MENU_FIELD_MOVES;
+    u8 fieldMove = sPartyMenuInternal->actions[Menu_GetCursorPos() + sPartyMenuInternal->actionScroll] - MENU_FIELD_MOVES;
     const struct MapHeader *mapHeader;
 
     PlaySE(SE_SELECT);
