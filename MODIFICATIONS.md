@@ -1,8 +1,8 @@
 # SoulGold Modifications
 
-This file documents the custom changes made on the `dev` branch of `bluezero11/soulgold`, plus important implementation findings and build/debugging notes discovered while compiling the project.
+This file documents the custom changes made on the `dev` branch of `bluezero11/soulgold`, plus important implementation findings and build/debugging notes discovered while compiling the project. It also records feature work developed on short-lived branches before merge.
 
-The intention is to keep `master` as the untouched/reference branch and do custom gameplay work on `dev`.
+The intention is to keep `master` as the untouched/reference branch, keep `dev` as the main custom gameplay branch, and isolate larger experimental features on dedicated branches until they compile and test cleanly.
 
 ## Build status
 
@@ -29,6 +29,183 @@ ROM: 32295928 B / 32 MB    (96.25%)
 ```
 
 These values are high, especially EWRAM and ROM usage, but they were not the cause of the linker failures encountered.
+
+---
+
+## Feature branch: stat editor
+
+Branch:
+
+```text
+feature/stat-editor
+```
+
+This branch was created from a clean, compiling `dev` state so the stat-editor transplant could be developed and debugged without destabilizing `dev`.
+
+### Overview
+
+A reusable Pokémon stat editor was transplanted from `fakuzatsu/verdant`, a pokeemerald-expansion-based project.
+
+The editor is accessible directly from the normal field party menu. After selecting a Pokémon, the action list now includes:
+
+```text
+Edit stats
+```
+
+The option is intentionally placed **second-last**, immediately before **Cancel**, regardless of the other available party actions.
+
+Selecting it opens the editor for that specific party Pokémon. Exiting the editor returns to the party menu.
+
+The current editor supports direct editing of all six:
+
+- EVs
+- IVs
+
+It also displays the Pokémon's:
+
+- actual calculated stats
+- ability
+- nature
+- level
+- gender
+- sprite
+
+Nature and ability are currently display-only in this transplanted version.
+
+### Main implementation files
+
+New files:
+
+```text
+src/ui_stat_editor.c
+include/ui_stat_editor.h
+graphics/ui_menu/a_button.png
+graphics/ui_menu/b_button.png
+graphics/ui_menu/background_pal.pal
+graphics/ui_menu/background_tileset.bin
+graphics/ui_menu/background_tileset.png
+graphics/ui_menu/dpad_button.png
+graphics/ui_menu/r_button.png
+graphics/ui_menu/selector.pal
+graphics/ui_menu/selector.png
+graphics/summary_screen/bw/shadow.pal
+```
+
+Party-menu integration touches the party-menu source/data variants present in this project, including:
+
+```text
+src/party_menu.c
+src/data/party_menu.h
+src/swsh_party_menu.c
+src/data/swsh_party_menu.h
+```
+
+### SoulGold compatibility adaptations
+
+The Verdant editor was not copied completely unchanged because SoulGold has diverged from the donor's pokeemerald-expansion revision.
+
+Important compatibility fixes made during the transplant:
+
+1. **Ability-info declaration**
+
+   Verdant's header declared:
+
+   ```c
+   extern const struct Ability gAbilitiesInfo[];
+   ```
+
+   SoulGold uses:
+
+   ```c
+   extern const struct AbilityInfo gAbilitiesInfo[];
+   ```
+
+   The declaration was updated accordingly. The incorrect donor declaration conflicted with SoulGold's `enum Ability` and caused cascading compile errors in party-menu code.
+
+2. **Pokémon summary animation API**
+
+   Verdant called an older four-argument form:
+
+   ```c
+   PokemonSummaryDoMonAnimation(sprite, sprite->sSpecies, isEgg, sprite->sIsShadow);
+   ```
+
+   SoulGold's current API is:
+
+   ```c
+   PokemonSummaryDoMonAnimation(sprite, species, oneFrame);
+   ```
+
+   The editor now calls:
+
+   ```c
+   PokemonSummaryDoMonAnimation(sprite, sprite->sSpecies, isEgg);
+   ```
+
+3. **Verdant scrolling-background dependency**
+
+   The donor editor relied on Verdant-specific `gScrollBgTiles`, `gScrollBgTilemap`, and `gScrollBgPalette` globals that SoulGold does not contain.
+
+   Rather than importing unrelated UI systems, that scrolling layer was removed. The stat editor retains its own primary background and interface graphics.
+
+4. **Donor source cleanup**
+
+   A missing semicolon in the transplanted setup code was corrected, and an unused secondary tilemap buffer associated with the removed scrolling background was removed.
+
+### Stat editor UI adjustments
+
+The initial transplant worked functionally but several palette choices did not fit SoulGold cleanly.
+
+The following visual refinements were made after runtime testing:
+
+- The **A** and **START** button graphics use a clear **magenta outline**.
+- START lettering was brightened so the button reads clearly.
+- The **magenta selection cursor** remains unchanged as a strong interaction cue.
+- The original large bright-magenta triangle behind the Pokémon was replaced with a muted **slate-grey-blue** so the Pokémon sprite is visually dominant.
+- The donor's teal accent colors were replaced with cool/light greys to better match the rest of the interface.
+- Dark text on the light stat panel now uses a light-grey accent shadow for improved legibility.
+- Magenta button/cursor accents were deliberately preserved while the background accents were desaturated.
+
+Current background-accent palette choices include approximately:
+
+```text
+Large triangle:       RGB 92, 103, 122
+Light grey accent:    RGB 205, 209, 216
+Mid grey accent:      RGB 166, 172, 182
+```
+
+### Build and runtime status
+
+The feature branch has completed a full successful ROM build.
+
+Observed successful-link memory usage:
+
+```text
+EWRAM: 255432 B / 256 KB   (97.44%)
+IWRAM:  24156 B / 32 KB    (73.72%)
+ROM: 32303852 B / 32 MB    (96.27%)
+```
+
+The build completed through:
+
+```text
+arm-none-eabi-ld
+gbafix Soulgold.elf
+arm-none-eabi-objcopy -O binary Soulgold.elf Soulgold.gba
+gbafix Soulgold.gba
+```
+
+Runtime testing has also confirmed that:
+
+- **Edit stats** appears in the party Pokémon action menu.
+- It is positioned immediately before **Cancel**.
+- The editor opens successfully for the selected Pokémon.
+- The EV/IV editor interface renders correctly.
+- The compatibility fixes compile and run.
+- The revised button/text palettes display correctly.
+- The later slate-grey-blue / grey accent palette is working well in emulator testing.
+
+At the time this section was written, `feature/stat-editor` was **18 commits ahead of `dev` and 0 behind**, and was considered ready to document before merging.
 
 ---
 
