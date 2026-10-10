@@ -38,6 +38,7 @@
 #include "pokeblock.h"
 #include "pokegear.h"
 #include "pokemon.h"
+#include "pokevial.h"
 #include "ruins_of_alph_puzzles.h"
 #include "script.h"
 #include "sound.h"
@@ -66,6 +67,7 @@ static void PlayerFaceHiddenItem(enum Direction);
 static void CheckForHiddenItemsInMapConnection(u8);
 static void Task_OpenRegisteredPokeblockCase(u8);
 static void Task_AccessPokemonBoxLink(u8);
+static void Task_UsePokeVial(u8 taskId);
 static void ItemUseOnFieldCB_Bike(u8);
 static void ItemUseOnFieldCB_Rod(u8);
 static void ItemUseOnFieldCB_Itemfinder(u8);
@@ -98,6 +100,8 @@ static const u8 sText_ItemFinderOnTop[] = _("Oh!\nThe ITEMFINDER's shaking wildl
 static const u8 sText_ItemFinderNothing[] = _("… … … …Nope!\nThere's no response.{PAUSE_UNTIL_PRESS}");
 static const u8 sText_CoinCase[] = _("Your coins:\n{STR_VAR_1}{PAUSE_UNTIL_PRESS}");
 static const u8 sText_PowderQty[] = _("Powder qty: {STR_VAR_1}{PAUSE_UNTIL_PRESS}");
+static const u8 sText_PokeVialHealed[] = _("Your party was fully healed!\n{STR_VAR_1} doses remain.{PAUSE_UNTIL_PRESS}");
+static const u8 sText_PokeVialEmpty[] = _("The Poké Vial is empty.\nRefill it at a Pokémon Center.{PAUSE_UNTIL_PRESS}");
 static const u8 sText_CandyJarQty[] = _("Stored EXP: {STR_VAR_1}\nNext candy: {STR_VAR_2}{PAUSE_UNTIL_PRESS}");
 static const u8 sText_CandyJarMadeCandy[] = _("The Candy Jar created:\n{STR_VAR_1}{PAUSE_UNTIL_PRESS}");
 static const u8 sText_BootedUpTM[] = _("Booted up a TM.");
@@ -1810,6 +1814,35 @@ static void Task_OpenRegisteredRadio(u8 taskId)
         DestroyTask(taskId);
         OpenPokegearApp(POKEGEAR_APP_RADIO, CB2_ReturnToField);
     }
+}
+
+// Field-use key item adapted from Pokémon World's Pokévial.
+// The callback handles both Bag and registered-key-item use.
+void ItemUseOutOfBattle_PokeVial(u8 taskId)
+{
+    if (MenuHelpers_IsLinkActive())
+    {
+        DisplayDadsAdviceCannotUseItemMessage(taskId, gTasks[taskId].tUsingRegisteredKeyItem);
+        return;
+    }
+
+    sItemUseOnFieldCB = Task_UsePokeVial;
+    SetUpItemUseOnFieldCallback(taskId);
+}
+
+static void Task_UsePokeVial(u8 taskId)
+{
+    if (PokeVial_Use())
+    {
+        ConvertIntToDecimalStringN(gStringVar1, PokeVial_GetCharges(), STR_CONV_MODE_LEFT_ALIGN, 2);
+        StringExpandPlaceholders(gStringVar4, sText_PokeVialHealed);
+    }
+    else
+    {
+        StringCopy(gStringVar4, sText_PokeVialEmpty);
+    }
+
+    DisplayItemMessageOnField(taskId, gStringVar4, Task_CloseCantUseKeyItemMessage);
 }
 
 void ItemUseOutOfBattle_BeckoningBell(u8 taskId)

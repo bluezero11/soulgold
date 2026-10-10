@@ -919,3 +919,10 @@ ls -lh Soulgold.gba
 ```
 
 The ROM is produced in the repository root as `Soulgold.gba`.
+
+
+## Poké Vial (feature/pokevial)
+
+Ported Pokémon World's Poké Vial mechanic to SoulGold. A refillable key item heals the entire party's HP, PP, and status (including fainted Pokémon), using one charge each time. It starts with two charges, and has a 15-charge capacity cap. Pokémon Center nurse healing refills the item and grants it on the first visit (including existing saves). Bag and registered-key-item use both return to the field before healing. Charges and capacity use permanent event variables `0x4122` and `0x4123` rather than modifying SaveBlock structures. The Powder Jar icon is temporarily reused instead of importing donor binary artwork.
+
+**Test checklist:** Receive the item on the first nurse visit; heal HP/PP/status/fainting; use via Bag and registered shortcut; expend two charges and observe the empty message; refill at a nurse; save/reload; check that the stat editor still works. The new feature has not been compiled or playtested.

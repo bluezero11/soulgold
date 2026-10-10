@@ -310,6 +310,8 @@
 #define VAR_FOLLOWER_MEGA_OFF                           0x411F
 #define VAR_SHINY_RATE                                  0x4120
 #define VAR_BATTLE_MUSIC_THEME                          0x4121
+#define VAR_POKEVIAL_CHARGES                             0x4122 // Remaining party heals
+#define VAR_POKEVIAL_MAX_CHARGES                         0x4123 // Persistent capacity, starts at two
 
 #define VARS_END                                         0x42FF
 

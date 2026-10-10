@@ -39,7 +39,21 @@ EventScript_PkmnCenterNurse_TakeAndHealPkmn::
 	applymovement VAR_0x800B, Common_Movement_WalkInPlaceFasterDown
 	waitmovement 0
 	special HealPlayerParty
+	call EventScript_PokeVial_Refill
 	callnative UpdateFollowingPokemon
+	return
+
+@ The first Pokémon Center visit grants this key item (including on old saves).
+@ Both values use existing save vars, avoiding any SaveBlock layout changes.
+EventScript_PokeVial_Refill::
+	goto_if_ne VAR_POKEVIAL_MAX_CHARGES, 0, EventScript_PokeVial_HasCapacity
+	setvar VAR_POKEVIAL_MAX_CHARGES, 2
+EventScript_PokeVial_HasCapacity::
+	copyvar VAR_POKEVIAL_CHARGES, VAR_POKEVIAL_MAX_CHARGES
+	checkitem ITEM_POKE_VIAL, 1
+	goto_if_eq VAR_RESULT, TRUE, EventScript_PokeVial_Done
+	giveitem ITEM_POKE_VIAL, 1
+EventScript_PokeVial_Done::
 	return
 
 EventScript_PkmnCenterNurse_CheckTrainerHillAndUnionRoom::
