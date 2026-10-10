@@ -2888,7 +2888,6 @@ static void SetPartyMonFieldSelectionActions(struct Pokemon *mons, u8 slotId)
 
     sPartyMenuInternal->numActions = 0;
     AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_SUMMARY);
-    AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_EDIT_STATS);
 
     if (P_PARTY_MOVE_RELEARNER
      && GetMonData(&mons[slotId], MON_DATA_SPECIES)
@@ -2948,6 +2947,7 @@ static void SetPartyMonFieldSelectionActions(struct Pokemon *mons, u8 slotId)
             }
         }
     }
+    AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_EDIT_STATS);
     AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_CANCEL1);
 }
 
