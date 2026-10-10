@@ -261,7 +261,9 @@ static const u8 gText_IntroSlideOff[]      = _("{COLOR GREEN}{SHADOW LIGHT_GREEN
 static const u8 gText_BattleUiLight[]      = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}Light");
 static const u8 gText_BattleUiDark[]       = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}Dark");
 static const u8 *const sShinyRateLabels[SHINY_RATE_COUNT] = {
-        [SHINY_RATE_256] = COMPOUND_STRING("{COLOR GREEN}{SHADOW LIGHT_GREEN}<1/64>"),
+        [SHINY_RATE_64] = COMPOUND_STRING("{COLOR GREEN}{SHADOW LIGHT_GREEN}<1/64>"),
+        [SHINY_RATE_128] = COMPOUND_STRING("{COLOR GREEN}{SHADOW LIGHT_GREEN}<1/128>"),
+        [SHINY_RATE_256] = COMPOUND_STRING("{COLOR GREEN}{SHADOW LIGHT_GREEN}<1/256>"),
         [SHINY_RATE_512] = COMPOUND_STRING("{COLOR GREEN}{SHADOW LIGHT_GREEN}<1/512>"),
         [SHINY_RATE_1024] = COMPOUND_STRING("{COLOR GREEN}{SHADOW LIGHT_GREEN}<1/1024>"),
     };
@@ -926,12 +928,12 @@ static void ProcessOptionInput(u8 taskId)
     case OPTION_MENU_PG3_START + MENUITEM_SHINY_RATE:
         if (JOY_NEW(DPAD_RIGHT))
         {
-            sShinyRate = sShinyRate == SHINY_RATE_1024 ? SHINY_RATE_256 : sShinyRate + 1;
+            sShinyRate = sShinyRate == SHINY_RATE_1024 ? SHINY_RATE_64 : sShinyRate + 1;
             sArrowPressed = TRUE;
         }
         else if (JOY_NEW(DPAD_LEFT))
         {
-            sShinyRate = sShinyRate == SHINY_RATE_256 ? SHINY_RATE_1024 : sShinyRate - 1;
+            sShinyRate = sShinyRate == SHINY_RATE_64 ? SHINY_RATE_1024 : sShinyRate - 1;
             sArrowPressed = TRUE;
         }
         ShinyRate_DrawChoices(sShinyRate);
