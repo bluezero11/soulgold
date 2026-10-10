@@ -509,7 +509,7 @@ VioletCity_Text_BoyGiftRufflet:
 	.string "Rufflet$"
 
 VioletCity_Text_BoyGiftDecline:
-	.string "No thanks$"
+	.string "No thanks!$"
 
 VioletCity_Text_BoyGiftAfter:
 	.string "Take good care of {STR_VAR_1}!\p"
