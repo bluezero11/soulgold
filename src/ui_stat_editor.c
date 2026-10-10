@@ -1159,7 +1159,7 @@ static void SpriteCB_Pokemon(struct Sprite *sprite)
         if (!sStatEditorDataPtr->monAnimPlayed) // only play cry on the first time mon is animated
             PlayMonCry();
 
-        PokemonSummaryDoMonAnimation(sprite, sprite->sSpecies, isEgg, sprite->sIsShadow);
+        PokemonSummaryDoMonAnimation(sprite, sprite->sSpecies, isEgg);
         sStatEditorDataPtr->monAnimPlayed = TRUE;
     }
 }
