@@ -1311,6 +1311,10 @@ static bool8 CanEditGender(u16 species)
 {
     u8 ratio = gSpeciesInfo[species].genderRatio;
 
+    // Party menu integrations can expose eggs; never edit their PID.
+    if (GetMonData(ReturnPartyMon(), MON_DATA_IS_EGG))
+        return FALSE;
+
     return ratio != MON_MALE && ratio != MON_FEMALE && ratio != MON_GENDERLESS;
 }
 
