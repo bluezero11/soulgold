@@ -978,10 +978,10 @@ static void SelectorCallback(struct Sprite *sprite)
 
     if (sStatEditorDataPtr->selectedPanel == PANEL_DETAILS)
     {
-        // Original animation 2: local arrow pixels x=1..5.
-        // Sprite center x=19, left edge x=3 -> screen pixels x=4..8.
-        // The detail labels start at screen x=12.
-        sprite->x = 19;
+        // Gender symbol is near screen x=57..63. Move the left
+        // arrow inward to x=49..53 without touching the Lv. text.
+        // Ability/Nature retain their existing x=4..8 position.
+        sprite->x = (sStatEditorDataPtr->selectedDetail == DETAIL_GENDER) ? 64 : 19;
         sprite->y = (sStatEditorDataPtr->selectedDetail == DETAIL_GENDER) ? 113
                   : (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY) ? 130 : 146;
     }
@@ -997,9 +997,10 @@ static void SelectorCallback(struct Sprite *sprite)
 // and edit-mode blinking, and hide it whenever the stat grid is selected.
 static void DetailRightSelectorCallback(struct Sprite *sprite)
 {
-    // Original animation 1: local arrow pixels x=27..31.
-    // Sprite center x=63, left edge x=47 -> screen x=74..78.
-    sprite->x = 63;
+    // Gender's right arrow moves inward to x=68..72, forming
+    // a balanced bracket around the gender symbol at x=57..63.
+    // Ability/Nature retain their existing x=74..78 position.
+    sprite->x = (sStatEditorDataPtr->selectedDetail == DETAIL_GENDER) ? 57 : 63;
     sprite->y = (sStatEditorDataPtr->selectedDetail == DETAIL_GENDER) ? 113
               : (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY) ? 130 : 146;
     sprite->invisible = sStatEditorDataPtr->selectedPanel != PANEL_DETAILS
