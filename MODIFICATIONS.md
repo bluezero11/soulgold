@@ -921,6 +921,20 @@ ls -lh Soulgold.gba
 The ROM is produced in the repository root as `Soulgold.gba`.
 
 
+## Expanded stat editor (feature/expanded-editor)
+
+Based on the working editor transplanted from `fakuzatsu/verdant`, with the nature/ability cycling approach cross-checked against `PCG06/pokeemerald`'s `feat/stat_editor` branch. This branch extends the existing SoulGold stat editor, preserving its graphics, original EV/IV grid, party switching, and START confirmation behavior.
+
+- **Natural D-pad movement:** From the EV column, press Left to enter the left-hand details panel; press Right to return to the EV column, then Right again for IVs. Up/Down cycles between **Ability** and **Nature** in the details panel. Gender remains display-only (reserved for future development).
+- **A-to-edit, A-to-stage:** Press A on either detail to enter edit mode, adjust it with Left/Right (Up/Down jumps to last/first choice), then press A to return to selection mode. Edits are staged in memory alongside the EVs and IVs.
+- **Ability:** Cycles only through distinct, nonempty abilities actually available to that Pokémon's species/form. Editing is blocked if there is only one distinct ability.
+- **Nature:** Uses `MON_DATA_HIDDEN_NATURE` (the effective/Mint nature) so stat adjustments change without altering the Pokémon's personality, gender, shininess or forms. Both the displayed nature and stat preview use the staged effective nature.
+- **Save behavior:** START commits all staged EVs, IVs, ability and nature and recalculates stats. B from the main selection mode discards pending changes. Like the original editor, changing to another party member with L/R commits pending edits to the previous Pokémon.
+- **Gender is not editable.** Its existing display now reads `GetMonGender()` rather than truncating the 32-bit personality value to 16 bits.
+- **Compatibility:** No new save fields, Pokémon data layout changes, or graphics; only `src/ui_stat_editor.c` and this documentation are changed.
+
+**Test plan:** Test both D-pad transitions from EV to details and back, A edit/stage and START save, nature stat-preview matching the in-game Summary screen, all three ability slots where present, hidden/duplicate/missing ability slots, one-ability species, genderless species, B discard, L/R party switching, save/reload and existing EV/IV editing. This branch is not yet compiled or playtested.
+
 ## Poké Vial (feature/pokevial)
 
 Ported Pokémon World's Poké Vial mechanic to SoulGold. A refillable key item heals the entire party's HP, PP, and status (including fainted Pokémon), using one charge each time. It starts with five charges, refilled at every Pokémon Center, and retains support for a 15-charge capacity cap. Pokémon Center nurse healing refills the item and grants it on the first visit (including existing saves). A follow-up explanation appears only after the vial is successfully given: "Here's a vial to heal up when out on journeys. Refill it at Pokémon Centers!" The bag description uses a shorter line without "whole", and successful healing now reports remaining heals instead of doses (with singular grammar for one heal). Choosing Use in the Bag or through a registered shortcut first shows the number of remaining heals and asks for confirmation. Choosing No or pressing B does not consume a charge. Only a confirmed Yes heals the party. Existing two-charge saves are upgraded to five without losing track of doses already spent. Charges and capacity use permanent event variables `0x4122` and `0x4123` rather than modifying SaveBlock structures. The Powder Jar icon is temporarily reused instead of importing donor binary artwork.

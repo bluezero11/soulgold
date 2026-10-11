@@ -66,6 +66,10 @@ struct StatEditorResources
     u16 ivTotal;
     u16 partyid;
     u16 inputMode;
+    u8 selectedPanel;
+    u8 selectedDetail;
+    u8 newNature;
+    u8 newAbilitySlot;
     u8 newEVs[6];
     u8 newIVs[6];
     bool8 monAnimPlayed;
@@ -73,6 +77,14 @@ struct StatEditorResources
 
 #define INPUT_SELECT_STAT 0
 #define INPUT_EDIT_STAT 1
+
+// The existing stat grid and the lower-left info panel share one cursor.
+// Left from the EV column enters info; Right returns to the stat grid.
+#define PANEL_STATS   0
+#define PANEL_DETAILS 1
+#define DETAIL_ABILITY 0
+#define DETAIL_NATURE  1
+#define DETAIL_COUNT   2
 
 #define UI_STAT_HP 0
 #define UI_STAT_ATK 1
@@ -124,6 +136,9 @@ static void SelectorCallback(struct Sprite *sprite);
 static inline struct Pokemon *ReturnPartyMon();
 static void ChangeAndUpdateStats(void);
 static void ChangePartyPokemon(u8 taskId, s8 direction);
+static void Task_MenuEditingDetail(u8 taskId);
+static void ChangeDetailValue(bool8 increase, bool8 jumpToEnd);
+static u8 GetValidAbilitySlots(u16 species, u8 *slots);
 static u8 CreateSelector(void);
 static void DestroySelector(void);
 static void SpriteCB_Pokemon(struct Sprite *);
@@ -338,7 +353,11 @@ void StatEditor_Init(MainCallback callback, u16 partyIndex)
 
     for (i = 0; i < 6; i++)
         sStatEditorDataPtr->newIVs[i] = GetMonData(ReturnPartyMon(), MON_DATA_HP_IV + i);
-    
+
+    sStatEditorDataPtr->selectedPanel = PANEL_STATS;
+    sStatEditorDataPtr->newNature = GetMonData(ReturnPartyMon(), MON_DATA_HIDDEN_NATURE);
+    sStatEditorDataPtr->newAbilitySlot = GetMonData(ReturnPartyMon(), MON_DATA_ABILITY_NUM);
+
     SetMainCallback2(StatEditor_RunSetup);
 }
 
@@ -693,8 +712,10 @@ static const u8 sText_MonLevel[]      = _("Lv.{CLEAR 1}{STR_VAR_1}");
 
 static const u8 sText_MenuStartButtonTextMain[] = _("Confirm");
 static const u8 sText_MenuAButtonTextMain[]     = _("Edit Stats");
+static const u8 sText_MenuAButtonTextDetail[]   = _("Edit Info");
 static const u8 sText_MenuBButtonTextMain[]     = _("Back");
 static const u8 sText_MenuDPadButtonTextMain[]  = _("Change Stat");
+static const u8 sText_MenuDPadButtonTextDetail[] = _("Change");
 
 #define BUTTON_Y 4
 static void PrintTitleToWindowMainState()
@@ -704,7 +725,8 @@ static void PrintTitleToWindowMainState()
     AddTextPrinterParameterized4(WINDOW_1, FONT_NORMAL, 1, 0, 0, 0, sMenuWindowFontColors[FONT_WHITE], TEXT_SKIP_DRAW, sText_MenuTitle);
 
     BlitBitmapToWindow(WINDOW_1, sA_ButtonGfx, 75, (BUTTON_Y), 8, 8);
-    AddTextPrinterParameterized4(WINDOW_1, FONT_NARROW, 87, 0, 0, 0, sMenuWindowFontColors[FONT_WHITE], TEXT_SKIP_DRAW, sText_MenuAButtonTextMain);
+    AddTextPrinterParameterized4(WINDOW_1, FONT_NARROW, 87, 0, 0, 0, sMenuWindowFontColors[FONT_WHITE], TEXT_SKIP_DRAW,
+                                 sStatEditorDataPtr->selectedPanel == PANEL_DETAILS ? sText_MenuAButtonTextDetail : sText_MenuAButtonTextMain);
 
     BlitBitmapToWindow(WINDOW_1, sStart_ButtonGfx, 140, (BUTTON_Y), 24, 8);
     AddTextPrinterParameterized4(WINDOW_1, FONT_NARROW, 168, 0, 0, 0, sMenuWindowFontColors[FONT_WHITE], TEXT_SKIP_DRAW, sText_MenuStartButtonTextMain);
@@ -720,7 +742,8 @@ static void PrintTitleToWindowEditState()
     AddTextPrinterParameterized4(WINDOW_1, FONT_NORMAL, 1, 0, 0, 0, sMenuWindowFontColors[FONT_WHITE], TEXT_SKIP_DRAW, sText_MenuTitle);
 
     BlitBitmapToWindow(WINDOW_1, sDPad_ButtonGfx, 75, (BUTTON_Y), 24, 8);
-    AddTextPrinterParameterized4(WINDOW_1, FONT_NARROW, 102, 0, 0, 0, sMenuWindowFontColors[FONT_WHITE], TEXT_SKIP_DRAW, sText_MenuDPadButtonTextMain);
+    AddTextPrinterParameterized4(WINDOW_1, FONT_NARROW, 102, 0, 0, 0, sMenuWindowFontColors[FONT_WHITE], TEXT_SKIP_DRAW,
+                                 sStatEditorDataPtr->selectedPanel == PANEL_DETAILS ? sText_MenuDPadButtonTextDetail : sText_MenuDPadButtonTextMain);
 
     BlitBitmapToWindow(WINDOW_1, sB_ButtonGfx, 160, (BUTTON_Y), 8, 8);
     AddTextPrinterParameterized4(WINDOW_1, FONT_NARROW, 172, 0, 0, 0, sMenuWindowFontColors[FONT_WHITE], TEXT_SKIP_DRAW, sText_MenuBButtonTextMain);
@@ -773,10 +796,11 @@ static void PrintMonStats()
     u16 currentStat;
     u8 text[2];
     u16 level = GetMonData(ReturnPartyMon(), MON_DATA_LEVEL);
-    u16 personality = GetMonData(ReturnPartyMon(), MON_DATA_PERSONALITY);
-    u16 gender = GetGenderFromSpeciesAndPersonality(sStatEditorDataPtr->speciesID, personality);
-    u16 ability = GetAbilityBySpecies(sStatEditorDataPtr->speciesID, GetMonData(ReturnPartyMon(), MON_DATA_ABILITY_NUM));
-    u8 nature = GetNature(ReturnPartyMon());
+    u8 gender = GetMonGender(ReturnPartyMon());
+    u16 ability = GetAbilityBySpecies(sStatEditorDataPtr->speciesID, sStatEditorDataPtr->newAbilitySlot);
+    // This is the Mint/effective nature actually used by CalculateMonStats,
+    // unlike GetNature(), which reads the original personality-based nature.
+    u8 nature = sStatEditorDataPtr->newNature;
 
     FillWindowPixelBuffer(WINDOW_2, PIXEL_FILL(TEXT_COLOR_TRANSPARENT));
     FillWindowPixelBuffer(WINDOW_3, PIXEL_FILL(TEXT_COLOR_TRANSPARENT));
@@ -903,12 +927,19 @@ static void SelectorCallback(struct Sprite *sprite)
         sprite->data[0] = 0;
     }
 
-    sStatEditorDataPtr->selectedStat = sStatEditorDataPtr->selector_x + (sStatEditorDataPtr->selector_y * 2);
-
-    sprite->x = spriteCords[sStatEditorDataPtr->selector_y][sStatEditorDataPtr->selector_x].x;
-    sprite->y = spriteCords[sStatEditorDataPtr->selector_y][sStatEditorDataPtr->selector_x].y;
-
-    DebugPrintf("%d", sStatEditorDataPtr->selectedStat);
+    if (sStatEditorDataPtr->selectedPanel == PANEL_DETAILS)
+    {
+        // The existing 32x32 magenta selector brackets the ability/nature text.
+        // WINDOW_3 is at screen (8, 88); its detail lines begin at y=34/50.
+        sprite->x = 40;
+        sprite->y = (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY) ? 130 : 146;
+    }
+    else
+    {
+        sStatEditorDataPtr->selectedStat = sStatEditorDataPtr->selector_x + (sStatEditorDataPtr->selector_y * 2);
+        sprite->x = spriteCords[sStatEditorDataPtr->selector_y][sStatEditorDataPtr->selector_x].x;
+        sprite->y = spriteCords[sStatEditorDataPtr->selector_y][sStatEditorDataPtr->selector_x].y;
+    }
 }
 
 static const u16 selectedStatToStatEnum[] = {
@@ -970,6 +1001,8 @@ static void ChangePartyPokemon(u8 taskId, s8 direction)
     for (i = 0; i < 6; i++)
         sStatEditorDataPtr->newIVs[i] = GetMonData(ReturnPartyMon(), MON_DATA_HP_IV + i);
 
+    sStatEditorDataPtr->newNature = GetMonData(ReturnPartyMon(), MON_DATA_HIDDEN_NATURE);
+    sStatEditorDataPtr->newAbilitySlot = GetMonData(ReturnPartyMon(), MON_DATA_ABILITY_NUM);
     sStatEditorDataPtr->inputMode = INPUT_SELECT_STAT;
     StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 0);
     PrintTitleToWindowMainState();
@@ -1052,6 +1085,26 @@ static void Task_StatEditorMain(u8 taskId) // input control when first loaded in
     }
     if (JOY_NEW(A_BUTTON))
     {
+        if (sStatEditorDataPtr->selectedPanel == PANEL_DETAILS)
+        {
+            u8 slots[NUM_ABILITY_SLOTS];
+
+            // Do not offer an edit action for species with only one ability.
+            if (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY
+             && GetValidAbilitySlots(sStatEditorDataPtr->speciesID, slots) <= 1)
+            {
+                PlaySE(SE_FAILURE);
+                return;
+            }
+
+            PlaySE(SE_SELECT);
+            StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 3);
+            sStatEditorDataPtr->inputMode = INPUT_EDIT_STAT;
+            PrintTitleToWindowEditState();
+            gTasks[taskId].func = Task_MenuEditingDetail;
+            return;
+        }
+
         ConvertEnumToFromArray(sStatEditorDataPtr->selectedStat, GET_STAT);
         StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 3);
         PlaySE(SE_SELECT);
@@ -1079,26 +1132,48 @@ static void Task_StatEditorMain(u8 taskId) // input control when first loaded in
         BeginNormalPaletteFade(0xFFFFFFFF, 0, 0, 16, RGB_BLACK);
         gTasks[taskId].func = Task_StatEditorTurnOff;
     }
-    if (JOY_NEW(DPAD_LEFT) || JOY_NEW(DPAD_RIGHT))
+    if (JOY_NEW(DPAD_LEFT))
     {
-        if(sStatEditorDataPtr->selector_x == 0)
-            sStatEditorDataPtr->selector_x = 1;
+        if (sStatEditorDataPtr->selectedPanel == PANEL_STATS)
+        {
+            if (sStatEditorDataPtr->selector_x == 0)
+            {
+                sStatEditorDataPtr->selectedPanel = PANEL_DETAILS;
+                // Enter by whichever info line is nearer the selected stat.
+                sStatEditorDataPtr->selectedDetail = sStatEditorDataPtr->selector_y >= 4 ? DETAIL_NATURE : DETAIL_ABILITY;
+                PrintTitleToWindowMainState();
+            }
+            else
+                sStatEditorDataPtr->selector_x = 0;
+        }
+        return;
+    }
+    if (JOY_NEW(DPAD_RIGHT))
+    {
+        if (sStatEditorDataPtr->selectedPanel == PANEL_DETAILS)
+        {
+            sStatEditorDataPtr->selectedPanel = PANEL_STATS;
+            sStatEditorDataPtr->selector_x = 0;
+            PrintTitleToWindowMainState();
+        }
         else
-            sStatEditorDataPtr->selector_x = 0; 
+            sStatEditorDataPtr->selector_x = 1;
+        return;
     }
     if (JOY_NEW(DPAD_UP))
     {
-        if (sStatEditorDataPtr->selector_y == 0)
-            sStatEditorDataPtr->selector_y = 5;
+        if (sStatEditorDataPtr->selectedPanel == PANEL_DETAILS)
+            sStatEditorDataPtr->selectedDetail = (sStatEditorDataPtr->selectedDetail + DETAIL_COUNT - 1) % DETAIL_COUNT;
         else
-            sStatEditorDataPtr->selector_y--;
+            sStatEditorDataPtr->selector_y = (sStatEditorDataPtr->selector_y + 5) % 6;
+        return;
     }
     if (JOY_NEW(DPAD_DOWN))
     {
-        if (sStatEditorDataPtr->selector_y == 5)
-            sStatEditorDataPtr->selector_y = 0;
+        if (sStatEditorDataPtr->selectedPanel == PANEL_DETAILS)
+            sStatEditorDataPtr->selectedDetail = (sStatEditorDataPtr->selectedDetail + 1) % DETAIL_COUNT;
         else
-            sStatEditorDataPtr->selector_y++;
+            sStatEditorDataPtr->selector_y = (sStatEditorDataPtr->selector_y + 1) % 6;
     }
 
 }
@@ -1113,7 +1188,122 @@ static void ChangeAndUpdateStats(void)
     for (i = 0; i < 6; i++)
         SetMonData(ReturnPartyMon(), MON_DATA_HP_IV + i, &(sStatEditorDataPtr->newIVs[i]));
 
+    SetMonData(ReturnPartyMon(), MON_DATA_HIDDEN_NATURE, &sStatEditorDataPtr->newNature);
+    SetMonData(ReturnPartyMon(), MON_DATA_ABILITY_NUM, &sStatEditorDataPtr->newAbilitySlot);
     CalculateMonStats(ReturnPartyMon());
+}
+
+// Ability and nature edits use the same stage/confirm flow as EV/IV edits.
+// Only offered ability slots are used; missing and duplicate abilities are skipped.
+static u8 GetValidAbilitySlots(u16 species, u8 *slots)
+{
+    u8 slot, i, count = 0;
+
+    for (slot = 0; slot < NUM_ABILITY_SLOTS; slot++)
+    {
+        enum Ability ability = GetSpeciesAbility(species, slot);
+        bool8 duplicate = FALSE;
+
+        if (ability == ABILITY_NONE)
+            continue;
+
+        for (i = 0; i < count; i++)
+        {
+            if (GetSpeciesAbility(species, slots[i]) == ability)
+            {
+                duplicate = TRUE;
+                break;
+            }
+        }
+
+        if (!duplicate)
+            slots[count++] = slot;
+    }
+    return count;
+}
+
+static void ChangeDetailValue(bool8 increase, bool8 jumpToEnd)
+{
+    if (sStatEditorDataPtr->selectedDetail == DETAIL_NATURE)
+    {
+        u8 value = sStatEditorDataPtr->newNature;
+
+        if (jumpToEnd)
+            value = increase ? NUM_NATURES - 1 : 0;
+        else
+            value = increase ? (value + 1) % NUM_NATURES : (value + NUM_NATURES - 1) % NUM_NATURES;
+
+        sStatEditorDataPtr->newNature = value;
+    }
+    else
+    {
+        u8 slots[NUM_ABILITY_SLOTS];
+        u8 count = GetValidAbilitySlots(sStatEditorDataPtr->speciesID, slots);
+        u8 i, position = 0;
+        bool8 found = FALSE;
+
+        if (count <= 1)
+            return;
+
+        for (i = 0; i < count; i++)
+        {
+            if (slots[i] == sStatEditorDataPtr->newAbilitySlot)
+            {
+                position = i;
+                found = TRUE;
+                break;
+            }
+        }
+
+        if (jumpToEnd)
+            position = increase ? count - 1 : 0;
+        else if (!found)
+            position = increase ? 0 : count - 1;
+        else
+            position = increase ? (position + 1) % count : (position + count - 1) % count;
+
+        sStatEditorDataPtr->newAbilitySlot = slots[position];
+    }
+
+    // Preview changes immediately; no Pokémon data is saved until START
+    // (or the existing commit-before-changing-party behavior).
+    PrintMonStats();
+}
+
+static void Task_MenuEditingDetail(u8 taskId)
+{
+    if (JOY_NEW(L_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        ChangePartyPokemon(taskId, -1);
+        return;
+    }
+    if (JOY_NEW(R_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        ChangePartyPokemon(taskId, 1);
+        return;
+    }
+    if (JOY_NEW(A_BUTTON) || JOY_NEW(B_BUTTON))
+    {
+        // A stages the current value, exactly as it does for EVs and IVs.
+        // B keeps the existing edit-mode behavior (exits without reverting).
+        gTasks[taskId].func = Task_StatEditorMain;
+        StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 0);
+        PlaySE(SE_SELECT);
+        sStatEditorDataPtr->inputMode = INPUT_SELECT_STAT;
+        PrintTitleToWindowMainState();
+        return;
+    }
+
+    if (JOY_REPEAT(DPAD_LEFT))
+        ChangeDetailValue(FALSE, FALSE);
+    else if (JOY_REPEAT(DPAD_RIGHT))
+        ChangeDetailValue(TRUE, FALSE);
+    else if (JOY_NEW(DPAD_UP))
+        ChangeDetailValue(TRUE, TRUE);
+    else if (JOY_NEW(DPAD_DOWN))
+        ChangeDetailValue(FALSE, TRUE);
 }
 
 #define EDIT_INPUT_INCREASE_STATE           0
