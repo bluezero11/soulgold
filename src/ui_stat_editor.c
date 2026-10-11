@@ -58,6 +58,7 @@ struct StatEditorResources
     u16 speciesID;
     u16 selectedStat;
     u16 selectorSpriteId;
+    u8 detailRightSelectorId;
     u16 selector_x;
     u16 selector_y;
     u32 editingStat;
@@ -133,6 +134,7 @@ static void Task_MenuEditingStat(u8 taskId);
 static void SampleUi_DrawMonIcon(u16 dexNum);
 static void PrintMonStats(void);
 static void SelectorCallback(struct Sprite *sprite);
+static void DetailRightSelectorCallback(struct Sprite *sprite);
 static inline struct Pokemon *ReturnPartyMon();
 static void ChangeAndUpdateStats(void);
 static void ChangePartyPokemon(u8 taskId, s8 direction);
@@ -346,6 +348,7 @@ void StatEditor_Init(MainCallback callback, u16 partyIndex)
     sStatEditorDataPtr->gfxLoadState = 0;
     sStatEditorDataPtr->savedCallback = callback;
     sStatEditorDataPtr->selectorSpriteId = 0xFF;
+    sStatEditorDataPtr->detailRightSelectorId = 0xFF;
     sStatEditorDataPtr->partyid = partyIndex;
 
     for (i = 0; i < 6; i++)
@@ -596,8 +599,12 @@ static void SampleUi_DrawMonIcon(u16 dexNum)
 {
     u8 shadowPalette = 0;
     u16 speciesId = dexNum;
+    // Match the real Pokémon's palette and PID (including shiny and gender
+    // differences), rather than always drawing the normal palette and dummy PID.
+    bool8 isShiny = GetMonData(ReturnPartyMon(), MON_DATA_IS_SHINY);
+    u32 personality = GetMonData(ReturnPartyMon(), MON_DATA_PERSONALITY);
 
-    POKEMON_SPRITE = CreateMonPicSprite_Affine(speciesId, 0, 0x8000, TRUE, MON_ICON_X, MON_ICON_Y, 0, TAG_NONE);
+    POKEMON_SPRITE = CreateMonPicSprite_Affine(speciesId, isShiny, personality, TRUE, MON_ICON_X, MON_ICON_Y, 0, TAG_NONE);
 
     gSprites[POKEMON_SPRITE].oam.priority = 0;
     gSprites[POKEMON_SPRITE].sSpecies = sStatEditorDataPtr->speciesID;
@@ -605,7 +612,7 @@ static void SampleUi_DrawMonIcon(u16 dexNum)
     gSprites[POKEMON_SPRITE].sIsShadow = FALSE;
     gSprites[POKEMON_SPRITE].sDelayAnim = 0;
 
-    SHADOW_SPRITE = CreateMonPicSprite_Affine(speciesId, 0, 0x8000, TRUE, MON_ICON_X + 5, MON_ICON_Y - 2, 0, TAG_NONE);
+    SHADOW_SPRITE = CreateMonPicSprite_Affine(speciesId, isShiny, personality, TRUE, MON_ICON_X + 5, MON_ICON_Y - 2, 0, TAG_NONE);
 
     gSprites[SHADOW_SPRITE].oam.priority = 1;
     gSprites[SHADOW_SPRITE].sSpecies = sStatEditorDataPtr->speciesID;
@@ -629,12 +636,32 @@ static u8 CreateSelector(void)
 
     gSprites[sStatEditorDataPtr->selectorSpriteId].invisible = FALSE;
     StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 0);
+
+    // The existing selector art already has left-only (anim 1) and
+    // right-only (anim 2) frames. Reuse it twice to bracket the full
+    // details panel without changing the compact EV/IV selection cursor.
+    if (sStatEditorDataPtr->detailRightSelectorId == 0xFF)
+    {
+        u8 spriteId = CreateSprite(&sSpriteTemplate_Selector, 62, 128, 0);
+        if (spriteId < MAX_SPRITES)
+        {
+            sStatEditorDataPtr->detailRightSelectorId = spriteId;
+            gSprites[spriteId].callback = DetailRightSelectorCallback;
+            gSprites[spriteId].invisible = TRUE;
+            StartSpriteAnim(&gSprites[spriteId], 2);
+        }
+    }
+
     DebugPrintf("Sprite ID: %d", sStatEditorDataPtr->selectorSpriteId);
     return sStatEditorDataPtr->selectorSpriteId;
 }
 
 static void DestroySelector(void)
 {
+    if (sStatEditorDataPtr->detailRightSelectorId != 0xFF)
+        DestroySprite(&gSprites[sStatEditorDataPtr->detailRightSelectorId]);
+    sStatEditorDataPtr->detailRightSelectorId = 0xFF;
+
     if (sStatEditorDataPtr->selectorSpriteId != 0xFF)
         DestroySprite(&gSprites[sStatEditorDataPtr->selectorSpriteId]);
     sStatEditorDataPtr->selectorSpriteId = 0xFF;
@@ -929,9 +956,10 @@ static void SelectorCallback(struct Sprite *sprite)
 
     if (sStatEditorDataPtr->selectedPanel == PANEL_DETAILS)
     {
-        // The existing 32x32 magenta selector brackets the ability/nature text.
-        // WINDOW_3 is at screen (8, 88); its detail lines begin at y=34/50.
-        sprite->x = 40;
+        // WINDOW_3 begins at x=8. The left-only arrow at sprite x=22
+        // appears at x=7..10; the separate right-only arrow at x=62
+        // appears at x=73..76, bracketing the full details panel.
+        sprite->x = 22;
         sprite->y = (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY) ? 128 : 144;
     }
     else
@@ -940,6 +968,16 @@ static void SelectorCallback(struct Sprite *sprite)
         sprite->x = spriteCords[sStatEditorDataPtr->selector_y][sStatEditorDataPtr->selector_x].x;
         sprite->y = spriteCords[sStatEditorDataPtr->selector_y][sStatEditorDataPtr->selector_x].y;
     }
+}
+
+// Keep the second bracket arrow in sync with the original cursor's position
+// and edit-mode blinking, and hide it whenever the stat grid is selected.
+static void DetailRightSelectorCallback(struct Sprite *sprite)
+{
+    sprite->x = 62;
+    sprite->y = (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY) ? 128 : 144;
+    sprite->invisible = sStatEditorDataPtr->selectedPanel != PANEL_DETAILS
+                     || gSprites[sStatEditorDataPtr->selectorSpriteId].invisible;
 }
 
 static const u16 selectedStatToStatEnum[] = {
@@ -1004,7 +1042,8 @@ static void ChangePartyPokemon(u8 taskId, s8 direction)
     sStatEditorDataPtr->newNature = GetMonData(ReturnPartyMon(), MON_DATA_HIDDEN_NATURE);
     sStatEditorDataPtr->newAbilitySlot = GetMonData(ReturnPartyMon(), MON_DATA_ABILITY_NUM);
     sStatEditorDataPtr->inputMode = INPUT_SELECT_STAT;
-    StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 0);
+    StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId],
+                    sStatEditorDataPtr->selectedPanel == PANEL_DETAILS ? 1 : 0);
     PrintTitleToWindowMainState();
 
     gTasks[taskId].func = Task_DelayedSpriteLoad;
@@ -1098,7 +1137,7 @@ static void Task_StatEditorMain(u8 taskId) // input control when first loaded in
             }
 
             PlaySE(SE_SELECT);
-            StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 3);
+            StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 1);
             sStatEditorDataPtr->inputMode = INPUT_EDIT_STAT;
             PrintTitleToWindowEditState();
             gTasks[taskId].func = Task_MenuEditingDetail;
@@ -1141,6 +1180,7 @@ static void Task_StatEditorMain(u8 taskId) // input control when first loaded in
                 sStatEditorDataPtr->selectedPanel = PANEL_DETAILS;
                 // Enter by whichever info line is nearer the selected stat.
                 sStatEditorDataPtr->selectedDetail = sStatEditorDataPtr->selector_y >= 4 ? DETAIL_NATURE : DETAIL_ABILITY;
+                StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 1);
                 PrintTitleToWindowMainState();
             }
             else
@@ -1154,6 +1194,7 @@ static void Task_StatEditorMain(u8 taskId) // input control when first loaded in
         {
             sStatEditorDataPtr->selectedPanel = PANEL_STATS;
             sStatEditorDataPtr->selector_x = 0;
+            StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 0);
             PrintTitleToWindowMainState();
         }
         else
@@ -1289,7 +1330,7 @@ static void Task_MenuEditingDetail(u8 taskId)
         // A stages the current value, exactly as it does for EVs and IVs.
         // B keeps the existing edit-mode behavior (exits without reverting).
         gTasks[taskId].func = Task_StatEditorMain;
-        StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 0);
+        StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 1);
         PlaySE(SE_SELECT);
         sStatEditorDataPtr->inputMode = INPUT_SELECT_STAT;
         PrintTitleToWindowMainState();

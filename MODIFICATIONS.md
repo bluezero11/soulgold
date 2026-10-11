@@ -931,9 +931,11 @@ Based on the working editor transplanted from `fakuzatsu/verdant`, with the natu
 - **Nature:** Uses `MON_DATA_HIDDEN_NATURE` (the effective/Mint nature) so stat adjustments change without altering the Pokémon's personality, gender, shininess or forms. Both the displayed nature and stat preview use the staged effective nature.
 - **Save behavior:** START commits all staged EVs, IVs, ability and nature and recalculates stats. B from the main selection mode discards pending changes. Like the original editor, changing to another party member with L/R commits pending edits to the previous Pokémon.
 - **Gender is not editable.** Its existing display now reads `GetMonGender()` rather than truncating the 32-bit personality value to 16 bits.
+- **Sprite fidelity fix:** The front Pokémon sprite (and its shadow copy) are created using the current Pokémon's `MON_DATA_IS_SHINY` and complete `MON_DATA_PERSONALITY`, preserving shiny palettes and personality-based sprite variations.
+- **Details cursor fix:** The existing magenta selector sheet already contains individual left/right arrow animations. The detail panel now uses an additional selector sprite to position arrows on the outer left and right of the whole info area, rather than around the text; the EV/IV cursor remains unchanged and the two detail arrows blink together.
 - **Compatibility:** No new save fields, Pokémon data layout changes, or graphics; only `src/ui_stat_editor.c` and this documentation are changed.
 
-**Test plan:** Test both D-pad transitions from EV to details and back, A edit/stage and START save, nature stat-preview matching the in-game Summary screen, all three ability slots where present, hidden/duplicate/missing ability slots, one-ability species, genderless species, B discard, L/R party switching, save/reload and existing EV/IV editing. This branch is not yet compiled or playtested.
+**Test plan:** Test both D-pad transitions from EV to details and back, A edit/stage and START save, nature stat-preview matching the in-game Summary screen, all three ability slots where present, hidden/duplicate/missing ability slots, one-ability species, genderless species, B discard, L/R party switching, save/reload and existing EV/IV editing. The latest cursor and shiny-sprite fixes are not yet compiled or playtested.
 
 ## Poké Vial (feature/pokevial)
 
