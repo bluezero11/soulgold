@@ -126,6 +126,7 @@ static EWRAM_DATA struct StatEditorResources *sStatEditorDataPtr = NULL;
 //==========STATIC=DEFINES==========//
 static void StatEditor_RunSetup(void);
 static bool8 StatEditor_DoGfxSetup(void);
+static void StatEditor_SanitizeMonSpriteOam(void);
 static bool8 StatEditor_InitBgs(void);
 static void StatEditor_FadeAndBail(void);
 static bool8 StatEditor_LoadGraphics(void);
@@ -380,10 +381,41 @@ static void StatEditor_RunSetup(void)
     }
 }
 
+// Pokémon summary animations can leave a freed affine matrix index in
+// oam.matrixNum. Once affine mode is off, bits 3/4 become OAM flip flags
+// and can leave the sprite randomly mirrored or upside-down. SoulGold's
+// SwSh party menu already fixes this in RunMonAnimTimer.
+static void StatEditor_SanitizeMonSpriteOam(void)
+{
+    u8 i;
+    u8 spriteIds[2] = {
+        sStatEditorDataPtr->monIconSpriteId,
+        sStatEditorDataPtr->monIconShadowId
+    };
+
+    for (i = 0; i < ARRAY_COUNT(spriteIds); i++)
+    {
+        u8 spriteId = spriteIds[i];
+
+        if (spriteId < MAX_SPRITES
+         && gSprites[spriteId].inUse
+         && gSprites[spriteId].callback == SpriteCallbackDummy
+         && gSprites[spriteId].oam.affineMode == ST_OAM_AFFINE_OFF)
+        {
+            gSprites[spriteId].oam.matrixNum =
+                (gSprites[spriteId].hFlip << 3) | (gSprites[spriteId].vFlip << 4);
+        }
+    }
+}
+
 static void StatEditor_MainCB(void)
 {
     RunTasks();
     AnimateSprites();
+    // Sanitize only after sprite callbacks and before rendering. RunTasks
+    // can exit the editor and release its resources.
+    if (sStatEditorDataPtr != NULL)
+        StatEditor_SanitizeMonSpriteOam();
     BuildOamBuffer();
     DoScheduledBgTilemapCopiesToVram();
     UpdatePaletteFade();
