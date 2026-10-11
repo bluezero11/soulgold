@@ -637,18 +637,20 @@ static u8 CreateSelector(void)
     gSprites[sStatEditorDataPtr->selectorSpriteId].invisible = FALSE;
     StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 0);
 
-    // The existing selector art already has left-only (anim 1) and
-    // right-only (anim 2) frames. Reuse it twice to bracket the full
-    // details panel without changing the compact EV/IV selection cursor.
+    // The sprite sheet has left-only (animation 2) and right-only
+    // (animation 1) frames. The animation indexes are tile offsets,
+    // so the numbering is opposite the apparent left/right order.
+    // Reuse two sprites to bracket the full details panel without
+    // changing the compact EV/IV selection cursor.
     if (sStatEditorDataPtr->detailRightSelectorId == 0xFF)
     {
-        u8 spriteId = CreateSprite(&sSpriteTemplate_Selector, 62, 128, 0);
+        u8 spriteId = CreateSprite(&sSpriteTemplate_Selector, 62, 130, 0);
         if (spriteId < MAX_SPRITES)
         {
             sStatEditorDataPtr->detailRightSelectorId = spriteId;
             gSprites[spriteId].callback = DetailRightSelectorCallback;
             gSprites[spriteId].invisible = TRUE;
-            StartSpriteAnim(&gSprites[spriteId], 2);
+            StartSpriteAnim(&gSprites[spriteId], 1);
         }
     }
 
@@ -956,11 +958,12 @@ static void SelectorCallback(struct Sprite *sprite)
 
     if (sStatEditorDataPtr->selectedPanel == PANEL_DETAILS)
     {
-        // WINDOW_3 begins at x=8. The left-only arrow at sprite x=22
-        // appears at x=7..10; the separate right-only arrow at x=62
-        // appears at x=73..76, bracketing the full details panel.
-        sprite->x = 22;
-        sprite->y = (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY) ? 128 : 144;
+        // The sprite's coordinate is its CENTER, and the arrow art
+        // sits near the edge of its 32-pixel frame. With animation 2,
+        // sprite x=16 places the right-pointing arrow at screen x~4-8,
+        // outside the info text (which starts at screen x=12).
+        sprite->x = 16;
+        sprite->y = (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY) ? 130 : 146;
     }
     else
     {
@@ -974,8 +977,10 @@ static void SelectorCallback(struct Sprite *sprite)
 // and edit-mode blinking, and hide it whenever the stat grid is selected.
 static void DetailRightSelectorCallback(struct Sprite *sprite)
 {
+    // Animation 1 uses the rightmost arrow art, putting the arrow
+    // at screen x~74-78, near the outer edge of the details panel.
     sprite->x = 62;
-    sprite->y = (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY) ? 128 : 144;
+    sprite->y = (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY) ? 130 : 146;
     sprite->invisible = sStatEditorDataPtr->selectedPanel != PANEL_DETAILS
                      || gSprites[sStatEditorDataPtr->selectorSpriteId].invisible;
 }
@@ -1043,7 +1048,7 @@ static void ChangePartyPokemon(u8 taskId, s8 direction)
     sStatEditorDataPtr->newAbilitySlot = GetMonData(ReturnPartyMon(), MON_DATA_ABILITY_NUM);
     sStatEditorDataPtr->inputMode = INPUT_SELECT_STAT;
     StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId],
-                    sStatEditorDataPtr->selectedPanel == PANEL_DETAILS ? 1 : 0);
+                    sStatEditorDataPtr->selectedPanel == PANEL_DETAILS ? 2 : 0);
     PrintTitleToWindowMainState();
 
     gTasks[taskId].func = Task_DelayedSpriteLoad;
@@ -1137,7 +1142,7 @@ static void Task_StatEditorMain(u8 taskId) // input control when first loaded in
             }
 
             PlaySE(SE_SELECT);
-            StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 1);
+            StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 2);
             sStatEditorDataPtr->inputMode = INPUT_EDIT_STAT;
             PrintTitleToWindowEditState();
             gTasks[taskId].func = Task_MenuEditingDetail;
@@ -1180,7 +1185,7 @@ static void Task_StatEditorMain(u8 taskId) // input control when first loaded in
                 sStatEditorDataPtr->selectedPanel = PANEL_DETAILS;
                 // Enter by whichever info line is nearer the selected stat.
                 sStatEditorDataPtr->selectedDetail = sStatEditorDataPtr->selector_y >= 4 ? DETAIL_NATURE : DETAIL_ABILITY;
-                StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 1);
+                StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 2);
                 PrintTitleToWindowMainState();
             }
             else
@@ -1330,7 +1335,7 @@ static void Task_MenuEditingDetail(u8 taskId)
         // A stages the current value, exactly as it does for EVs and IVs.
         // B keeps the existing edit-mode behavior (exits without reverting).
         gTasks[taskId].func = Task_StatEditorMain;
-        StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 1);
+        StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 2);
         PlaySE(SE_SELECT);
         sStatEditorDataPtr->inputMode = INPUT_SELECT_STAT;
         PrintTitleToWindowMainState();
