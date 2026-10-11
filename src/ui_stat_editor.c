@@ -1371,18 +1371,29 @@ static void ChangeDetailValue(bool8 increase, bool8 jumpToEnd)
     if (sStatEditorDataPtr->selectedDetail == DETAIL_GENDER)
     {
         u32 personality;
+        u32 original = GetMonData(ReturnPartyMon(), MON_DATA_PERSONALITY);
         u8 currentGender = GetGenderFromSpeciesAndPersonality(
             sStatEditorDataPtr->speciesID, sStatEditorDataPtr->newPersonality);
+        u8 originalGender = GetGenderFromSpeciesAndPersonality(
+            sStatEditorDataPtr->speciesID, original);
         u8 nextGender = currentGender == MON_MALE ? MON_FEMALE : MON_MALE;
 
-        if (!FindGenderPersonality(sStatEditorDataPtr->speciesID,
-                                   sStatEditorDataPtr->newPersonality,
-                                   nextGender, &personality))
+        if (nextGender == originalGender)
         {
-            PlaySE(SE_FAILURE);
-            return;
+            // Toggling back restores the exact original PID, including
+            // Spinda markings and any other PID-dependent characteristics.
+            sStatEditorDataPtr->newPersonality = original;
         }
-        sStatEditorDataPtr->newPersonality = personality;
+        else
+        {
+            if (!FindGenderPersonality(sStatEditorDataPtr->speciesID,
+                                       original, nextGender, &personality))
+            {
+                PlaySE(SE_FAILURE);
+                return;
+            }
+            sStatEditorDataPtr->newPersonality = personality;
+        }
     }
     else if (sStatEditorDataPtr->selectedDetail == DETAIL_NATURE)
     {
