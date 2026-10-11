@@ -264,7 +264,7 @@ static const struct OamData sOamData_Selector =
 static const struct CompressedSpriteSheet sSpriteSheet_Selector =
 {
     .data = sSelector_Gfx,
-    .size = 32*32*6/2,
+    .size = 32*32*4/2,
     .tag = TAG_SELECTOR,
 };
 
@@ -303,30 +303,12 @@ static const union AnimCmd sSpriteAnim_Selector3[] =
     ANIMCMD_JUMP(0),
 };
 
-// Separate 32x32 cursor frames for the wide details panel. The single
-// right-pointing arrow is at pixels x=1..4 in frame 4; the left-pointing
-// arrow is at pixels x=27..30 in frame 5. Unlike the original single-arrow
-// frames, these can sit at the panel edges without moving the sprite offscreen.
-static const union AnimCmd sSpriteAnim_SelectorDetailLeft[] =
-{
-    ANIMCMD_FRAME(64, 32),
-    ANIMCMD_JUMP(0),
-};
-
-static const union AnimCmd sSpriteAnim_SelectorDetailRight[] =
-{
-    ANIMCMD_FRAME(80, 32),
-    ANIMCMD_JUMP(0),
-};
-
 static const union AnimCmd *const sSpriteAnimTable_Selector[] =
 {
     sSpriteAnim_Selector0,
     sSpriteAnim_Selector1,
     sSpriteAnim_Selector2,
     sSpriteAnim_Selector3,
-    sSpriteAnim_SelectorDetailLeft,
-    sSpriteAnim_SelectorDetailRight,
 };
 
 static const struct SpriteTemplate sSpriteTemplate_Selector =
@@ -655,19 +637,19 @@ static u8 CreateSelector(void)
     gSprites[sStatEditorDataPtr->selectorSpriteId].invisible = FALSE;
     StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 0);
 
-    // Dedicated details frames put the magenta pixels at the near edge
-    // of the left sprite and the far edge of the right sprite. The
-    // actual pixel positions are x=7..10 and x=75..78 on the GBA screen.
-    // The original EV/IV cursor frame and positioning are unchanged.
+    // Reuse the original four-frame selector PNG, which is known-good.
+    // Animation 2 shows only the left arrow (frame at tile offset 16);
+    // animation 1 shows only the right arrow (frame at offset 32).
+    // This avoids importing extra graphics or modifying EV/IV cursors.
     if (sStatEditorDataPtr->detailRightSelectorId == 0xFF)
     {
-        u8 spriteId = CreateSprite(&sSpriteTemplate_Selector, 64, 130, 0);
+        u8 spriteId = CreateSprite(&sSpriteTemplate_Selector, 63, 130, 0);
         if (spriteId < MAX_SPRITES)
         {
             sStatEditorDataPtr->detailRightSelectorId = spriteId;
             gSprites[spriteId].callback = DetailRightSelectorCallback;
             gSprites[spriteId].invisible = TRUE;
-            StartSpriteAnim(&gSprites[spriteId], 5);
+            StartSpriteAnim(&gSprites[spriteId], 1);
         }
     }
 
@@ -975,10 +957,10 @@ static void SelectorCallback(struct Sprite *sprite)
 
     if (sStatEditorDataPtr->selectedPanel == PANEL_DETAILS)
     {
-        // New frame 4: right-facing arrow at local pixels 1..4.
-        // x=22 minus 16px sprite origin => screen pixels 7..10,
-        // just before the detail labels starting at x=12.
-        sprite->x = 22;
+        // Original animation 2: local arrow pixels x=1..5.
+        // Sprite center x=19, left edge x=3 -> screen pixels x=4..8.
+        // The detail labels start at screen x=12.
+        sprite->x = 19;
         sprite->y = (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY) ? 130 : 146;
     }
     else
@@ -993,9 +975,9 @@ static void SelectorCallback(struct Sprite *sprite)
 // and edit-mode blinking, and hide it whenever the stat grid is selected.
 static void DetailRightSelectorCallback(struct Sprite *sprite)
 {
-    // New frame 5: left-facing arrow at local pixels 27..30.
-    // x=64 minus 16px sprite origin => screen pixels 75..78.
-    sprite->x = 64;
+    // Original animation 1: local arrow pixels x=27..31.
+    // Sprite center x=63, left edge x=47 -> screen x=74..78.
+    sprite->x = 63;
     sprite->y = (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY) ? 130 : 146;
     sprite->invisible = sStatEditorDataPtr->selectedPanel != PANEL_DETAILS
                      || gSprites[sStatEditorDataPtr->selectorSpriteId].invisible;
@@ -1064,7 +1046,7 @@ static void ChangePartyPokemon(u8 taskId, s8 direction)
     sStatEditorDataPtr->newAbilitySlot = GetMonData(ReturnPartyMon(), MON_DATA_ABILITY_NUM);
     sStatEditorDataPtr->inputMode = INPUT_SELECT_STAT;
     StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId],
-                    sStatEditorDataPtr->selectedPanel == PANEL_DETAILS ? 4 : 0);
+                    sStatEditorDataPtr->selectedPanel == PANEL_DETAILS ? 2 : 0);
     PrintTitleToWindowMainState();
 
     gTasks[taskId].func = Task_DelayedSpriteLoad;
@@ -1158,7 +1140,7 @@ static void Task_StatEditorMain(u8 taskId) // input control when first loaded in
             }
 
             PlaySE(SE_SELECT);
-            StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 4);
+            StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 2);
             sStatEditorDataPtr->inputMode = INPUT_EDIT_STAT;
             PrintTitleToWindowEditState();
             gTasks[taskId].func = Task_MenuEditingDetail;
@@ -1201,7 +1183,7 @@ static void Task_StatEditorMain(u8 taskId) // input control when first loaded in
                 sStatEditorDataPtr->selectedPanel = PANEL_DETAILS;
                 // Enter by whichever info line is nearer the selected stat.
                 sStatEditorDataPtr->selectedDetail = sStatEditorDataPtr->selector_y >= 4 ? DETAIL_NATURE : DETAIL_ABILITY;
-                StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 4);
+                StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 2);
                 PrintTitleToWindowMainState();
             }
             else
@@ -1351,7 +1333,7 @@ static void Task_MenuEditingDetail(u8 taskId)
         // A stages the current value, exactly as it does for EVs and IVs.
         // B keeps the existing edit-mode behavior (exits without reverting).
         gTasks[taskId].func = Task_StatEditorMain;
-        StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 4);
+        StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 2);
         PlaySE(SE_SELECT);
         sStatEditorDataPtr->inputMode = INPUT_SELECT_STAT;
         PrintTitleToWindowMainState();
