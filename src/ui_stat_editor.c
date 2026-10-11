@@ -71,6 +71,7 @@ struct StatEditorResources
     u8 selectedDetail;
     u8 newNature;
     u8 newAbilitySlot;
+    u32 newPersonality;
     u8 newEVs[6];
     u8 newIVs[6];
     bool8 monAnimPlayed;
@@ -83,9 +84,11 @@ struct StatEditorResources
 // Left from the EV column enters info; Right returns to the stat grid.
 #define PANEL_STATS   0
 #define PANEL_DETAILS 1
-#define DETAIL_ABILITY 0
-#define DETAIL_NATURE  1
-#define DETAIL_COUNT   2
+// Rows reflect their physical top-to-bottom position in WINDOW_3.
+#define DETAIL_GENDER  0
+#define DETAIL_ABILITY 1
+#define DETAIL_NATURE  2
+#define DETAIL_COUNT   3
 
 #define UI_STAT_HP 0
 #define UI_STAT_ATK 1
@@ -138,9 +141,12 @@ static void DetailRightSelectorCallback(struct Sprite *sprite);
 static inline struct Pokemon *ReturnPartyMon();
 static void ChangeAndUpdateStats(void);
 static void ChangePartyPokemon(u8 taskId, s8 direction);
+static void RefreshStatEditorMonSprite(void);
 static void Task_MenuEditingDetail(u8 taskId);
 static void ChangeDetailValue(bool8 increase, bool8 jumpToEnd);
 static u8 GetValidAbilitySlots(u16 species, u8 *slots);
+static bool8 CanEditGender(u16 species);
+static bool8 FindGenderPersonality(u16 species, u32 original, u8 gender, u32 *result);
 static u8 CreateSelector(void);
 static void DestroySelector(void);
 static void SpriteCB_Pokemon(struct Sprite *);
@@ -360,6 +366,7 @@ void StatEditor_Init(MainCallback callback, u16 partyIndex)
     sStatEditorDataPtr->selectedPanel = PANEL_STATS;
     sStatEditorDataPtr->newNature = GetMonData(ReturnPartyMon(), MON_DATA_HIDDEN_NATURE);
     sStatEditorDataPtr->newAbilitySlot = GetMonData(ReturnPartyMon(), MON_DATA_ABILITY_NUM);
+    sStatEditorDataPtr->newPersonality = GetMonData(ReturnPartyMon(), MON_DATA_PERSONALITY);
 
     SetMainCallback2(StatEditor_RunSetup);
 }
@@ -602,7 +609,7 @@ static void SampleUi_DrawMonIcon(u16 dexNum)
     // Match the real Pokémon's palette and PID (including shiny and gender
     // differences), rather than always drawing the normal palette and dummy PID.
     bool8 isShiny = GetMonData(ReturnPartyMon(), MON_DATA_IS_SHINY);
-    u32 personality = GetMonData(ReturnPartyMon(), MON_DATA_PERSONALITY);
+    u32 personality = sStatEditorDataPtr->newPersonality;
 
     POKEMON_SPRITE = CreateMonPicSprite_Affine(speciesId, isShiny, personality, TRUE, MON_ICON_X, MON_ICON_Y, 0, TAG_NONE);
 
@@ -628,6 +635,18 @@ static void SampleUi_DrawMonIcon(u16 dexNum)
 
 #undef POKEMON_SPRITE
 #undef SHADOW_SPRITE
+
+// Preview gender-dependent front sprites only after staging the edit.
+// Reuse the resource lifecycle from existing party switching.
+static void RefreshStatEditorMonSprite(void)
+{
+    StopPokemonAnimationDelayTask();
+    DestroyStatEditorMonSprite(sStatEditorDataPtr->monIconSpriteId);
+    FreeResourcesAndDestroySprite(&gSprites[sStatEditorDataPtr->monIconShadowId],
+                                  sStatEditorDataPtr->monIconShadowId);
+    sStatEditorDataPtr->monAnimPlayed = TRUE;
+    SampleUi_DrawMonIcon(sStatEditorDataPtr->speciesID);
+}
 
 static u8 CreateSelector(void)
 {
@@ -824,7 +843,9 @@ static void PrintMonStats()
     u16 currentStat;
     u8 text[2];
     u16 level = GetMonData(ReturnPartyMon(), MON_DATA_LEVEL);
-    u8 gender = GetMonGender(ReturnPartyMon());
+    // Preview staged gender without mutating party data.
+    u8 gender = GetGenderFromSpeciesAndPersonality(sStatEditorDataPtr->speciesID,
+                                                   sStatEditorDataPtr->newPersonality);
     u16 ability = GetAbilityBySpecies(sStatEditorDataPtr->speciesID, sStatEditorDataPtr->newAbilitySlot);
     // This is the Mint/effective nature actually used by CalculateMonStats,
     // unlike GetNature(), which reads the original personality-based nature.
@@ -961,7 +982,8 @@ static void SelectorCallback(struct Sprite *sprite)
         // Sprite center x=19, left edge x=3 -> screen pixels x=4..8.
         // The detail labels start at screen x=12.
         sprite->x = 19;
-        sprite->y = (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY) ? 130 : 146;
+        sprite->y = (sStatEditorDataPtr->selectedDetail == DETAIL_GENDER) ? 113
+                  : (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY) ? 130 : 146;
     }
     else
     {
@@ -978,7 +1000,8 @@ static void DetailRightSelectorCallback(struct Sprite *sprite)
     // Original animation 1: local arrow pixels x=27..31.
     // Sprite center x=63, left edge x=47 -> screen x=74..78.
     sprite->x = 63;
-    sprite->y = (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY) ? 130 : 146;
+    sprite->y = (sStatEditorDataPtr->selectedDetail == DETAIL_GENDER) ? 113
+              : (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY) ? 130 : 146;
     sprite->invisible = sStatEditorDataPtr->selectedPanel != PANEL_DETAILS
                      || gSprites[sStatEditorDataPtr->selectorSpriteId].invisible;
 }
@@ -1044,6 +1067,7 @@ static void ChangePartyPokemon(u8 taskId, s8 direction)
 
     sStatEditorDataPtr->newNature = GetMonData(ReturnPartyMon(), MON_DATA_HIDDEN_NATURE);
     sStatEditorDataPtr->newAbilitySlot = GetMonData(ReturnPartyMon(), MON_DATA_ABILITY_NUM);
+    sStatEditorDataPtr->newPersonality = GetMonData(ReturnPartyMon(), MON_DATA_PERSONALITY);
     sStatEditorDataPtr->inputMode = INPUT_SELECT_STAT;
     StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId],
                     sStatEditorDataPtr->selectedPanel == PANEL_DETAILS ? 2 : 0);
@@ -1131,9 +1155,12 @@ static void Task_StatEditorMain(u8 taskId) // input control when first loaded in
         {
             u8 slots[NUM_ABILITY_SLOTS];
 
-            // Do not offer an edit action for species with only one ability.
-            if (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY
-             && GetValidAbilitySlots(sStatEditorDataPtr->speciesID, slots) <= 1)
+            // Don't offer gender editing on fixed/genderless species or
+            // ability editing when the species has just one distinct ability.
+            if ((sStatEditorDataPtr->selectedDetail == DETAIL_GENDER
+              && !CanEditGender(sStatEditorDataPtr->speciesID))
+             || (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY
+              && GetValidAbilitySlots(sStatEditorDataPtr->speciesID, slots) <= 1))
             {
                 PlaySE(SE_FAILURE);
                 return;
@@ -1182,7 +1209,9 @@ static void Task_StatEditorMain(u8 taskId) // input control when first loaded in
             {
                 sStatEditorDataPtr->selectedPanel = PANEL_DETAILS;
                 // Enter by whichever info line is nearer the selected stat.
-                sStatEditorDataPtr->selectedDetail = sStatEditorDataPtr->selector_y >= 4 ? DETAIL_NATURE : DETAIL_ABILITY;
+                sStatEditorDataPtr->selectedDetail = sStatEditorDataPtr->selector_y >= 4 ? DETAIL_NATURE
+                                                     : sStatEditorDataPtr->selector_y >= 2 ? DETAIL_ABILITY
+                                                     : DETAIL_GENDER;
                 StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 2);
                 PrintTitleToWindowMainState();
             }
@@ -1232,6 +1261,13 @@ static void ChangeAndUpdateStats(void)
     for (i = 0; i < 6; i++)
         SetMonData(ReturnPartyMon(), MON_DATA_HP_IV + i, &(sStatEditorDataPtr->newIVs[i]));
 
+    if (sStatEditorDataPtr->newPersonality != GetMonData(ReturnPartyMon(), MON_DATA_PERSONALITY))
+    {
+        // SoulGold's existing helper preserves shiny state, effective
+        // nature and Tera type when the personality changes.
+        UpdateMonPersonality(&ReturnPartyMon()->box, sStatEditorDataPtr->newPersonality);
+    }
+
     SetMonData(ReturnPartyMon(), MON_DATA_HIDDEN_NATURE, &sStatEditorDataPtr->newNature);
     SetMonData(ReturnPartyMon(), MON_DATA_ABILITY_NUM, &sStatEditorDataPtr->newAbilitySlot);
     CalculateMonStats(ReturnPartyMon());
@@ -1266,9 +1302,85 @@ static u8 GetValidAbilitySlots(u16 species, u8 *slots)
     return count;
 }
 
+// Gender depends on PID's bottom byte. Choose the closest replacement
+// preserving (a) upper 16 bits used by Wurmple and other evolutions,
+// (b) original natural nature (PID % 25) and (c), if possible, the
+// lowest two bits of every byte used by Unown's letter calculation.
+// Search is deterministic and bounded; no RNG or extra save data.
+static bool8 CanEditGender(u16 species)
+{
+    u8 ratio = gSpeciesInfo[species].genderRatio;
+
+    return ratio != MON_MALE && ratio != MON_FEMALE && ratio != MON_GENDERLESS;
+}
+
+static bool8 FindGenderPersonality(u16 species, u32 original, u8 gender, u32 *result)
+{
+    u32 lowByte, midByte, candidate, difference;
+    u32 originalNature = GetNatureFromPersonality(original);
+    u32 upperHalf = original & 0xFFFF0000;
+    u32 bestDifference = 0xFFFFFFFF;
+    u8 ratio = gSpeciesInfo[species].genderRatio;
+    u8 pass;
+    bool8 found = FALSE;
+
+    if (!CanEditGender(species))
+        return FALSE;
+
+    for (pass = 0; pass < 2; pass++)
+    {
+        // Prefer retaining PID bits 0-1. Pass 1 relaxes only those
+        // bits for unusual gender ratios with no matching candidate.
+        u32 start = (pass == 0) ? (original & 3) : 0;
+        u32 step = (pass == 0) ? 4 : 1;
+
+        for (lowByte = start; lowByte < 256; lowByte += step)
+        {
+            if ((lowByte < ratio) != (gender == MON_FEMALE))
+                continue;
+
+            // Preserve bits 8-9 and all of the upper 16 bits.
+            for (midByte = (original >> 8) & 3; midByte < 256; midByte += 4)
+            {
+                candidate = upperHalf | (midByte << 8) | lowByte;
+                if (GetNatureFromPersonality(candidate) != originalNature)
+                    continue;
+
+                difference = (candidate > original) ? candidate - original : original - candidate;
+                if (difference < bestDifference)
+                {
+                    bestDifference = difference;
+                    *result = candidate;
+                    found = TRUE;
+                }
+            }
+        }
+        if (found)
+            break;
+    }
+
+    return found;
+}
+
 static void ChangeDetailValue(bool8 increase, bool8 jumpToEnd)
 {
-    if (sStatEditorDataPtr->selectedDetail == DETAIL_NATURE)
+    if (sStatEditorDataPtr->selectedDetail == DETAIL_GENDER)
+    {
+        u32 personality;
+        u8 currentGender = GetGenderFromSpeciesAndPersonality(
+            sStatEditorDataPtr->speciesID, sStatEditorDataPtr->newPersonality);
+        u8 nextGender = currentGender == MON_MALE ? MON_FEMALE : MON_MALE;
+
+        if (!FindGenderPersonality(sStatEditorDataPtr->speciesID,
+                                   sStatEditorDataPtr->newPersonality,
+                                   nextGender, &personality))
+        {
+            PlaySE(SE_FAILURE);
+            return;
+        }
+        sStatEditorDataPtr->newPersonality = personality;
+    }
+    else if (sStatEditorDataPtr->selectedDetail == DETAIL_NATURE)
     {
         u8 value = sStatEditorDataPtr->newNature;
 
@@ -1330,8 +1442,10 @@ static void Task_MenuEditingDetail(u8 taskId)
     }
     if (JOY_NEW(A_BUTTON) || JOY_NEW(B_BUTTON))
     {
-        // A stages the current value, exactly as it does for EVs and IVs.
-        // B keeps the existing edit-mode behavior (exits without reverting).
+        // A stages, just like EVs/IVs. B retains the existing behavior.
+        // Refresh a gender-dependent front sprite only once on staging.
+        if (sStatEditorDataPtr->selectedDetail == DETAIL_GENDER)
+            RefreshStatEditorMonSprite();
         gTasks[taskId].func = Task_StatEditorMain;
         StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 2);
         PlaySE(SE_SELECT);
