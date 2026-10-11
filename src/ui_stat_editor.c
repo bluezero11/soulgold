@@ -932,7 +932,7 @@ static void SelectorCallback(struct Sprite *sprite)
         // The existing 32x32 magenta selector brackets the ability/nature text.
         // WINDOW_3 is at screen (8, 88); its detail lines begin at y=34/50.
         sprite->x = 40;
-        sprite->y = (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY) ? 130 : 146;
+        sprite->y = (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY) ? 128 : 144;
     }
     else
     {
