@@ -687,7 +687,7 @@ script Cherrygrove_FriendlyTrader {
             case SPECIES_SINISTEA_PHONY:
                 setvar(VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_SINISTEA_PHONY)
 	            bufferspeciesname(STR_VAR_1, SPECIES_SINISTEA_PHONY)
-            	givemon(SPECIES_SINISTEA_PHONY, 5)
+            	givemon(SPECIES_SINISTEA_PHONY, 5, move1=MOVE_ASTONISH, move2=MOVE_WITHDRAW, move3=MOVE_WILL_O_WISP, move4=MOVE_CONFUSION)
                 showgivemonpic(10, 3)
                 removeobject(LOCALID_CHERRY_ZIGZAGOON)
 	            call(Common_EventScript_GiftMon)
