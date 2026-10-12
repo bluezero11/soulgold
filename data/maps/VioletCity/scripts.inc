@@ -168,6 +168,8 @@ VioletCity_EventScript_Boy_GiveCaterpie::
 	showgivemonpic 10, 3
 	call Common_EventScript_GiftMon
 	hidemonpic
+	@ PC transfer uses STR_VAR_1 for the box name; restore the received species.
+	bufferspeciesname STR_VAR_1, VAR_TEMP_TRANSFERRED_SPECIES
 	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
 	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
 	release
@@ -180,6 +182,8 @@ VioletCity_EventScript_Boy_GiveCutiefly::
 	showgivemonpic 10, 3
 	call Common_EventScript_GiftMon
 	hidemonpic
+	@ PC transfer uses STR_VAR_1 for the box name; restore the received species.
+	bufferspeciesname STR_VAR_1, VAR_TEMP_TRANSFERRED_SPECIES
 	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
 	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
 	release
@@ -192,6 +196,8 @@ VioletCity_EventScript_Boy_GiveGrubbin::
 	showgivemonpic 10, 3
 	call Common_EventScript_GiftMon
 	hidemonpic
+	@ PC transfer uses STR_VAR_1 for the box name; restore the received species.
+	bufferspeciesname STR_VAR_1, VAR_TEMP_TRANSFERRED_SPECIES
 	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
 	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
 	release
@@ -204,6 +210,8 @@ VioletCity_EventScript_Boy_GiveJoltik::
 	showgivemonpic 10, 3
 	call Common_EventScript_GiftMon
 	hidemonpic
+	@ PC transfer uses STR_VAR_1 for the box name; restore the received species.
+	bufferspeciesname STR_VAR_1, VAR_TEMP_TRANSFERRED_SPECIES
 	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
 	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
 	release
@@ -216,6 +224,8 @@ VioletCity_EventScript_Boy_GiveNincada::
 	showgivemonpic 10, 3
 	call Common_EventScript_GiftMon
 	hidemonpic
+	@ PC transfer uses STR_VAR_1 for the box name; restore the received species.
+	bufferspeciesname STR_VAR_1, VAR_TEMP_TRANSFERRED_SPECIES
 	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
 	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
 	release
@@ -228,6 +238,8 @@ VioletCity_EventScript_Boy_GiveSewaddle::
 	showgivemonpic 10, 3
 	call Common_EventScript_GiftMon
 	hidemonpic
+	@ PC transfer uses STR_VAR_1 for the box name; restore the received species.
+	bufferspeciesname STR_VAR_1, VAR_TEMP_TRANSFERRED_SPECIES
 	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
 	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
 	release
@@ -240,6 +252,8 @@ VioletCity_EventScript_Boy_GiveSizzlipede::
 	showgivemonpic 10, 3
 	call Common_EventScript_GiftMon
 	hidemonpic
+	@ PC transfer uses STR_VAR_1 for the box name; restore the received species.
+	bufferspeciesname STR_VAR_1, VAR_TEMP_TRANSFERRED_SPECIES
 	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
 	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
 	release
@@ -252,6 +266,8 @@ VioletCity_EventScript_Boy_GiveSkorupi::
 	showgivemonpic 10, 3
 	call Common_EventScript_GiftMon
 	hidemonpic
+	@ PC transfer uses STR_VAR_1 for the box name; restore the received species.
+	bufferspeciesname STR_VAR_1, VAR_TEMP_TRANSFERRED_SPECIES
 	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
 	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
 	release
@@ -264,6 +280,8 @@ VioletCity_EventScript_Boy_GiveSpinarak::
 	showgivemonpic 10, 3
 	call Common_EventScript_GiftMon
 	hidemonpic
+	@ PC transfer uses STR_VAR_1 for the box name; restore the received species.
+	bufferspeciesname STR_VAR_1, VAR_TEMP_TRANSFERRED_SPECIES
 	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
 	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
 	release
@@ -276,6 +294,8 @@ VioletCity_EventScript_Boy_GiveVenipede::
 	showgivemonpic 10, 3
 	call Common_EventScript_GiftMon
 	hidemonpic
+	@ PC transfer uses STR_VAR_1 for the box name; restore the received species.
+	bufferspeciesname STR_VAR_1, VAR_TEMP_TRANSFERRED_SPECIES
 	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
 	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
 	release
@@ -288,6 +308,8 @@ VioletCity_EventScript_Boy_GiveWeedle::
 	showgivemonpic 10, 3
 	call Common_EventScript_GiftMon
 	hidemonpic
+	@ PC transfer uses STR_VAR_1 for the box name; restore the received species.
+	bufferspeciesname STR_VAR_1, VAR_TEMP_TRANSFERRED_SPECIES
 	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
 	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
 	release
@@ -300,6 +322,8 @@ VioletCity_EventScript_Boy_GiveWimpod::
 	showgivemonpic 10, 3
 	call Common_EventScript_GiftMon
 	hidemonpic
+	@ PC transfer uses STR_VAR_1 for the box name; restore the received species.
+	bufferspeciesname STR_VAR_1, VAR_TEMP_TRANSFERRED_SPECIES
 	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
 	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
 	release
