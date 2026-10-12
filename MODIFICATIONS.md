@@ -430,6 +430,8 @@ The one-time Violet Academy / Violet City boy NPC gift now offers twelve enabled
 
 The sprite-preview dynamic menu displays five entries at a time and scrolls through the twelve species plus a **No thanks!** option. Selecting a species still gives only one Pokémon; the player may decline and return later. The completion flag is set only after taking a Pokémon.
 
+After the shared `Common_EventScript_GiftMon` routine, every Violet gift restores `STR_VAR_1` from `VAR_TEMP_TRANSFERRED_SPECIES` before the final NPC dialogue. The shared PC-transfer routine overwrites `STR_VAR_1` with the destination box name when a full-party gift is deposited in the PC; restoring it prevents lines such as “Take good care of Box1!”. Cherrygrove's Sinistea and Poltchageist gift scripts already restore `STR_VAR_1` after the shared call and need no changes.
+
 Each customized moveset is supplied directly to the existing `givemon` script macro through the `move1`–`move4` parameters. **Joltik and Skorupi** deliberately use the default `givemon` moveset instead. Regular Pokémon learnsets remain unchanged.
 
 Relevant files:
