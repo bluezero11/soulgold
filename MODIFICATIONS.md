@@ -404,20 +404,26 @@ Declining still follows the original decline/shame dialogue route.
 
 ## Violet City gift Pokémon
 
-A one-time Pokémon choice was added to the Violet Academy / Violet City boy NPC.
+The one-time Violet Academy / Violet City boy NPC gift now offers twelve enabled **Bug-type first-stage Pokémon**, each at **Lv. 5**.
 
-Available choices:
+| Pokémon | Gift moves |
+| --- | --- |
+| Caterpie | Tackle, String Shot, Bug Bite, Electroweb |
+| Cutiefly | Absorb, Fairy Wind, Sticky Web, Powder |
+| Grubbin | Vise Grip, Mud Slap, String Shot, Electroweb |
+| Joltik | Normal level-up starting moves (default) |
+| Nincada | Sand Attack, Scratch, Harden, Bug Bite |
+| Sewaddle | Tackle, String Shot, Camouflage, Grassy Terrain |
+| Sizzlipede | Ember, Smokescreen, Wrap, Bug Bite |
+| Skorupi | Normal level-up starting moves (default) |
+| Spinarak | Poison Sting, Twineedle, Toxic Spikes, Rage Powder |
+| Venipede | Poison Sting, Rollout, Toxic Spikes, Spikes |
+| Weedle | Poison Sting, String Shot, Bug Bite, Electroweb |
+| Wimpod | Struggle Bug, Aqua Jet, Wide Guard, Spikes |
 
-- Sneasel
-- Hisuian Sneasel
-- Mienfoo
-- Rufflet
+The sprite-preview dynamic menu displays five entries at a time and scrolls through the twelve species plus a **No thanks!** option. Selecting a species still gives only one Pokémon; the player may decline and return later. The completion flag is set only after taking a Pokémon.
 
-All are given at **Lv. 5**.
-
-The player may decline and return later. The completion flag is set only after taking a Pokémon.
-
-The menu was converted to species-valued dynamic entries and uses the Pokémon front-sprite preview callback.
+Each customized moveset is supplied directly to the existing `givemon` script macro through the `move1`–`move4` parameters. **Joltik and Skorupi** deliberately use the default `givemon` moveset instead. Regular Pokémon learnsets remain unchanged.
 
 Relevant files:
 
