@@ -386,7 +386,9 @@ The early Cherrygrove gift choice was changed from the previous regional rodents
 
 Both are given at **Lv. 5**.
 
-**Gift Sinistea (Phony Form)** is given with the exact moves **Astonish, Withdraw, Will-O-Wisp, and Confusion**. The Poltchageist gift keeps its normal level-5 moves.
+**Gift Sinistea (Phony Form)** is given with the exact moves **Astonish, Withdraw, Will-O-Wisp, and Confusion**.
+
+**Gift Poltchageist (Counterfeit Form)** is given with the exact moves **Astonish, Withdraw, Stun Spore, and Grassy Terrain**. These gift-only moves do not alter Poltchageist's normal level-up learnset.
 
 For regular level-up progression, **both Sinistea and Polteageist now learn Hex at level 30 instead of Sweet Scent**. This is a species-wide Gen 9 learnset adjustment and affects wild-caught Pokémon as well as the gift; Nasty Plot remains at level 42.
 
