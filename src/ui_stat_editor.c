@@ -1010,10 +1010,10 @@ static void SelectorCallback(struct Sprite *sprite)
 
     if (sStatEditorDataPtr->selectedPanel == PANEL_DETAILS)
     {
-        // Gender: move the arrow 2px left (visible at x=47..51),
-        // clear of the level text and close to the gender symbol.
+        // Gender left arrow: visible at roughly x=48..52, close to
+        // the gender symbol without covering the level number.
         // Ability/Nature retain their existing x=4..8 position.
-        sprite->x = (sStatEditorDataPtr->selectedDetail == DETAIL_GENDER) ? 62 : 19;
+        sprite->x = (sStatEditorDataPtr->selectedDetail == DETAIL_GENDER) ? 63 : 19;
         sprite->y = (sStatEditorDataPtr->selectedDetail == DETAIL_GENDER) ? 113
                   : (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY) ? 130 : 146;
     }
@@ -1029,10 +1029,10 @@ static void SelectorCallback(struct Sprite *sprite)
 // and edit-mode blinking, and hide it whenever the stat grid is selected.
 static void DetailRightSelectorCallback(struct Sprite *sprite)
 {
-    // Gender: move the arrow 2px left (visible at x=66..70),
-    // matching the left arrow's shift around the gender symbol.
+    // Gender right arrow: visible at roughly x=68..72, bracketing
+    // the gender symbol with the slightly adjusted left arrow.
     // Ability/Nature retain their existing x=74..78 position.
-    sprite->x = (sStatEditorDataPtr->selectedDetail == DETAIL_GENDER) ? 55 : 63;
+    sprite->x = (sStatEditorDataPtr->selectedDetail == DETAIL_GENDER) ? 57 : 63;
     sprite->y = (sStatEditorDataPtr->selectedDetail == DETAIL_GENDER) ? 113
               : (sStatEditorDataPtr->selectedDetail == DETAIL_ABILITY) ? 130 : 146;
     sprite->invisible = sStatEditorDataPtr->selectedPanel != PANEL_DETAILS
