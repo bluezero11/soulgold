@@ -702,7 +702,7 @@ script Cherrygrove_FriendlyTrader {
             case SPECIES_POLTCHAGEIST_COUNTERFEIT:
                 setvar(VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_POLTCHAGEIST_COUNTERFEIT)
 	            bufferspeciesname(STR_VAR_1, SPECIES_POLTCHAGEIST_COUNTERFEIT)
-            	givemon(SPECIES_POLTCHAGEIST_COUNTERFEIT, 5)
+            	givemon(SPECIES_POLTCHAGEIST_COUNTERFEIT, 5, move1=MOVE_ASTONISH, move2=MOVE_WITHDRAW, move3=MOVE_STUN_SPORE, move4=MOVE_GRASSY_TERRAIN)
                 showgivemonpic(10, 3)
                 removeobject(LOCALID_CHERRY_RATTATA)
 	            call(Common_EventScript_GiftMon)
