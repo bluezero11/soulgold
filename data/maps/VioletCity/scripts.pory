@@ -129,25 +129,42 @@ VioletCity_EventScript_Boy::
 	faceplayer
 	goto_if_set FLAG_RECEIVED_VIOLET_ACADEMY_GIFT, VioletCity_EventScript_Boy_AfterGift
 	msgbox VioletCity_Text_BoyGiftIntro, MSGBOX_DEFAULT
-	dynmultipush VioletCity_Text_BoyGiftSneasel, SPECIES_SNEASEL
-	dynmultipush VioletCity_Text_BoyGiftSneaselHisui, SPECIES_SNEASEL_HISUI
-	dynmultipush VioletCity_Text_BoyGiftMienfoo, SPECIES_MIENFOO
-	dynmultipush VioletCity_Text_BoyGiftRufflet, SPECIES_RUFFLET
+	dynmultipush VioletCity_Text_BoyGiftCaterpie, SPECIES_CATERPIE
+	dynmultipush VioletCity_Text_BoyGiftCutiefly, SPECIES_CUTIEFLY
+	dynmultipush VioletCity_Text_BoyGiftGrubbin, SPECIES_GRUBBIN
+	dynmultipush VioletCity_Text_BoyGiftJoltik, SPECIES_JOLTIK
+	dynmultipush VioletCity_Text_BoyGiftNincada, SPECIES_NINCADA
+	dynmultipush VioletCity_Text_BoyGiftSewaddle, SPECIES_SEWADDLE
+	dynmultipush VioletCity_Text_BoyGiftSizzlipede, SPECIES_SIZZLIPEDE
+	dynmultipush VioletCity_Text_BoyGiftSkorupi, SPECIES_SKORUPI
+	dynmultipush VioletCity_Text_BoyGiftSpinarak, SPECIES_SPINARAK
+	dynmultipush VioletCity_Text_BoyGiftVenipede, SPECIES_VENIPEDE
+	dynmultipush VioletCity_Text_BoyGiftWeedle, SPECIES_WEEDLE
+	dynmultipush VioletCity_Text_BoyGiftWimpod, SPECIES_WIMPOD
 	dynmultipush VioletCity_Text_BoyGiftDecline, SPECIES_NONE
-	dynmultistack 0, 0, FALSE, 5, FALSE, SPECIES_SNEASEL, DYN_MULTICHOICE_CB_SHOW_POKEMON
+	@ Five visible entries; the longer menu scrolls and retains sprite previews.
+	dynmultistack 0, 0, FALSE, 5, FALSE, SPECIES_CATERPIE, DYN_MULTICHOICE_CB_SHOW_POKEMON
 	switch VAR_RESULT
-	case SPECIES_SNEASEL, VioletCity_EventScript_Boy_GiveSneasel
-	case SPECIES_SNEASEL_HISUI, VioletCity_EventScript_Boy_GiveSneaselHisui
-	case SPECIES_MIENFOO, VioletCity_EventScript_Boy_GiveMienfoo
-	case SPECIES_RUFFLET, VioletCity_EventScript_Boy_GiveRufflet
+	case SPECIES_CATERPIE, VioletCity_EventScript_Boy_GiveCaterpie
+	case SPECIES_CUTIEFLY, VioletCity_EventScript_Boy_GiveCutiefly
+	case SPECIES_GRUBBIN, VioletCity_EventScript_Boy_GiveGrubbin
+	case SPECIES_JOLTIK, VioletCity_EventScript_Boy_GiveJoltik
+	case SPECIES_NINCADA, VioletCity_EventScript_Boy_GiveNincada
+	case SPECIES_SEWADDLE, VioletCity_EventScript_Boy_GiveSewaddle
+	case SPECIES_SIZZLIPEDE, VioletCity_EventScript_Boy_GiveSizzlipede
+	case SPECIES_SKORUPI, VioletCity_EventScript_Boy_GiveSkorupi
+	case SPECIES_SPINARAK, VioletCity_EventScript_Boy_GiveSpinarak
+	case SPECIES_VENIPEDE, VioletCity_EventScript_Boy_GiveVenipede
+	case SPECIES_WEEDLE, VioletCity_EventScript_Boy_GiveWeedle
+	case SPECIES_WIMPOD, VioletCity_EventScript_Boy_GiveWimpod
 	msgbox VioletCity_Text_BoyGiftNoProblem, MSGBOX_DEFAULT
 	release
 	end
 
-VioletCity_EventScript_Boy_GiveSneasel::
-	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_SNEASEL
-	bufferspeciesname STR_VAR_1, SPECIES_SNEASEL
-	givemon SPECIES_SNEASEL, 5
+VioletCity_EventScript_Boy_GiveCaterpie::
+	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_CATERPIE
+	bufferspeciesname STR_VAR_1, SPECIES_CATERPIE
+	givemon SPECIES_CATERPIE, 5, move1=MOVE_TACKLE, move2=MOVE_STRING_SHOT, move3=MOVE_BUG_BITE, move4=MOVE_ELECTROWEB
 	showgivemonpic 10, 3
 	call Common_EventScript_GiftMon
 	hidemonpic
@@ -156,10 +173,10 @@ VioletCity_EventScript_Boy_GiveSneasel::
 	release
 	end
 
-VioletCity_EventScript_Boy_GiveSneaselHisui::
-	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_SNEASEL_HISUI
-	bufferspeciesname STR_VAR_1, SPECIES_SNEASEL_HISUI
-	givemon SPECIES_SNEASEL_HISUI, 5
+VioletCity_EventScript_Boy_GiveCutiefly::
+	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_CUTIEFLY
+	bufferspeciesname STR_VAR_1, SPECIES_CUTIEFLY
+	givemon SPECIES_CUTIEFLY, 5, move1=MOVE_ABSORB, move2=MOVE_FAIRY_WIND, move3=MOVE_STICKY_WEB, move4=MOVE_POWDER
 	showgivemonpic 10, 3
 	call Common_EventScript_GiftMon
 	hidemonpic
@@ -168,10 +185,10 @@ VioletCity_EventScript_Boy_GiveSneaselHisui::
 	release
 	end
 
-VioletCity_EventScript_Boy_GiveMienfoo::
-	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_MIENFOO
-	bufferspeciesname STR_VAR_1, SPECIES_MIENFOO
-	givemon SPECIES_MIENFOO, 5
+VioletCity_EventScript_Boy_GiveGrubbin::
+	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_GRUBBIN
+	bufferspeciesname STR_VAR_1, SPECIES_GRUBBIN
+	givemon SPECIES_GRUBBIN, 5, move1=MOVE_VISE_GRIP, move2=MOVE_MUD_SLAP, move3=MOVE_STRING_SHOT, move4=MOVE_ELECTROWEB
 	showgivemonpic 10, 3
 	call Common_EventScript_GiftMon
 	hidemonpic
@@ -180,10 +197,106 @@ VioletCity_EventScript_Boy_GiveMienfoo::
 	release
 	end
 
-VioletCity_EventScript_Boy_GiveRufflet::
-	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_RUFFLET
-	bufferspeciesname STR_VAR_1, SPECIES_RUFFLET
-	givemon SPECIES_RUFFLET, 5
+VioletCity_EventScript_Boy_GiveJoltik::
+	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_JOLTIK
+	bufferspeciesname STR_VAR_1, SPECIES_JOLTIK
+	givemon SPECIES_JOLTIK, 5
+	showgivemonpic 10, 3
+	call Common_EventScript_GiftMon
+	hidemonpic
+	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
+	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
+	release
+	end
+
+VioletCity_EventScript_Boy_GiveNincada::
+	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_NINCADA
+	bufferspeciesname STR_VAR_1, SPECIES_NINCADA
+	givemon SPECIES_NINCADA, 5, move1=MOVE_SAND_ATTACK, move2=MOVE_SCRATCH, move3=MOVE_HARDEN, move4=MOVE_BUG_BITE
+	showgivemonpic 10, 3
+	call Common_EventScript_GiftMon
+	hidemonpic
+	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
+	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
+	release
+	end
+
+VioletCity_EventScript_Boy_GiveSewaddle::
+	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_SEWADDLE
+	bufferspeciesname STR_VAR_1, SPECIES_SEWADDLE
+	givemon SPECIES_SEWADDLE, 5, move1=MOVE_TACKLE, move2=MOVE_STRING_SHOT, move3=MOVE_CAMOUFLAGE, move4=MOVE_GRASSY_TERRAIN
+	showgivemonpic 10, 3
+	call Common_EventScript_GiftMon
+	hidemonpic
+	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
+	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
+	release
+	end
+
+VioletCity_EventScript_Boy_GiveSizzlipede::
+	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_SIZZLIPEDE
+	bufferspeciesname STR_VAR_1, SPECIES_SIZZLIPEDE
+	givemon SPECIES_SIZZLIPEDE, 5, move1=MOVE_EMBER, move2=MOVE_SMOKESCREEN, move3=MOVE_WRAP, move4=MOVE_BUG_BITE
+	showgivemonpic 10, 3
+	call Common_EventScript_GiftMon
+	hidemonpic
+	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
+	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
+	release
+	end
+
+VioletCity_EventScript_Boy_GiveSkorupi::
+	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_SKORUPI
+	bufferspeciesname STR_VAR_1, SPECIES_SKORUPI
+	givemon SPECIES_SKORUPI, 5
+	showgivemonpic 10, 3
+	call Common_EventScript_GiftMon
+	hidemonpic
+	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
+	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
+	release
+	end
+
+VioletCity_EventScript_Boy_GiveSpinarak::
+	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_SPINARAK
+	bufferspeciesname STR_VAR_1, SPECIES_SPINARAK
+	givemon SPECIES_SPINARAK, 5, move1=MOVE_POISON_STING, move2=MOVE_TWINEEDLE, move3=MOVE_TOXIC_SPIKES, move4=MOVE_RAGE_POWDER
+	showgivemonpic 10, 3
+	call Common_EventScript_GiftMon
+	hidemonpic
+	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
+	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
+	release
+	end
+
+VioletCity_EventScript_Boy_GiveVenipede::
+	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_VENIPEDE
+	bufferspeciesname STR_VAR_1, SPECIES_VENIPEDE
+	givemon SPECIES_VENIPEDE, 5, move1=MOVE_POISON_STING, move2=MOVE_ROLLOUT, move3=MOVE_TOXIC_SPIKES, move4=MOVE_SPIKES
+	showgivemonpic 10, 3
+	call Common_EventScript_GiftMon
+	hidemonpic
+	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
+	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
+	release
+	end
+
+VioletCity_EventScript_Boy_GiveWeedle::
+	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_WEEDLE
+	bufferspeciesname STR_VAR_1, SPECIES_WEEDLE
+	givemon SPECIES_WEEDLE, 5, move1=MOVE_POISON_STING, move2=MOVE_STRING_SHOT, move3=MOVE_BUG_BITE, move4=MOVE_ELECTROWEB
+	showgivemonpic 10, 3
+	call Common_EventScript_GiftMon
+	hidemonpic
+	setflag FLAG_RECEIVED_VIOLET_ACADEMY_GIFT
+	msgbox VioletCity_Text_BoyGiftAfter, MSGBOX_DEFAULT
+	release
+	end
+
+VioletCity_EventScript_Boy_GiveWimpod::
+	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_WIMPOD
+	bufferspeciesname STR_VAR_1, SPECIES_WIMPOD
+	givemon SPECIES_WIMPOD, 5, move1=MOVE_STRUGGLE_BUG, move2=MOVE_AQUA_JET, move3=MOVE_WIDE_GUARD, move4=MOVE_SPIKES
 	showgivemonpic 10, 3
 	call Common_EventScript_GiftMon
 	hidemonpic
@@ -491,22 +604,46 @@ VioletCity_Text_Lass:
 
 VioletCity_Text_BoyGiftIntro:
 	.string "Hey, you're a Pokémon trainer?\p"
-	.string "The Academy has a few Pokémon for\n"
-	.string "new trainers, and I was asked to\l"
-	.string "help find homes for them.\p"
-	.string "Would you like to take one with you?$"
+	.string "The Academy is finding homes for\n"
+	.string "some Bug Pokémon we've been\l"
+	.string "looking after.\p"
+	.string "Would you like to take one?$"
 
-VioletCity_Text_BoyGiftSneasel:
-	.string "Johtonian Sneasel$"
+VioletCity_Text_BoyGiftCaterpie:
+	.string "Caterpie$"
 
-VioletCity_Text_BoyGiftSneaselHisui:
-	.string "Hisuian Sneasel$"
+VioletCity_Text_BoyGiftCutiefly:
+	.string "Cutiefly$"
 
-VioletCity_Text_BoyGiftMienfoo:
-	.string "Mienfoo$"
+VioletCity_Text_BoyGiftGrubbin:
+	.string "Grubbin$"
 
-VioletCity_Text_BoyGiftRufflet:
-	.string "Rufflet$"
+VioletCity_Text_BoyGiftJoltik:
+	.string "Joltik$"
+
+VioletCity_Text_BoyGiftNincada:
+	.string "Nincada$"
+
+VioletCity_Text_BoyGiftSewaddle:
+	.string "Sewaddle$"
+
+VioletCity_Text_BoyGiftSizzlipede:
+	.string "Sizzlipede$"
+
+VioletCity_Text_BoyGiftSkorupi:
+	.string "Skorupi$"
+
+VioletCity_Text_BoyGiftSpinarak:
+	.string "Spinarak$"
+
+VioletCity_Text_BoyGiftVenipede:
+	.string "Venipede$"
+
+VioletCity_Text_BoyGiftWeedle:
+	.string "Weedle$"
+
+VioletCity_Text_BoyGiftWimpod:
+	.string "Wimpod$"
 
 VioletCity_Text_BoyGiftDecline:
 	.string "No thanks!$"
@@ -523,6 +660,7 @@ VioletCity_Text_BoyGiftAlreadyReceived:
 	.string "How's your new partner doing?\p"
 	.string "The Academy teaches trainers as much\n"
 	.string "as it teaches Pokémon!$"
+
 
 VioletCity_Text_Gramps:
 	.string "Falkner, from the Violet\n"
