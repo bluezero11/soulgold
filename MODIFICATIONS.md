@@ -936,6 +936,21 @@ ls -lh Soulgold.gba
 The ROM is produced in the repository root as `Soulgold.gba`.
 
 
+## Stat editor nature preview and ordering (feature/stat-editor-natures)
+
+- **Nature stat colors:** The Stat Editor's **Actual** numbers now mirror the Pokémon Summary screen's convention: boosted stat in red, reduced stat in blue, neutral stats in charcoal. HP, actual stat totals, EVs, IVs and labels stay unchanged. Changes are visible immediately while scrolling because the preview already recomputes from staged `MON_DATA_HIDDEN_NATURE` (effective/Mint nature), matching the Summary screen's source of nature modifiers.
+- **Palette integration:** Two new font styles use previously unused indices 11–14 in the Stat Editor's 16-color text palette (red/blue faces with pale shadows). No new graphics files, BG palettes or Pokémon data structures are required.
+- **Grouped nature order:** Left/Right steps through these 25 nature IDs instead of the underlying enum order, sorted by boosted stat then reduced stat (Attack, Defense, Sp. Atk, Sp. Def, Speed). The sequence is:
+  - **+Attack:** Lonely (-Def), Adamant (-SpA), Naughty (-SpD), Brave (-Speed)
+  - **+Defense:** Bold (-Atk), Impish (-SpA), Lax (-SpD), Relaxed (-Speed)
+  - **+Sp. Atk:** Modest (-Atk), Mild (-Def), Rash (-SpD), Quiet (-Speed)
+  - **+Sp. Def:** Calm (-Atk), Gentle (-Def), Careful (-SpA), Sassy (-Speed)
+  - **+Speed:** Timid (-Atk), Hasty (-Def), Jolly (-SpA), Naive (-SpD)
+  - **Neutral, alphabetically:** Bashful, Docile, Hardy, Quirky, Serious
+- **Controls and save behavior:** Nature wraps from the final neutral nature back to Lonely. Existing Up/Down first/last shortcuts are preserved, as are A-to-edit/A-to-stage, START confirmation, B cancellation and L/R party switching. Only display/selection order changes; existing game-wide nature IDs remain intact.
+
+**Testing:** Compile and inspect colored boosted/reduced stats for several natures (including Speed and neutral natures); verify EV/IV columns and HP stay uncolored, nature cycling order/wrap and first/last shortcuts, save persistence, and UI appearance for both shiny and non-shiny Pokémon. This branch is not yet compiled or playtested.
+
 ## Expanded stat editor (feature/expanded-editor)
 
 Based on the working editor transplanted from `fakuzatsu/verdant`, with the nature/ability cycling approach cross-checked against `PCG06/pokeemerald`'s `feat/stat_editor` branch. This branch extends the existing SoulGold stat editor, preserving its graphics, original EV/IV grid, party switching, and START confirmation behavior.
