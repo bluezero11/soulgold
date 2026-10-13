@@ -224,6 +224,8 @@ enum Colors
 {
     FONT_BLACK,
     FONT_WHITE,
+    FONT_NATURE_UP,
+    FONT_NATURE_DOWN,
 };
 
 static const u16 sStatEditorTextPalette[] =
@@ -239,17 +241,19 @@ static const u16 sStatEditorTextPalette[] =
     RGB(29, 5, 22),     // magenta button outline
     RGB(24, 25, 27),    // light grey shadow for dark text
     RGB(8, 8, 9),       // dark shadow for light text
-    RGB(0, 0, 0),
-    RGB(0, 0, 0),
-    RGB(0, 0, 0),
-    RGB(0, 0, 0),
+    RGB(26, 6, 9),      // nature-boosted stat: red text on the pale stat panel
+    RGB(31, 24, 25),   // light red shadow for crisp lettering
+    RGB(6, 12, 26),    // nature-reduced stat: blue text on the pale stat panel
+    RGB(24, 27, 31),   // light blue shadow for crisp lettering
     RGB(0, 0, 0),
 };
 
 static const u8 sMenuWindowFontColors[][3] = 
 {
-    [FONT_BLACK]  = {TEXT_COLOR_TRANSPARENT, 3, 9},
-    [FONT_WHITE]  = {TEXT_COLOR_TRANSPARENT, 1, 10},
+    [FONT_BLACK]       = {TEXT_COLOR_TRANSPARENT, 3, 9},
+    [FONT_WHITE]       = {TEXT_COLOR_TRANSPARENT, 1, 10},
+    [FONT_NATURE_UP]   = {TEXT_COLOR_TRANSPARENT, 11, 12},
+    [FONT_NATURE_DOWN] = {TEXT_COLOR_TRANSPARENT, 13, 14},
 };
 
 #define TAG_SELECTOR 30004
@@ -761,12 +765,37 @@ static const u16 statsToPrintActual[] = {
         MON_DATA_MAX_HP, MON_DATA_ATK, MON_DATA_DEF, MON_DATA_SPEED, MON_DATA_SPATK, MON_DATA_SPDEF,
 };
 
+// Match enum Stat indices used by gNaturesInfo, not the on-screen
+// order (Speed is stat 3 but appears below both special stats).
+static const u8 sStatIndexForActualRow[] = {
+    STAT_HP, STAT_ATK, STAT_DEF, STAT_SPEED, STAT_SPATK, STAT_SPDEF,
+};
+
 static const u16 statsToPrintEVs[] = {
         MON_DATA_HP_EV, MON_DATA_ATK_EV, MON_DATA_DEF_EV, MON_DATA_SPEED_EV, MON_DATA_SPATK_EV, MON_DATA_SPDEF_EV,
 };
 
 static const u16 statsToPrintIVs[] = {
         MON_DATA_HP_IV, MON_DATA_ATK_IV, MON_DATA_DEF_IV, MON_DATA_SPEED_IV, MON_DATA_SPATK_IV, MON_DATA_SPDEF_IV,
+};
+
+// Group by nature's boosted stat (Atk, Def, SpA, SpD, Speed), then
+// by its lowered stat in that same order. Neutral natures follow in
+// alphabetical order. This changes only the selection UI; underlying
+// NATURE_* IDs and battle/stat logic are untouched.
+static const u8 sNaturesByStatChange[NUM_NATURES] = {
+    // +Attack: -Defense, -Sp. Atk, -Sp. Def, -Speed
+    NATURE_LONELY, NATURE_ADAMANT, NATURE_NAUGHTY, NATURE_BRAVE,
+    // +Defense: -Attack, -Sp. Atk, -Sp. Def, -Speed
+    NATURE_BOLD, NATURE_IMPISH, NATURE_LAX, NATURE_RELAXED,
+    // +Sp. Atk: -Attack, -Defense, -Sp. Def, -Speed
+    NATURE_MODEST, NATURE_MILD, NATURE_RASH, NATURE_QUIET,
+    // +Sp. Def: -Attack, -Defense, -Sp. Atk, -Speed
+    NATURE_CALM, NATURE_GENTLE, NATURE_CAREFUL, NATURE_SASSY,
+    // +Speed: -Attack, -Defense, -Sp. Atk, -Sp. Def
+    NATURE_TIMID, NATURE_HASTY, NATURE_JOLLY, NATURE_NAIVE,
+    // Neutral, alphabetically
+    NATURE_BASHFUL, NATURE_DOCILE, NATURE_HARDY, NATURE_QUIRKY, NATURE_SERIOUS,
 };
 
 static const u8 sGenderColors[2][3] =
@@ -910,7 +939,21 @@ static void PrintMonStats()
         sStatEditorDataPtr->normalTotal += currentStat;
         DebugPrintf("Stat: %d", currentStat);
         ConvertIntToDecimalStringN(gStringVar2, currentStat, STR_CONV_MODE_RIGHT_ALIGN, 3);
-        AddTextPrinterParameterized4(WINDOW_2, 1, StatPrintData[statsToPrintActual[i]].x, StatPrintData[statsToPrintActual[i]].y, 0, 0, sMenuWindowFontColors[FONT_BLACK], 0xFF, gStringVar2);
+        // Match the Summary screen's effective-nature coloring. Keep HP
+        // and all neutral-nature stats charcoal, and only color Actual
+        // values (never the independent EV/IV columns or totals).
+        {
+            u8 color = FONT_BLACK;
+
+            if (i != 0 && gNaturesInfo[nature].statUp != gNaturesInfo[nature].statDown)
+            {
+                if (sStatIndexForActualRow[i] == gNaturesInfo[nature].statUp)
+                    color = FONT_NATURE_UP;
+                else if (sStatIndexForActualRow[i] == gNaturesInfo[nature].statDown)
+                    color = FONT_NATURE_DOWN;
+            }
+            AddTextPrinterParameterized4(WINDOW_2, 1, StatPrintData[statsToPrintActual[i]].x, StatPrintData[statsToPrintActual[i]].y, 0, 0, sMenuWindowFontColors[color], 0xFF, gStringVar2);
+        }
     }
 
     for(i = 0; i < 6; i++)
@@ -1430,14 +1473,28 @@ static void ChangeDetailValue(bool8 increase, bool8 jumpToEnd)
     }
     else if (sStatEditorDataPtr->selectedDetail == DETAIL_NATURE)
     {
-        u8 value = sStatEditorDataPtr->newNature;
+        u8 position = 0;
+        u8 i;
+
+        // Find the currently staged effective nature in our custom
+        // display order, then navigate by positions instead of nature IDs.
+        for (i = 0; i < ARRAY_COUNT(sNaturesByStatChange); i++)
+        {
+            if (sNaturesByStatChange[i] == sStatEditorDataPtr->newNature)
+            {
+                position = i;
+                break;
+            }
+        }
 
         if (jumpToEnd)
-            value = increase ? NUM_NATURES - 1 : 0;
+            position = increase ? ARRAY_COUNT(sNaturesByStatChange) - 1 : 0;
+        else if (increase)
+            position = (position + 1) % ARRAY_COUNT(sNaturesByStatChange);
         else
-            value = increase ? (value + 1) % NUM_NATURES : (value + NUM_NATURES - 1) % NUM_NATURES;
+            position = (position + ARRAY_COUNT(sNaturesByStatChange) - 1) % ARRAY_COUNT(sNaturesByStatChange);
 
-        sStatEditorDataPtr->newNature = value;
+        sStatEditorDataPtr->newNature = sNaturesByStatChange[position];
     }
     else
     {
