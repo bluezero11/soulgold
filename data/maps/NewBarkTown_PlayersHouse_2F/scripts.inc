@@ -54,6 +54,7 @@ NewBarkTown_PlayersHouse_2F_EventScript_NES::
     goto_if_unset FLAG_SYS_POKEMON_GET, NewBarkTown_PlayersHouse_2F_EventScript_NESBeforeStarter
     msgbox NewBarkTown_PlayersHouse_2F_Text_NESCheatPrompt, MSGBOX_YESNO
     goto_if_ne VAR_RESULT, YES, NewBarkTown_PlayersHouse_2F_EventScript_NESExit
+    closemessage
     special EnterCode
     waitstate
     special GetCodeFeedback
@@ -102,7 +103,8 @@ NewBarkTown_PlayersHouse_2F_Text_NESPlayed:
     .string "{PLAYER} played with the SNES.$"
 
 NewBarkTown_PlayersHouse_2F_Text_NESCheatPrompt:
-    .string "Would you like to enter a cheat code?$"
+    .string "Would you like to enter a\\n"
+    .string "cheat code?$"
 
 NewBarkTown_PlayersHouse_2F_Text_NESBeforeStarter:
     .string "…Okay!\\n"
@@ -121,4 +123,5 @@ NewBarkTown_PlayersHouse_2F_Text_NESCodeDisabled:
     .string "Cheat code deactivated!$"
 
 NewBarkTown_PlayersHouse_2F_Text_NESNoRoom:
-    .string "Your party and PC boxes are full!$"
+    .string "Your party and PC boxes\\n"
+    .string "are full!$"
