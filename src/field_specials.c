@@ -4521,8 +4521,51 @@ void EnterCode(void)
     DoNamingScreen(NAMING_SCREEN_CODE, gStringVar2, 0, 0, 0, FALSE, CB2_ReturnToFieldContinueScript);
 }
 
+// Curated level-5 gifts for the SNES monotype cheat codes.
+// The code is matched case-insensitively; each eligible species has a 1/3 chance.
+static const struct
+{
+    const u8 *code;
+    u16 species[3];
+} sMonotypeCheatCodes[] =
+{
+    { COMPOUND_STRING("MONONORMAL"), { SPECIES_ZIGZAGOON, SPECIES_DITTO, SPECIES_RATTATA } },
+    { COMPOUND_STRING("MONOFIGHT"),  { SPECIES_TYROGUE, SPECIES_MEDITITE, SPECIES_MAKUHITA } },
+    { COMPOUND_STRING("MONOFLYING"), { SPECIES_STARLY, SPECIES_ROOKIDEE, SPECIES_FLETCHLING } },
+    { COMPOUND_STRING("MONOPOISON"), { SPECIES_WOOPER_PALDEA, SPECIES_TOXEL, SPECIES_ZUBAT } },
+    { COMPOUND_STRING("MONOGROUND"), { SPECIES_DIGLETT, SPECIES_SANDSHREW, SPECIES_TRAPINCH } },
+    { COMPOUND_STRING("MONOROCK"),   { SPECIES_GEODUDE, SPECIES_NACLI, SPECIES_LARVITAR } },
+    { COMPOUND_STRING("MONOBUG"),    { SPECIES_WIMPOD, SPECIES_VENIPEDE, SPECIES_GRUBBIN } },
+    { COMPOUND_STRING("MONOGHOST"),  { SPECIES_LITWICK, SPECIES_SHUPPET, SPECIES_DUSKULL } },
+    { COMPOUND_STRING("MONOSTEEL"),  { SPECIES_MEOWTH_GALAR, SPECIES_ARON, SPECIES_BELDUM } },
+    { COMPOUND_STRING("MONOFIRE"),   { SPECIES_CHARCADET, SPECIES_VULPIX, SPECIES_NUMEL } },
+    { COMPOUND_STRING("MONOWATER"),  { SPECIES_MAGIKARP, SPECIES_FEEBAS, SPECIES_WINGULL } },
+    { COMPOUND_STRING("MONOGRASS"),  { SPECIES_HOPPIP, SPECIES_APPLIN, SPECIES_BUDEW } },
+    { COMPOUND_STRING("MONOELECTR"), { SPECIES_PIKACHU, SPECIES_SHINX, SPECIES_PAWMI } },
+    { COMPOUND_STRING("MONOPSYCH"),  { SPECIES_FLITTLE, SPECIES_SOLOSIS, SPECIES_ABRA } },
+    { COMPOUND_STRING("MONOICE"),    { SPECIES_SWINUB, SPECIES_SPHEAL, SPECIES_SNORUNT } },
+    { COMPOUND_STRING("MONODRAGON"), { SPECIES_NOIBAT, SPECIES_DREEPY, SPECIES_DRATINI } },
+    { COMPOUND_STRING("MONODARK"),   { SPECIES_SANDILE, SPECIES_DEINO, SPECIES_ZORUA } },
+    { COMPOUND_STRING("MONOFAIRY"),  { SPECIES_RALTS, SPECIES_IMPIDIMP, SPECIES_FLABEBE } },
+};
+
 void GetCodeFeedback(void)
 {
+    u8 uppercaseCode[CODE_NAME_LENGTH + 1];
+    u32 i;
+
+    // The naming screen opens on uppercase letters. Accept either case.
+    StringCopyUppercase(uppercaseCode, gStringVar2);
+    for (i = 0; i < ARRAY_COUNT(sMonotypeCheatCodes); i++)
+    {
+        if (StringCompare(uppercaseCode, sMonotypeCheatCodes[i].code) == 0)
+        {
+            gSpecialVar_0x8004 = sMonotypeCheatCodes[i].species[Random() % ARRAY_COUNT(sMonotypeCheatCodes[i].species)];
+            gSpecialVar_Result = 4; // Monotype gift: species in VAR_0x8004
+            return;
+        }
+    }
+
     static const u8 sText_SampleCode[] = _("SampleCode");
     static const u8 sText_AllIvs[] = _("allivs");
     static const u8 sText_AllEvs[] = _("allevs");
