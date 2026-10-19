@@ -4551,6 +4551,13 @@ static const struct
 
 void GetCodeFeedback(void)
 {
+    static const u8 sText_SampleCode[] = _("SampleCode");
+    static const u8 sText_AllIvs[] = _("allivs");
+    static const u8 sText_AllEvs[] = _("allevs");
+    static const u8 sText_FullStats[] = _("fullstats");
+    static const u8 sText_MaxPain[] = _("maxpain");
+    static const u8 sText_EasyIvs[] = _("easyivs");
+    static const u8 sText_NoInnates[] = _("noinnates");
     u8 uppercaseCode[CODE_NAME_LENGTH + 1];
     u32 i;
 
@@ -4566,13 +4573,6 @@ void GetCodeFeedback(void)
         }
     }
 
-    static const u8 sText_SampleCode[] = _("SampleCode");
-    static const u8 sText_AllIvs[] = _("allivs");
-    static const u8 sText_AllEvs[] = _("allevs");
-    static const u8 sText_FullStats[] = _("fullstats");
-    static const u8 sText_MaxPain[] = _("maxpain");
-    static const u8 sText_EasyIvs[] = _("easyivs");
-    static const u8 sText_NoInnates[] = _("noinnates");
     if (!StringCompare(gStringVar2, sText_SampleCode))
         gSpecialVar_Result = 1;
     else if (!StringCompare(gStringVar2, sText_AllIvs))
