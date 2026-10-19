@@ -103,11 +103,11 @@ NewBarkTown_PlayersHouse_2F_Text_NESPlayed:
     .string "{PLAYER} played with the SNES.$"
 
 NewBarkTown_PlayersHouse_2F_Text_NESCheatPrompt:
-    .string "Would you like to enter a\\n"
+    .string "Would you like to enter a\n"
     .string "cheat code?$"
 
 NewBarkTown_PlayersHouse_2F_Text_NESBeforeStarter:
-    .string "…Okay!\\n"
+    .string "…Okay!\n"
     .string "It's time to go!$"
 
 NewBarkTown_PlayersHouse_2F_Text_NESInvalidCode:
@@ -123,5 +123,5 @@ NewBarkTown_PlayersHouse_2F_Text_NESCodeDisabled:
     .string "Cheat code deactivated!$"
 
 NewBarkTown_PlayersHouse_2F_Text_NESNoRoom:
-    .string "Your party and PC boxes\\n"
+    .string "Your party and PC boxes\n"
     .string "are full!$"
