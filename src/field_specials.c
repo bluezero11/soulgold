@@ -4865,7 +4865,6 @@ void GetNextRandomizerGift(void)
     gSpecialVar_0x8004 = sRandomizerGiftSpecies[sRandomizerGiftIndex++];
     gSpecialVar_Result = 1;
 }
-}
 
 void GetCodeFeedback(void)
 {
