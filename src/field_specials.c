@@ -4521,66 +4521,162 @@ void EnterCode(void)
     DoNamingScreen(NAMING_SCREEN_CODE, gStringVar2, 0, 0, 0, FALSE, CB2_ReturnToFieldContinueScript);
 }
 
-// Curated level-5 gifts for the SNES monotype cheat codes.
-// The code is matched case-insensitively; each eligible species has a 1/3 chance.
+// Master list for the SNES randomizer gifts (one entry per species).
+// A species can belong to multiple monotype pools by OR-ing its type masks.
+// Keep this list curated: tags need not match the species' current battle types.
+// Example: RANDOMIZER_TYPE_MASK(TYPE_GRASS) | RANDOMIZER_TYPE_MASK(TYPE_POISON)
+#define RANDOMIZER_TYPE_MASK(type) (1u << (type))
+
+static const struct
+{
+    u16 species;
+    u32 typeMask;
+} sRandomizerMons[] =
+{
+    // NORMAL
+    { SPECIES_ZIGZAGOON, RANDOMIZER_TYPE_MASK(TYPE_NORMAL) },
+    { SPECIES_DITTO, RANDOMIZER_TYPE_MASK(TYPE_NORMAL) },
+    { SPECIES_RATTATA, RANDOMIZER_TYPE_MASK(TYPE_NORMAL) },
+    // FIGHTING
+    { SPECIES_TYROGUE, RANDOMIZER_TYPE_MASK(TYPE_FIGHTING) },
+    { SPECIES_MEDITITE, RANDOMIZER_TYPE_MASK(TYPE_FIGHTING) },
+    { SPECIES_MAKUHITA, RANDOMIZER_TYPE_MASK(TYPE_FIGHTING) },
+    // FLYING
+    { SPECIES_STARLY, RANDOMIZER_TYPE_MASK(TYPE_FLYING) },
+    { SPECIES_ROOKIDEE, RANDOMIZER_TYPE_MASK(TYPE_FLYING) },
+    { SPECIES_FLETCHLING, RANDOMIZER_TYPE_MASK(TYPE_FLYING) },
+    // POISON
+    { SPECIES_WOOPER_PALDEA, RANDOMIZER_TYPE_MASK(TYPE_POISON) },
+    { SPECIES_TOXEL, RANDOMIZER_TYPE_MASK(TYPE_POISON) },
+    { SPECIES_ZUBAT, RANDOMIZER_TYPE_MASK(TYPE_POISON) },
+    // GROUND
+    { SPECIES_DIGLETT, RANDOMIZER_TYPE_MASK(TYPE_GROUND) },
+    { SPECIES_SANDSHREW, RANDOMIZER_TYPE_MASK(TYPE_GROUND) },
+    { SPECIES_TRAPINCH, RANDOMIZER_TYPE_MASK(TYPE_GROUND) },
+    // ROCK
+    { SPECIES_GEODUDE, RANDOMIZER_TYPE_MASK(TYPE_ROCK) },
+    { SPECIES_NACLI, RANDOMIZER_TYPE_MASK(TYPE_ROCK) },
+    { SPECIES_LARVITAR, RANDOMIZER_TYPE_MASK(TYPE_ROCK) },
+    // BUG
+    { SPECIES_WIMPOD, RANDOMIZER_TYPE_MASK(TYPE_BUG) },
+    { SPECIES_VENIPEDE, RANDOMIZER_TYPE_MASK(TYPE_BUG) },
+    { SPECIES_GRUBBIN, RANDOMIZER_TYPE_MASK(TYPE_BUG) },
+    // GHOST
+    { SPECIES_LITWICK, RANDOMIZER_TYPE_MASK(TYPE_GHOST) },
+    { SPECIES_SHUPPET, RANDOMIZER_TYPE_MASK(TYPE_GHOST) },
+    { SPECIES_DUSKULL, RANDOMIZER_TYPE_MASK(TYPE_GHOST) },
+    // STEEL
+    { SPECIES_MEOWTH_GALAR, RANDOMIZER_TYPE_MASK(TYPE_STEEL) },
+    { SPECIES_ARON, RANDOMIZER_TYPE_MASK(TYPE_STEEL) },
+    { SPECIES_BELDUM, RANDOMIZER_TYPE_MASK(TYPE_STEEL) },
+    // FIRE
+    { SPECIES_CHARCADET, RANDOMIZER_TYPE_MASK(TYPE_FIRE) },
+    { SPECIES_VULPIX, RANDOMIZER_TYPE_MASK(TYPE_FIRE) },
+    { SPECIES_NUMEL, RANDOMIZER_TYPE_MASK(TYPE_FIRE) },
+    // WATER
+    { SPECIES_MAGIKARP, RANDOMIZER_TYPE_MASK(TYPE_WATER) },
+    { SPECIES_FEEBAS, RANDOMIZER_TYPE_MASK(TYPE_WATER) },
+    { SPECIES_WINGULL, RANDOMIZER_TYPE_MASK(TYPE_WATER) },
+    // GRASS
+    { SPECIES_HOPPIP, RANDOMIZER_TYPE_MASK(TYPE_GRASS) },
+    { SPECIES_APPLIN, RANDOMIZER_TYPE_MASK(TYPE_GRASS) },
+    { SPECIES_BUDEW, RANDOMIZER_TYPE_MASK(TYPE_GRASS) },
+    // ELECTRIC
+    { SPECIES_PIKACHU, RANDOMIZER_TYPE_MASK(TYPE_ELECTRIC) },
+    { SPECIES_SHINX, RANDOMIZER_TYPE_MASK(TYPE_ELECTRIC) },
+    { SPECIES_PAWMI, RANDOMIZER_TYPE_MASK(TYPE_ELECTRIC) },
+    // PSYCHIC
+    { SPECIES_FLITTLE, RANDOMIZER_TYPE_MASK(TYPE_PSYCHIC) },
+    { SPECIES_SOLOSIS, RANDOMIZER_TYPE_MASK(TYPE_PSYCHIC) },
+    { SPECIES_ABRA, RANDOMIZER_TYPE_MASK(TYPE_PSYCHIC) },
+    // ICE
+    { SPECIES_SWINUB, RANDOMIZER_TYPE_MASK(TYPE_ICE) },
+    { SPECIES_SPHEAL, RANDOMIZER_TYPE_MASK(TYPE_ICE) },
+    { SPECIES_SNORUNT, RANDOMIZER_TYPE_MASK(TYPE_ICE) },
+    // DRAGON
+    { SPECIES_NOIBAT, RANDOMIZER_TYPE_MASK(TYPE_DRAGON) },
+    { SPECIES_DREEPY, RANDOMIZER_TYPE_MASK(TYPE_DRAGON) },
+    { SPECIES_DRATINI, RANDOMIZER_TYPE_MASK(TYPE_DRAGON) },
+    // DARK
+    { SPECIES_SANDILE, RANDOMIZER_TYPE_MASK(TYPE_DARK) },
+    { SPECIES_DEINO, RANDOMIZER_TYPE_MASK(TYPE_DARK) },
+    { SPECIES_ZORUA, RANDOMIZER_TYPE_MASK(TYPE_DARK) },
+    // FAIRY
+    { SPECIES_RALTS, RANDOMIZER_TYPE_MASK(TYPE_FAIRY) },
+    { SPECIES_IMPIDIMP, RANDOMIZER_TYPE_MASK(TYPE_FAIRY) },
+    { SPECIES_FLABEBE, RANDOMIZER_TYPE_MASK(TYPE_FAIRY) },
+};
+
+// Monotype codes are just filters over sRandomizerMons, not separate species pools.
 static const struct
 {
     const u8 *code;
-    u16 species[3];
+    u32 typeMask;
 } sMonotypeCheatCodes[] =
 {
-    { COMPOUND_STRING("MONONORMAL"), { SPECIES_ZIGZAGOON, SPECIES_DITTO, SPECIES_RATTATA } },
-    { COMPOUND_STRING("MONOFIGHT"),  { SPECIES_TYROGUE, SPECIES_MEDITITE, SPECIES_MAKUHITA } },
-    { COMPOUND_STRING("MONOFLYING"), { SPECIES_STARLY, SPECIES_ROOKIDEE, SPECIES_FLETCHLING } },
-    { COMPOUND_STRING("MONOPOISON"), { SPECIES_WOOPER_PALDEA, SPECIES_TOXEL, SPECIES_ZUBAT } },
-    { COMPOUND_STRING("MONOGROUND"), { SPECIES_DIGLETT, SPECIES_SANDSHREW, SPECIES_TRAPINCH } },
-    { COMPOUND_STRING("MONOROCK"),   { SPECIES_GEODUDE, SPECIES_NACLI, SPECIES_LARVITAR } },
-    { COMPOUND_STRING("MONOBUG"),    { SPECIES_WIMPOD, SPECIES_VENIPEDE, SPECIES_GRUBBIN } },
-    { COMPOUND_STRING("MONOGHOST"),  { SPECIES_LITWICK, SPECIES_SHUPPET, SPECIES_DUSKULL } },
-    { COMPOUND_STRING("MONOSTEEL"),  { SPECIES_MEOWTH_GALAR, SPECIES_ARON, SPECIES_BELDUM } },
-    { COMPOUND_STRING("MONOFIRE"),   { SPECIES_CHARCADET, SPECIES_VULPIX, SPECIES_NUMEL } },
-    { COMPOUND_STRING("MONOWATER"),  { SPECIES_MAGIKARP, SPECIES_FEEBAS, SPECIES_WINGULL } },
-    { COMPOUND_STRING("MONOGRASS"),  { SPECIES_HOPPIP, SPECIES_APPLIN, SPECIES_BUDEW } },
-    { COMPOUND_STRING("MONOELECTR"), { SPECIES_PIKACHU, SPECIES_SHINX, SPECIES_PAWMI } },
-    { COMPOUND_STRING("MONOPSYCH"),  { SPECIES_FLITTLE, SPECIES_SOLOSIS, SPECIES_ABRA } },
-    { COMPOUND_STRING("MONOICE"),    { SPECIES_SWINUB, SPECIES_SPHEAL, SPECIES_SNORUNT } },
-    { COMPOUND_STRING("MONODRAGON"), { SPECIES_NOIBAT, SPECIES_DREEPY, SPECIES_DRATINI } },
-    { COMPOUND_STRING("MONODARK"),   { SPECIES_SANDILE, SPECIES_DEINO, SPECIES_ZORUA } },
-    { COMPOUND_STRING("MONOFAIRY"),  { SPECIES_RALTS, SPECIES_IMPIDIMP, SPECIES_FLABEBE } },
+    { COMPOUND_STRING("MONONORMAL"), RANDOMIZER_TYPE_MASK(TYPE_NORMAL) },
+    { COMPOUND_STRING("MONOFIGHT"), RANDOMIZER_TYPE_MASK(TYPE_FIGHTING) },
+    { COMPOUND_STRING("MONOFLYING"), RANDOMIZER_TYPE_MASK(TYPE_FLYING) },
+    { COMPOUND_STRING("MONOPOISON"), RANDOMIZER_TYPE_MASK(TYPE_POISON) },
+    { COMPOUND_STRING("MONOGROUND"), RANDOMIZER_TYPE_MASK(TYPE_GROUND) },
+    { COMPOUND_STRING("MONOROCK"), RANDOMIZER_TYPE_MASK(TYPE_ROCK) },
+    { COMPOUND_STRING("MONOBUG"), RANDOMIZER_TYPE_MASK(TYPE_BUG) },
+    { COMPOUND_STRING("MONOGHOST"), RANDOMIZER_TYPE_MASK(TYPE_GHOST) },
+    { COMPOUND_STRING("MONOSTEEL"), RANDOMIZER_TYPE_MASK(TYPE_STEEL) },
+    { COMPOUND_STRING("MONOFIRE"), RANDOMIZER_TYPE_MASK(TYPE_FIRE) },
+    { COMPOUND_STRING("MONOWATER"), RANDOMIZER_TYPE_MASK(TYPE_WATER) },
+    { COMPOUND_STRING("MONOGRASS"), RANDOMIZER_TYPE_MASK(TYPE_GRASS) },
+    { COMPOUND_STRING("MONOELECTR"), RANDOMIZER_TYPE_MASK(TYPE_ELECTRIC) },
+    { COMPOUND_STRING("MONOPSYCH"), RANDOMIZER_TYPE_MASK(TYPE_PSYCHIC) },
+    { COMPOUND_STRING("MONOICE"), RANDOMIZER_TYPE_MASK(TYPE_ICE) },
+    { COMPOUND_STRING("MONODRAGON"), RANDOMIZER_TYPE_MASK(TYPE_DRAGON) },
+    { COMPOUND_STRING("MONODARK"), RANDOMIZER_TYPE_MASK(TYPE_DARK) },
+    { COMPOUND_STRING("MONOFAIRY"), RANDOMIZER_TYPE_MASK(TYPE_FAIRY) },
 };
 
-
-/*
- * Pick uniformly from all unique species in the monotype cheat pools.
- * Repeated entries across types should not give a species extra weight.
- */
-static u16 ChooseRandomMonotypeCheatSpecies(void)
+// A zero mask means the full master list (ROLLTHEDIE).
+// Count eligible entries, then pick one; each listed species has equal odds.
+static u16 ChooseRandomCheatSpecies(u32 typeMask)
 {
-    u16 uniqueSpecies[ARRAY_COUNT(sMonotypeCheatCodes) * ARRAY_COUNT(sMonotypeCheatCodes[0].species)];
-    u32 uniqueCount = 0;
-    u32 i, j, k;
+    u32 i;
+    u32 eligibleCount = 0;
+    u32 selectedIndex;
 
-    for (i = 0; i < ARRAY_COUNT(sMonotypeCheatCodes); i++)
+    for (i = 0; i < ARRAY_COUNT(sRandomizerMons); i++)
     {
-        for (j = 0; j < ARRAY_COUNT(sMonotypeCheatCodes[i].species); j++)
+        if (typeMask == 0 || (sRandomizerMons[i].typeMask & typeMask))
+            eligibleCount++;
+    }
+
+    if (eligibleCount == 0)
+        return SPECIES_NONE;
+
+    selectedIndex = Random() % eligibleCount;
+    for (i = 0; i < ARRAY_COUNT(sRandomizerMons); i++)
+    {
+        if (typeMask == 0 || (sRandomizerMons[i].typeMask & typeMask))
         {
-            u16 species = sMonotypeCheatCodes[i].species[j];
-
-            if (species == SPECIES_NONE)
-                continue;
-
-            for (k = 0; k < uniqueCount; k++)
-            {
-                if (uniqueSpecies[k] == species)
-                    break;
-            }
-
-            if (k == uniqueCount)
-                uniqueSpecies[uniqueCount++] = species;
+            if (selectedIndex == 0)
+                return sRandomizerMons[i].species;
+            selectedIndex--;
         }
     }
 
-    return uniqueSpecies[Random() % uniqueCount];
+    return SPECIES_NONE;
+}
+
+static void SetRandomizerCheatGift(u32 typeMask)
+{
+    u16 species = ChooseRandomCheatSpecies(typeMask);
+
+    if (species == SPECIES_NONE)
+    {
+        gSpecialVar_Result = 0;
+        return;
+    }
+
+    gSpecialVar_0x8004 = species;
+    gSpecialVar_Result = 4; // Existing level-5 gift handler.
 }
 
 void GetCodeFeedback(void)
@@ -4600,8 +4696,7 @@ void GetCodeFeedback(void)
     StringCopyUppercase(uppercaseCode, gStringVar2);
     if (StringCompare(uppercaseCode, sText_RollTheDie) == 0)
     {
-        gSpecialVar_0x8004 = ChooseRandomMonotypeCheatSpecies();
-        gSpecialVar_Result = 4; // Reuse the existing level-5 gift handler.
+        SetRandomizerCheatGift(0);
         return;
     }
 
@@ -4609,8 +4704,7 @@ void GetCodeFeedback(void)
     {
         if (StringCompare(uppercaseCode, sMonotypeCheatCodes[i].code) == 0)
         {
-            gSpecialVar_0x8004 = sMonotypeCheatCodes[i].species[Random() % ARRAY_COUNT(sMonotypeCheatCodes[i].species)];
-            gSpecialVar_Result = 4; // Monotype gift: species in VAR_0x8004
+            SetRandomizerCheatGift(sMonotypeCheatCodes[i].typeMask);
             return;
         }
     }
