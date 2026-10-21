@@ -74,6 +74,8 @@ NewBarkTown_PlayersHouse_2F_EventScript_NESMonotypeGift::
     showgivemonpic 10, 3
     call Common_EventScript_GiftMon
     hidemonpic
+    special GetNextRandomizerGift
+    goto_if_eq VAR_RESULT, 1, NewBarkTown_PlayersHouse_2F_EventScript_NESMonotypeGift
     goto NewBarkTown_PlayersHouse_2F_EventScript_NESExit
 
 NewBarkTown_PlayersHouse_2F_EventScript_NESNoRoom::
