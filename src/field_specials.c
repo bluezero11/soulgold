@@ -4549,6 +4549,40 @@ static const struct
     { COMPOUND_STRING("MONOFAIRY"),  { SPECIES_RALTS, SPECIES_IMPIDIMP, SPECIES_FLABEBE } },
 };
 
+
+/*
+ * Pick uniformly from all unique species in the monotype cheat pools.
+ * Repeated entries across types should not give a species extra weight.
+ */
+static u16 ChooseRandomMonotypeCheatSpecies(void)
+{
+    u16 uniqueSpecies[ARRAY_COUNT(sMonotypeCheatCodes) * ARRAY_COUNT(sMonotypeCheatCodes[0].species)];
+    u32 uniqueCount = 0;
+    u32 i, j, k;
+
+    for (i = 0; i < ARRAY_COUNT(sMonotypeCheatCodes); i++)
+    {
+        for (j = 0; j < ARRAY_COUNT(sMonotypeCheatCodes[i].species); j++)
+        {
+            u16 species = sMonotypeCheatCodes[i].species[j];
+
+            if (species == SPECIES_NONE)
+                continue;
+
+            for (k = 0; k < uniqueCount; k++)
+            {
+                if (uniqueSpecies[k] == species)
+                    break;
+            }
+
+            if (k == uniqueCount)
+                uniqueSpecies[uniqueCount++] = species;
+        }
+    }
+
+    return uniqueSpecies[Random() % uniqueCount];
+}
+
 void GetCodeFeedback(void)
 {
     static const u8 sText_SampleCode[] = _("SampleCode");
@@ -4558,11 +4592,19 @@ void GetCodeFeedback(void)
     static const u8 sText_MaxPain[] = _("maxpain");
     static const u8 sText_EasyIvs[] = _("easyivs");
     static const u8 sText_NoInnates[] = _("noinnates");
+    static const u8 sText_RollTheDie[] = _("ROLLTHEDIE");
     u8 uppercaseCode[CODE_NAME_LENGTH + 1];
     u32 i;
 
     // The naming screen opens on uppercase letters. Accept either case.
     StringCopyUppercase(uppercaseCode, gStringVar2);
+    if (StringCompare(uppercaseCode, sText_RollTheDie) == 0)
+    {
+        gSpecialVar_0x8004 = ChooseRandomMonotypeCheatSpecies();
+        gSpecialVar_Result = 4; // Reuse the existing level-5 gift handler.
+        return;
+    }
+
     for (i = 0; i < ARRAY_COUNT(sMonotypeCheatCodes); i++)
     {
         if (StringCompare(uppercaseCode, sMonotypeCheatCodes[i].code) == 0)
