@@ -56,6 +56,7 @@
 #include "tv.h"
 #include "wallclock.h"
 #include "window.h"
+#include "constants/characters.h"
 #include "constants/battle_frontier.h"
 #include "constants/battle_pyramid.h"
 #include "constants/battle_tower.h"
@@ -4521,11 +4522,11 @@ void EnterCode(void)
     DoNamingScreen(NAMING_SCREEN_CODE, gStringVar2, 0, 0, 0, FALSE, CB2_ReturnToFieldContinueScript);
 }
 
-// Master list for the SNES randomizer gifts (one entry per species).
-// A species can belong to multiple monotype pools by OR-ing its type masks.
-// Keep this list curated: tags need not match the species' current battle types.
-// Example: RANDOMIZER_TYPE_MASK(TYPE_GRASS) | RANDOMIZER_TYPE_MASK(TYPE_POISON)
+// The master species list is the only place to edit randomizer eligibility.
+// A Pokemon appears only once, with explicit tags for all its eligible codes.
+// Evolution-family typing may count (e.g. Scraggy is Fighting/Dark).
 #define RANDOMIZER_TYPE_MASK(type) (1u << (type))
+#define MAX_RANDOMIZER_GIFTS 6
 
 static const struct
 {
@@ -4533,81 +4534,248 @@ static const struct
     u32 typeMask;
 } sRandomizerMons[] =
 {
-    // NORMAL
+    // NORMAL (existing)
     { SPECIES_ZIGZAGOON, RANDOMIZER_TYPE_MASK(TYPE_NORMAL) },
     { SPECIES_DITTO, RANDOMIZER_TYPE_MASK(TYPE_NORMAL) },
     { SPECIES_RATTATA, RANDOMIZER_TYPE_MASK(TYPE_NORMAL) },
-    // FIGHTING
+
+    // FIGHTING (existing)
     { SPECIES_TYROGUE, RANDOMIZER_TYPE_MASK(TYPE_FIGHTING) },
     { SPECIES_MEDITITE, RANDOMIZER_TYPE_MASK(TYPE_FIGHTING) },
     { SPECIES_MAKUHITA, RANDOMIZER_TYPE_MASK(TYPE_FIGHTING) },
-    // FLYING
+
+    // FLYING (existing)
     { SPECIES_STARLY, RANDOMIZER_TYPE_MASK(TYPE_FLYING) },
     { SPECIES_ROOKIDEE, RANDOMIZER_TYPE_MASK(TYPE_FLYING) },
-    { SPECIES_FLETCHLING, RANDOMIZER_TYPE_MASK(TYPE_FLYING) },
-    // POISON
+    { SPECIES_FLETCHLING, RANDOMIZER_TYPE_MASK(TYPE_FLYING) | RANDOMIZER_TYPE_MASK(TYPE_FIRE) },
+
+    // POISON (existing)
     { SPECIES_WOOPER_PALDEA, RANDOMIZER_TYPE_MASK(TYPE_POISON) },
     { SPECIES_TOXEL, RANDOMIZER_TYPE_MASK(TYPE_POISON) },
     { SPECIES_ZUBAT, RANDOMIZER_TYPE_MASK(TYPE_POISON) },
-    // GROUND
+
+    // GROUND (existing)
     { SPECIES_DIGLETT, RANDOMIZER_TYPE_MASK(TYPE_GROUND) },
     { SPECIES_SANDSHREW, RANDOMIZER_TYPE_MASK(TYPE_GROUND) },
     { SPECIES_TRAPINCH, RANDOMIZER_TYPE_MASK(TYPE_GROUND) },
-    // ROCK
+
+    // ROCK (existing)
     { SPECIES_GEODUDE, RANDOMIZER_TYPE_MASK(TYPE_ROCK) },
     { SPECIES_NACLI, RANDOMIZER_TYPE_MASK(TYPE_ROCK) },
     { SPECIES_LARVITAR, RANDOMIZER_TYPE_MASK(TYPE_ROCK) },
-    // BUG
+
+    // BUG (existing)
     { SPECIES_WIMPOD, RANDOMIZER_TYPE_MASK(TYPE_BUG) },
     { SPECIES_VENIPEDE, RANDOMIZER_TYPE_MASK(TYPE_BUG) },
     { SPECIES_GRUBBIN, RANDOMIZER_TYPE_MASK(TYPE_BUG) },
-    // GHOST
-    { SPECIES_LITWICK, RANDOMIZER_TYPE_MASK(TYPE_GHOST) },
+
+    // GHOST (existing)
+    { SPECIES_LITWICK, RANDOMIZER_TYPE_MASK(TYPE_GHOST) | RANDOMIZER_TYPE_MASK(TYPE_FIRE) },
     { SPECIES_SHUPPET, RANDOMIZER_TYPE_MASK(TYPE_GHOST) },
     { SPECIES_DUSKULL, RANDOMIZER_TYPE_MASK(TYPE_GHOST) },
-    // STEEL
+
+    // STEEL (existing)
     { SPECIES_MEOWTH_GALAR, RANDOMIZER_TYPE_MASK(TYPE_STEEL) },
     { SPECIES_ARON, RANDOMIZER_TYPE_MASK(TYPE_STEEL) },
-    { SPECIES_BELDUM, RANDOMIZER_TYPE_MASK(TYPE_STEEL) },
-    // FIRE
+    { SPECIES_BELDUM, RANDOMIZER_TYPE_MASK(TYPE_STEEL) | RANDOMIZER_TYPE_MASK(TYPE_PSYCHIC) },
+
+    // FIRE (existing)
     { SPECIES_CHARCADET, RANDOMIZER_TYPE_MASK(TYPE_FIRE) },
     { SPECIES_VULPIX, RANDOMIZER_TYPE_MASK(TYPE_FIRE) },
     { SPECIES_NUMEL, RANDOMIZER_TYPE_MASK(TYPE_FIRE) },
-    // WATER
+
+    // WATER (existing)
     { SPECIES_MAGIKARP, RANDOMIZER_TYPE_MASK(TYPE_WATER) },
     { SPECIES_FEEBAS, RANDOMIZER_TYPE_MASK(TYPE_WATER) },
     { SPECIES_WINGULL, RANDOMIZER_TYPE_MASK(TYPE_WATER) },
-    // GRASS
+
+    // GRASS (existing)
     { SPECIES_HOPPIP, RANDOMIZER_TYPE_MASK(TYPE_GRASS) },
     { SPECIES_APPLIN, RANDOMIZER_TYPE_MASK(TYPE_GRASS) },
-    { SPECIES_BUDEW, RANDOMIZER_TYPE_MASK(TYPE_GRASS) },
-    // ELECTRIC
+    { SPECIES_BUDEW, RANDOMIZER_TYPE_MASK(TYPE_GRASS) | RANDOMIZER_TYPE_MASK(TYPE_POISON) },
+
+    // ELECTRIC (existing)
     { SPECIES_PIKACHU, RANDOMIZER_TYPE_MASK(TYPE_ELECTRIC) },
     { SPECIES_SHINX, RANDOMIZER_TYPE_MASK(TYPE_ELECTRIC) },
     { SPECIES_PAWMI, RANDOMIZER_TYPE_MASK(TYPE_ELECTRIC) },
-    // PSYCHIC
+
+    // PSYCHIC (existing)
     { SPECIES_FLITTLE, RANDOMIZER_TYPE_MASK(TYPE_PSYCHIC) },
     { SPECIES_SOLOSIS, RANDOMIZER_TYPE_MASK(TYPE_PSYCHIC) },
     { SPECIES_ABRA, RANDOMIZER_TYPE_MASK(TYPE_PSYCHIC) },
-    // ICE
+
+    // ICE (existing)
     { SPECIES_SWINUB, RANDOMIZER_TYPE_MASK(TYPE_ICE) },
     { SPECIES_SPHEAL, RANDOMIZER_TYPE_MASK(TYPE_ICE) },
     { SPECIES_SNORUNT, RANDOMIZER_TYPE_MASK(TYPE_ICE) },
-    // DRAGON
+
+    // DRAGON (existing)
     { SPECIES_NOIBAT, RANDOMIZER_TYPE_MASK(TYPE_DRAGON) },
-    { SPECIES_DREEPY, RANDOMIZER_TYPE_MASK(TYPE_DRAGON) },
+    { SPECIES_DREEPY, RANDOMIZER_TYPE_MASK(TYPE_DRAGON) | RANDOMIZER_TYPE_MASK(TYPE_GHOST) },
     { SPECIES_DRATINI, RANDOMIZER_TYPE_MASK(TYPE_DRAGON) },
-    // DARK
+
+    // DARK (existing)
     { SPECIES_SANDILE, RANDOMIZER_TYPE_MASK(TYPE_DARK) },
     { SPECIES_DEINO, RANDOMIZER_TYPE_MASK(TYPE_DARK) },
     { SPECIES_ZORUA, RANDOMIZER_TYPE_MASK(TYPE_DARK) },
-    // FAIRY
-    { SPECIES_RALTS, RANDOMIZER_TYPE_MASK(TYPE_FAIRY) },
-    { SPECIES_IMPIDIMP, RANDOMIZER_TYPE_MASK(TYPE_FAIRY) },
+
+    // FAIRY (existing)
+    { SPECIES_RALTS, RANDOMIZER_TYPE_MASK(TYPE_FAIRY) | RANDOMIZER_TYPE_MASK(TYPE_PSYCHIC) },
+    { SPECIES_IMPIDIMP, RANDOMIZER_TYPE_MASK(TYPE_FAIRY) | RANDOMIZER_TYPE_MASK(TYPE_DARK) },
     { SPECIES_FLABEBE, RANDOMIZER_TYPE_MASK(TYPE_FAIRY) },
+
+    // NORMAL additions
+    { SPECIES_BUNEARY, RANDOMIZER_TYPE_MASK(TYPE_NORMAL) },
+    { SPECIES_MINCCINO, RANDOMIZER_TYPE_MASK(TYPE_NORMAL) },
+    { SPECIES_TANDEMAUS, RANDOMIZER_TYPE_MASK(TYPE_NORMAL) },
+    { SPECIES_MUNCHLAX, RANDOMIZER_TYPE_MASK(TYPE_NORMAL) },
+    { SPECIES_STANTLER, RANDOMIZER_TYPE_MASK(TYPE_NORMAL) | RANDOMIZER_TYPE_MASK(TYPE_PSYCHIC) },
+    { SPECIES_AIPOM, RANDOMIZER_TYPE_MASK(TYPE_NORMAL) },
+    { SPECIES_PORYGON, RANDOMIZER_TYPE_MASK(TYPE_NORMAL) },
+    { SPECIES_EEVEE, RANDOMIZER_TYPE_MASK(TYPE_NORMAL) },
+    { SPECIES_ZORUA_HISUI, RANDOMIZER_TYPE_MASK(TYPE_NORMAL) },
+
+    // FIGHTING additions
+    { SPECIES_RIOLU, RANDOMIZER_TYPE_MASK(TYPE_FIGHTING) },
+    { SPECIES_MANKEY, RANDOMIZER_TYPE_MASK(TYPE_FIGHTING) },
+    { SPECIES_MACHOP, RANDOMIZER_TYPE_MASK(TYPE_FIGHTING) },
+    { SPECIES_MIENFOO, RANDOMIZER_TYPE_MASK(TYPE_FIGHTING) },
+    { SPECIES_CRABRAWLER, RANDOMIZER_TYPE_MASK(TYPE_FIGHTING) },
+    { SPECIES_SCRAGGY, RANDOMIZER_TYPE_MASK(TYPE_FIGHTING) | RANDOMIZER_TYPE_MASK(TYPE_DARK) },
+    { SPECIES_HERACROSS, RANDOMIZER_TYPE_MASK(TYPE_FIGHTING) | RANDOMIZER_TYPE_MASK(TYPE_BUG) },
+    { SPECIES_KUBFU, RANDOMIZER_TYPE_MASK(TYPE_FIGHTING) },
+    { SPECIES_FALINKS, RANDOMIZER_TYPE_MASK(TYPE_FIGHTING) },
+
+    // FLYING additions
+    { SPECIES_PIDGEY, RANDOMIZER_TYPE_MASK(TYPE_FLYING) },
+    { SPECIES_MURKROW, RANDOMIZER_TYPE_MASK(TYPE_FLYING) | RANDOMIZER_TYPE_MASK(TYPE_DARK) },
+    { SPECIES_EMOLGA, RANDOMIZER_TYPE_MASK(TYPE_FLYING) | RANDOMIZER_TYPE_MASK(TYPE_ELECTRIC) },
+    { SPECIES_GLIGAR, RANDOMIZER_TYPE_MASK(TYPE_FLYING) | RANDOMIZER_TYPE_MASK(TYPE_GROUND) },
+    { SPECIES_AERODACTYL, RANDOMIZER_TYPE_MASK(TYPE_FLYING) | RANDOMIZER_TYPE_MASK(TYPE_ROCK) },
+    { SPECIES_VULLABY, RANDOMIZER_TYPE_MASK(TYPE_FLYING) | RANDOMIZER_TYPE_MASK(TYPE_DARK) },
+    { SPECIES_SWABLU, RANDOMIZER_TYPE_MASK(TYPE_FLYING) },
+    { SPECIES_DRIFLOON, RANDOMIZER_TYPE_MASK(TYPE_FLYING) | RANDOMIZER_TYPE_MASK(TYPE_GHOST) },
+    { SPECIES_WATTREL, RANDOMIZER_TYPE_MASK(TYPE_FLYING) | RANDOMIZER_TYPE_MASK(TYPE_ELECTRIC) },
+
+    // POISON additions
+    { SPECIES_BULBASAUR, RANDOMIZER_TYPE_MASK(TYPE_POISON) | RANDOMIZER_TYPE_MASK(TYPE_GRASS) },
+    { SPECIES_ODDISH, RANDOMIZER_TYPE_MASK(TYPE_POISON) | RANDOMIZER_TYPE_MASK(TYPE_GRASS) },
+    { SPECIES_MAREANIE, RANDOMIZER_TYPE_MASK(TYPE_POISON) },
+    { SPECIES_NIDORAN_F, RANDOMIZER_TYPE_MASK(TYPE_POISON) },
+    { SPECIES_TENTACOOL, RANDOMIZER_TYPE_MASK(TYPE_POISON) | RANDOMIZER_TYPE_MASK(TYPE_WATER) },
+    { SPECIES_KOFFING, RANDOMIZER_TYPE_MASK(TYPE_POISON) },
+    { SPECIES_POIPOLE, RANDOMIZER_TYPE_MASK(TYPE_POISON) | RANDOMIZER_TYPE_MASK(TYPE_DRAGON) },
+    { SPECIES_GRIMER, RANDOMIZER_TYPE_MASK(TYPE_POISON) },
+
+    // GROUND additions
+    { SPECIES_WOOPER, RANDOMIZER_TYPE_MASK(TYPE_GROUND) | RANDOMIZER_TYPE_MASK(TYPE_WATER) },
+    { SPECIES_SILICOBRA, RANDOMIZER_TYPE_MASK(TYPE_GROUND) },
+    { SPECIES_PHANPY, RANDOMIZER_TYPE_MASK(TYPE_GROUND) },
+    { SPECIES_DRILBUR, RANDOMIZER_TYPE_MASK(TYPE_GROUND) },
+    { SPECIES_HIPPOPOTAS, RANDOMIZER_TYPE_MASK(TYPE_GROUND) },
+    { SPECIES_RHYHORN, RANDOMIZER_TYPE_MASK(TYPE_GROUND) | RANDOMIZER_TYPE_MASK(TYPE_ROCK) },
+    { SPECIES_GOLETT, RANDOMIZER_TYPE_MASK(TYPE_GROUND) },
+    { SPECIES_GIBLE, RANDOMIZER_TYPE_MASK(TYPE_GROUND) | RANDOMIZER_TYPE_MASK(TYPE_DRAGON) },
+
+    // ROCK additions
+    { SPECIES_NOSEPASS, RANDOMIZER_TYPE_MASK(TYPE_ROCK) },
+    { SPECIES_ROCKRUFF, RANDOMIZER_TYPE_MASK(TYPE_ROCK) },
+    { SPECIES_ONIX, RANDOMIZER_TYPE_MASK(TYPE_ROCK) },
+    { SPECIES_LILEEP, RANDOMIZER_TYPE_MASK(TYPE_ROCK) },
+    { SPECIES_TYRUNT, RANDOMIZER_TYPE_MASK(TYPE_ROCK) | RANDOMIZER_TYPE_MASK(TYPE_DRAGON) },
+    { SPECIES_AMAURA, RANDOMIZER_TYPE_MASK(TYPE_ROCK) },
+    { SPECIES_BINACLE, RANDOMIZER_TYPE_MASK(TYPE_ROCK) },
+
+    // BUG additions
+    { SPECIES_SEWADDLE, RANDOMIZER_TYPE_MASK(TYPE_BUG) | RANDOMIZER_TYPE_MASK(TYPE_GRASS) },
+    { SPECIES_JOLTIK, RANDOMIZER_TYPE_MASK(TYPE_BUG) | RANDOMIZER_TYPE_MASK(TYPE_ELECTRIC) },
+    { SPECIES_LARVESTA, RANDOMIZER_TYPE_MASK(TYPE_BUG) | RANDOMIZER_TYPE_MASK(TYPE_FIRE) },
+    { SPECIES_SPINARAK, RANDOMIZER_TYPE_MASK(TYPE_BUG) },
+    { SPECIES_CUTIEFLY, RANDOMIZER_TYPE_MASK(TYPE_BUG) | RANDOMIZER_TYPE_MASK(TYPE_FAIRY) },
+    { SPECIES_NINCADA, RANDOMIZER_TYPE_MASK(TYPE_BUG) },
+    { SPECIES_SCYTHER, RANDOMIZER_TYPE_MASK(TYPE_BUG) },
+    { SPECIES_SIZZLIPEDE, RANDOMIZER_TYPE_MASK(TYPE_BUG) | RANDOMIZER_TYPE_MASK(TYPE_FIRE) },
+
+    // GHOST additions
+    { SPECIES_SINISTEA_PHONY, RANDOMIZER_TYPE_MASK(TYPE_GHOST) },
+    { SPECIES_POLTCHAGEIST_COUNTERFEIT, RANDOMIZER_TYPE_MASK(TYPE_GHOST) | RANDOMIZER_TYPE_MASK(TYPE_GRASS) },
+    { SPECIES_PHANTUMP, RANDOMIZER_TYPE_MASK(TYPE_GHOST) | RANDOMIZER_TYPE_MASK(TYPE_GRASS) },
+    { SPECIES_GASTLY, RANDOMIZER_TYPE_MASK(TYPE_GHOST) },
+    { SPECIES_SPIRITOMB, RANDOMIZER_TYPE_MASK(TYPE_GHOST) | RANDOMIZER_TYPE_MASK(TYPE_DARK) },
+    { SPECIES_HONEDGE, RANDOMIZER_TYPE_MASK(TYPE_GHOST) | RANDOMIZER_TYPE_MASK(TYPE_STEEL) },
+    { SPECIES_MIMIKYU, RANDOMIZER_TYPE_MASK(TYPE_GHOST) | RANDOMIZER_TYPE_MASK(TYPE_FAIRY) },
+
+    // STEEL additions
+    { SPECIES_MAGNEMITE, RANDOMIZER_TYPE_MASK(TYPE_STEEL) | RANDOMIZER_TYPE_MASK(TYPE_ELECTRIC) },
+    { SPECIES_FERROSEED, RANDOMIZER_TYPE_MASK(TYPE_STEEL) | RANDOMIZER_TYPE_MASK(TYPE_GRASS) },
+    { SPECIES_PAWNIARD, RANDOMIZER_TYPE_MASK(TYPE_STEEL) | RANDOMIZER_TYPE_MASK(TYPE_DARK) },
+    { SPECIES_MELTAN, RANDOMIZER_TYPE_MASK(TYPE_STEEL) },
+    { SPECIES_DURALUDON, RANDOMIZER_TYPE_MASK(TYPE_STEEL) },
+    { SPECIES_TINKATINK, RANDOMIZER_TYPE_MASK(TYPE_STEEL) | RANDOMIZER_TYPE_MASK(TYPE_FAIRY) },
+    { SPECIES_KLEFKI, RANDOMIZER_TYPE_MASK(TYPE_STEEL) },
+    { SPECIES_SANDSHREW_ALOLA, RANDOMIZER_TYPE_MASK(TYPE_STEEL) | RANDOMIZER_TYPE_MASK(TYPE_ICE) },
+
+    // FIRE additions
+    { SPECIES_GROWLITHE, RANDOMIZER_TYPE_MASK(TYPE_FIRE) },
+    { SPECIES_TORCHIC, RANDOMIZER_TYPE_MASK(TYPE_FIRE) },
+    { SPECIES_HOUNDOUR, RANDOMIZER_TYPE_MASK(TYPE_FIRE) | RANDOMIZER_TYPE_MASK(TYPE_DARK) },
+    { SPECIES_SCORBUNNY, RANDOMIZER_TYPE_MASK(TYPE_FIRE) },
+    { SPECIES_FUECOCO, RANDOMIZER_TYPE_MASK(TYPE_FIRE) },
+
+    // WATER additions
+    { SPECIES_SQUIRTLE, RANDOMIZER_TYPE_MASK(TYPE_WATER) },
+    { SPECIES_MARILL, RANDOMIZER_TYPE_MASK(TYPE_WATER) },
+    { SPECIES_CHINCHOU, RANDOMIZER_TYPE_MASK(TYPE_WATER) | RANDOMIZER_TYPE_MASK(TYPE_ELECTRIC) },
+    { SPECIES_SLOWPOKE, RANDOMIZER_TYPE_MASK(TYPE_WATER) | RANDOMIZER_TYPE_MASK(TYPE_PSYCHIC) },
+    { SPECIES_SHELLDER, RANDOMIZER_TYPE_MASK(TYPE_WATER) },
+    { SPECIES_MUDKIP, RANDOMIZER_TYPE_MASK(TYPE_WATER) },
+    { SPECIES_OSHAWOTT, RANDOMIZER_TYPE_MASK(TYPE_WATER) },
+
+    // GRASS additions
+    { SPECIES_SHROOMISH, RANDOMIZER_TYPE_MASK(TYPE_GRASS) },
+    { SPECIES_SNOVER, RANDOMIZER_TYPE_MASK(TYPE_GRASS) | RANDOMIZER_TYPE_MASK(TYPE_ICE) },
+    { SPECIES_CHIKORITA, RANDOMIZER_TYPE_MASK(TYPE_GRASS) },
+
+    // ELECTRIC additions
+    { SPECIES_VOLTORB, RANDOMIZER_TYPE_MASK(TYPE_ELECTRIC) },
+    { SPECIES_MAREEP, RANDOMIZER_TYPE_MASK(TYPE_ELECTRIC) },
+    { SPECIES_TYNAMO, RANDOMIZER_TYPE_MASK(TYPE_ELECTRIC) },
+    { SPECIES_ROTOM, RANDOMIZER_TYPE_MASK(TYPE_ELECTRIC) },
+
+    // PSYCHIC additions
+    { SPECIES_ESPURR, RANDOMIZER_TYPE_MASK(TYPE_PSYCHIC) },
+    { SPECIES_NATU, RANDOMIZER_TYPE_MASK(TYPE_PSYCHIC) },
+    { SPECIES_INKAY, RANDOMIZER_TYPE_MASK(TYPE_PSYCHIC) | RANDOMIZER_TYPE_MASK(TYPE_DARK) },
+    { SPECIES_BALTOY, RANDOMIZER_TYPE_MASK(TYPE_PSYCHIC) },
+    { SPECIES_PONYTA_GALAR, RANDOMIZER_TYPE_MASK(TYPE_PSYCHIC) | RANDOMIZER_TYPE_MASK(TYPE_FAIRY) },
+
+    // ICE additions
+    { SPECIES_VULPIX_ALOLA, RANDOMIZER_TYPE_MASK(TYPE_ICE) | RANDOMIZER_TYPE_MASK(TYPE_FAIRY) },
+    { SPECIES_SMOOCHUM, RANDOMIZER_TYPE_MASK(TYPE_ICE) },
+    { SPECIES_BERGMITE, RANDOMIZER_TYPE_MASK(TYPE_ICE) },
+    { SPECIES_SEEL, RANDOMIZER_TYPE_MASK(TYPE_ICE) },
+    { SPECIES_SNEASEL, RANDOMIZER_TYPE_MASK(TYPE_ICE) },
+    { SPECIES_LAPRAS, RANDOMIZER_TYPE_MASK(TYPE_ICE) },
+    { SPECIES_FRIGIBAX, RANDOMIZER_TYPE_MASK(TYPE_ICE) | RANDOMIZER_TYPE_MASK(TYPE_DRAGON) },
+
+    // DRAGON additions
+    { SPECIES_JANGMO_O, RANDOMIZER_TYPE_MASK(TYPE_DRAGON) },
+    { SPECIES_BAGON, RANDOMIZER_TYPE_MASK(TYPE_DRAGON) },
+    { SPECIES_AXEW, RANDOMIZER_TYPE_MASK(TYPE_DRAGON) },
+    { SPECIES_GOOMY, RANDOMIZER_TYPE_MASK(TYPE_DRAGON) },
+    { SPECIES_SKRELP, RANDOMIZER_TYPE_MASK(TYPE_DRAGON) },
+
+    // DARK additions
+    { SPECIES_SABLEYE, RANDOMIZER_TYPE_MASK(TYPE_DARK) },
+
+    // FAIRY additions
+    { SPECIES_COTTONEE, RANDOMIZER_TYPE_MASK(TYPE_FAIRY) },
+    { SPECIES_TOGEPI, RANDOMIZER_TYPE_MASK(TYPE_FAIRY) },
+    { SPECIES_AZURILL, RANDOMIZER_TYPE_MASK(TYPE_FAIRY) },
+    { SPECIES_CLEFFA, RANDOMIZER_TYPE_MASK(TYPE_FAIRY) },
 };
 
-// Monotype codes are just filters over sRandomizerMons, not separate species pools.
+// Monotype cheat names select a type filter, not a separate species array.
 static const struct
 {
     const u8 *code;
@@ -4634,49 +4802,69 @@ static const struct
     { COMPOUND_STRING("MONOFAIRY"), RANDOMIZER_TYPE_MASK(TYPE_FAIRY) },
 };
 
-// A zero mask means the full master list (ROLLTHEDIE).
-// Count eligible entries, then pick one; each listed species has equal odds.
-static u16 ChooseRandomCheatSpecies(u32 typeMask)
+// Store the selected batch between individual gifts, including trips to PC boxes.
+static EWRAM_DATA u16 sRandomizerGiftSpecies[MAX_RANDOMIZER_GIFTS] = {0};
+static EWRAM_DATA u8 sRandomizerGiftCount = 0;
+static EWRAM_DATA u8 sRandomizerGiftIndex = 0;
+
+// Select 1, 3, or 6 different species uniformly without replacement.
+static void SetRandomizerCheatGift(u32 typeMask, u8 giftCount)
 {
-    u32 i;
+    u16 eligibleSpecies[ARRAY_COUNT(sRandomizerMons)];
     u32 eligibleCount = 0;
-    u32 selectedIndex;
+    u32 i;
 
-    for (i = 0; i < ARRAY_COUNT(sRandomizerMons); i++)
-    {
-        if (typeMask == 0 || (sRandomizerMons[i].typeMask & typeMask))
-            eligibleCount++;
-    }
-
-    if (eligibleCount == 0)
-        return SPECIES_NONE;
-
-    selectedIndex = Random() % eligibleCount;
-    for (i = 0; i < ARRAY_COUNT(sRandomizerMons); i++)
-    {
-        if (typeMask == 0 || (sRandomizerMons[i].typeMask & typeMask))
-        {
-            if (selectedIndex == 0)
-                return sRandomizerMons[i].species;
-            selectedIndex--;
-        }
-    }
-
-    return SPECIES_NONE;
-}
-
-static void SetRandomizerCheatGift(u32 typeMask)
-{
-    u16 species = ChooseRandomCheatSpecies(typeMask);
-
-    if (species == SPECIES_NONE)
+    sRandomizerGiftCount = 0;
+    sRandomizerGiftIndex = 0;
+    if (giftCount == 0 || giftCount > MAX_RANDOMIZER_GIFTS)
     {
         gSpecialVar_Result = 0;
         return;
     }
 
-    gSpecialVar_0x8004 = species;
-    gSpecialVar_Result = 4; // Existing level-5 gift handler.
+    for (i = 0; i < ARRAY_COUNT(sRandomizerMons); i++)
+    {
+        if (typeMask == 0 || (sRandomizerMons[i].typeMask & typeMask))
+            eligibleSpecies[eligibleCount++] = sRandomizerMons[i].species;
+    }
+
+    // Fail rather than repeat a species if a pool is ever reduced below giftCount.
+    if (eligibleCount < giftCount)
+    {
+        gSpecialVar_Result = 0;
+        return;
+    }
+
+    for (i = 0; i < giftCount; i++)
+    {
+        u32 remaining = eligibleCount - i;
+        u32 chosen = Random() % remaining;
+
+        sRandomizerGiftSpecies[i] = eligibleSpecies[chosen];
+        eligibleSpecies[chosen] = eligibleSpecies[remaining - 1];
+    }
+
+    sRandomizerGiftCount = giftCount;
+    sRandomizerGiftIndex = 1;
+    gSpecialVar_0x8004 = sRandomizerGiftSpecies[0];
+    gSpecialVar_Result = 4; // Use the existing gift event for the first Pokemon.
+}
+
+// Called by the SNES script after each successful gift.
+// Returns 1 with the next species in VAR_0x8004, or 0 when the batch is complete.
+void GetNextRandomizerGift(void)
+{
+    if (sRandomizerGiftIndex >= sRandomizerGiftCount)
+    {
+        sRandomizerGiftCount = 0;
+        sRandomizerGiftIndex = 0;
+        gSpecialVar_Result = 0;
+        return;
+    }
+
+    gSpecialVar_0x8004 = sRandomizerGiftSpecies[sRandomizerGiftIndex++];
+    gSpecialVar_Result = 1;
+}
 }
 
 void GetCodeFeedback(void)
@@ -4691,12 +4879,23 @@ void GetCodeFeedback(void)
     static const u8 sText_RollTheDie[] = _("ROLLTHEDIE");
     u8 uppercaseCode[CODE_NAME_LENGTH + 1];
     u32 i;
+    u16 codeLength;
+    u8 giftCount = 1;
 
     // The naming screen opens on uppercase letters. Accept either case.
     StringCopyUppercase(uppercaseCode, gStringVar2);
+
+    // Optional final digit requests 3 or 6 distinct Pokemon instead of one.
+    codeLength = StringLength(uppercaseCode);
+    if (codeLength > 0 && (uppercaseCode[codeLength - 1] == CHAR_3 || uppercaseCode[codeLength - 1] == CHAR_6))
+    {
+        giftCount = uppercaseCode[codeLength - 1] == CHAR_3 ? 3 : 6;
+        uppercaseCode[codeLength - 1] = EOS;
+    }
+
     if (StringCompare(uppercaseCode, sText_RollTheDie) == 0)
     {
-        SetRandomizerCheatGift(0);
+        SetRandomizerCheatGift(0, giftCount);
         return;
     }
 
@@ -4704,7 +4903,7 @@ void GetCodeFeedback(void)
     {
         if (StringCompare(uppercaseCode, sMonotypeCheatCodes[i].code) == 0)
         {
-            SetRandomizerCheatGift(sMonotypeCheatCodes[i].typeMask);
+            SetRandomizerCheatGift(sMonotypeCheatCodes[i].typeMask, giftCount);
             return;
         }
     }
