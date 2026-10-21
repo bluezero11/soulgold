@@ -595,6 +595,7 @@ gSpecials::
 	def_special UseBlankMessageToCancelPokemonPic
 	def_special EnterCode
 	def_special GetCodeFeedback
+	def_special GetNextRandomizerGift
 	def_special SetHiddenNature
 	def_special ChooseItemFromBag
 	def_special DoSlidingPuzzle
