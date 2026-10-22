@@ -710,7 +710,7 @@
 #define FLAG_EXP_SHARE_OPTION  0x296 // exp. share
 #define FLAG_WONDERTRADE1  0x297 // Wonder Trade
 #define FLAG_WONDERTRADE2  0x298 // Wonder Trade
-#define FLAG_QOLUNLOCK_REDEEMED  0x299 // Formerly unused FLAG_WONDERTRADE3 slot; permanent giveallqol redemption
+#define FLAG_WONDERTRADE3  0x299 // Wonder Trade (referenced by trade event scripts)
 #define FLAG_VISITED_BATTLE_FRONTIER  0x29A // Unused Flag
 #define FLAG_FRONTIER_SECOND_CLERK  0x29B // Unused Flag
 #define FLAG_ALLOW_SOUTH_JOHTO_PASS  0x29C
@@ -1749,6 +1749,7 @@
 #define FLAG_ROUTE27_EXPERT_QUALIFIED               0x103C
 #define FLAG_TM_PICKUP_MIGRATION_COMPLETE           0x103D
 #define FLAG_RECEIVED_VIOLET_ACADEMY_GIFT           0x103E
+#define FLAG_QOLUNLOCK_REDEEMED                      0x103F // Persistent giveallqol redemption; dedicated unused custom flag
 
 #define FLAG_PYRAMID_ACHIEVEMENT_MIGRATION_COMPLETE 0x1041
 #define CUSTOM_FLAGS_END                            FLAG_PYRAMID_ACHIEVEMENT_MIGRATION_COMPLETE
