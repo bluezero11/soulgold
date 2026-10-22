@@ -4,6 +4,22 @@ This file documents the custom changes made on the `dev` branch of `bluezero11/s
 
 The intention is to keep `master` as the untouched/reference branch, keep `dev` as the main custom gameplay branch, and isolate larger experimental features on dedicated branches until they compile and test cleanly.
 
+## Source attribution and implementation lineage
+
+These notes distinguish **ported**, **adapted/reference-based**, **already-present**, and **custom SoulGold** functionality. Inspiration does not imply a verbatim port.
+
+| Feature | Donor / reference | How SoulGold uses it |
+| --- | --- | --- |
+| **Original EV/IV Stat Editor** | `fakuzatsu/verdant` ([historical GitHub URL](https://github.com/fakuzatsu/verdant), currently unavailable/unverified) | **Transplanted and adapted** editor controls, graphics and EV/IV editing for SoulGold's party menus, ability data and graphics/animation APIs. |
+| **Expanded Stat Editor** | Verdant foundation; nature/ability UX cross-checked against [PCG06/pokeemerald's `feat/stat_editor`](https://github.com/PCG06/pokeemerald/tree/feat/stat_editor) | **Reference-assisted and custom** nature/ability controls, gender and PID-preservation algorithm, staged changes, sprite preview and UI fixes. The gender algorithm is not attributed to PCG06. |
+| **Poké Vial** | [evilchinesefood/PKMN-World](https://github.com/evilchinesefood/PKMN-World), [`src/pokevial.c`](https://github.com/evilchinesefood/PKMN-World/blob/master/src/pokevial.c) | **Adapted mechanic** with SoulGold event-variable charge storage, item confirmations, nurse refills and redemption. |
+| **Repel Charm** | [pokeemerald-expansion Infinite Repel Item guide](https://github.com/rh-hideout/pokeemerald-expansion/wiki/Infinite-Repel-Item), contributed by `jtebbe` | **Adapted no-encounter flag and reusable item toggle**, with SoulGold-specific texts, art choice and reward script. |
+| **Code-entry foundation** | Already in [SoulGold `master`: `src/field_specials.c`](https://github.com/bluezero11/soulgold/blob/master/src/field_specials.c), including `EnterCode`, `GetCodeFeedback`, and replay-option codes | **Preexisting SoulGold functionality**, not newly transplanted from another hack. The original SNES was flavor text only. |
+| **SNES cheats and gifts** | Existing code entry above; user-curated `soulgold_stage1.xlsx` Pokémon pool | **Custom SoulGold work:** SNES script UI, `ROLLTHEDIE`/monotype selection, 3/6 gifting, cosmetic-form rolls, gift-to-PC handling, and `giveallqol` unlock/redeem logic. |
+| **Pokémon Box Link** | Already implemented in SoulGold and the [pokeemerald-expansion Box Link feature](https://github.com/rh-hideout/pokeemerald-expansion/blob/master/FEATURES.md) | **New distribution only:** reused existing item ID, field-use callback and storage script, adding code redemption and nurse catch-up; no Box Link mechanics ported. |
+
+If an upstream repository becomes inaccessible, retain the recorded attribution and mark the old URL unverified rather than guessing a replacement. The chronological feature sections below describe later SoulGold modifications separately from the original ports.
+
 ## Build status
 
 A full GBA ROM build has now completed successfully in GitHub Codespaces after fixing several flag-definition conflicts described below.
@@ -44,7 +60,7 @@ This branch was created from a clean, compiling `dev` state so the stat-editor t
 
 ### Overview
 
-A reusable Pokémon stat editor was transplanted from `fakuzatsu/verdant`, a pokeemerald-expansion-based project.
+A reusable Pokémon stat editor was transplanted from the historically credited `fakuzatsu/verdant`, a pokeemerald-expansion-based project. Its original repository URL is currently unavailable; see the attribution section above.
 
 The editor is accessible directly from the normal field party menu. After selecting a Pokémon, the action list now includes:
 
@@ -953,7 +969,7 @@ The ROM is produced in the repository root as `Soulgold.gba`.
 
 ## Expanded stat editor (feature/expanded-editor)
 
-Based on the working editor transplanted from `fakuzatsu/verdant`, with the nature/ability cycling approach cross-checked against `PCG06/pokeemerald`'s `feat/stat_editor` branch. This branch extends the existing SoulGold stat editor, preserving its graphics, original EV/IV grid, party switching, and START confirmation behavior.
+Based on the working editor transplanted from `fakuzatsu/verdant`, with the nature/ability cycling approach cross-checked against [PCG06/pokeemerald's `feat/stat_editor` branch](https://github.com/PCG06/pokeemerald/tree/feat/stat_editor). Gender/PID-preservation and additional SoulGold UI fixes are not attributed as direct copies from that branch. This branch extends the existing SoulGold stat editor, preserving its graphics, original EV/IV grid, party switching, and START confirmation behavior.
 
 - **Natural D-pad movement:** From the EV column, press Left to enter the left-hand details panel; press Right to return to EVs, then Right again for IVs. Up/Down cycles between **Gender**, **Ability**, and **Nature**, ordered top-to-bottom to match the UI. The new gender cursor brackets the Lv./gender row at y=113, with the working magenta arrow positions unchanged.
 - **A-to-edit, A-to-stage:** Press A on a detail to enter edit mode, adjust with Left/Right (Up/Down jumps to first/last ability or nature; either toggles gender), and press A to return to selection mode. Gender, ability, nature, EV and IV changes remain staged until START or party switching.
@@ -974,9 +990,9 @@ Based on the working editor transplanted from `fakuzatsu/verdant`, with the natu
 
 ## Poké Vial (feature/pokevial)
 
-Ported Pokémon World's Poké Vial mechanic to SoulGold. A refillable key item heals the entire party's HP, PP, and status (including fainted Pokémon), using one charge each time. It starts with five charges, refilled at every Pokémon Center, and retains support for a 15-charge capacity cap. Pokémon Center nurse healing refills existing vials. Originally it granted a vial automatically on the first visit; as of feature/repel-charm, a new vial is given at the first nurse visit *after* the `giveallqol` code is redeemed, while older saves with a vial keep theirs. A follow-up explanation appears only after the vial is successfully given: "Here's a vial to heal up when out on journeys. Refill it at Pokémon Centers!" The bag description uses a shorter line without "whole", and successful healing now reports remaining heals instead of doses (with singular grammar for one heal). Choosing Use in the Bag or through a registered shortcut first shows the number of remaining heals and asks for confirmation. Choosing No or pressing B does not consume a charge. Only a confirmed Yes heals the party. Existing two-charge saves are upgraded to five without losing track of doses already spent. Charges and capacity use permanent event variables `0x4122` and `0x4123` rather than modifying SaveBlock structures. The Powder Jar icon is temporarily reused instead of importing donor binary artwork.
+Adapted [Pokémon World's Poké Vial](https://github.com/evilchinesefood/PKMN-World/blob/master/src/pokevial.c) to SoulGold. A refillable key item heals the entire party's HP, PP, and status (including fainted Pokémon), using one charge each time. It starts with five charges, refilled at every Pokémon Center, and retains support for a 15-charge capacity cap. Pokémon Center nurse healing refills existing vials. Originally it granted a vial automatically on the first visit; as of feature/repel-charm, a new vial is given at the first nurse visit *after* the `giveallqol` code is redeemed, while older saves with a vial keep theirs. A follow-up explanation appears only after the vial is successfully given: "Here's a vial to heal up when out on journeys. Refill it at Pokémon Centers!" The bag description uses a shorter line without "whole", and successful healing now reports remaining heals instead of doses (with singular grammar for one heal). Choosing Use in the Bag or through a registered shortcut first shows the number of remaining heals and asks for confirmation. Choosing No or pressing B does not consume a charge. Only a confirmed Yes heals the party. Existing two-charge saves are upgraded to five without losing track of doses already spent. Charges and capacity use permanent event variables `0x4122` and `0x4123` rather than modifying SaveBlock structures. The Powder Jar icon is temporarily reused instead of importing donor binary artwork.
 
-**Test checklist:** Receive the item on the first nurse visit; heal HP/PP/status/fainting; use via Bag and registered shortcut; expend two charges and observe the empty message; refill at a nurse; save/reload; check that the stat editor still works. These PokéVial changes have not been compiled or playtested.
+**Test checklist (updated unlock behavior):** Redeem `giveallqol` to claim the vial on the next nurse visit; confirm new games without the code do not receive a vial and older saves retain/refill one; heal HP/PP/status/fainting; use via Bag and registered shortcut; expend two charges and observe the empty message; refill at a nurse; save/reload; check that the stat editor still works. These PokéVial changes have not been compiled or playtested.
 
 ## QOL unlock bundle / Repel Charm (feature/repel-charm)
 
