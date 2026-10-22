@@ -84,13 +84,21 @@ NewBarkTown_PlayersHouse_2F_EventScript_NESNoRoom::
     goto NewBarkTown_PlayersHouse_2F_EventScript_NESExit
 
 NewBarkTown_PlayersHouse_2F_EventScript_NESRepelCharm::
+    goto_if_set FLAG_WAYTOOBUSY_REDEEMED, NewBarkTown_PlayersHouse_2F_EventScript_NESCodeAlreadyEntered
+    @ Compatibility with saves that redeemed waytoobusy before code flags existed.
     checkitem ITEM_REPEL_CHARM, 1
-    goto_if_eq VAR_RESULT, TRUE, NewBarkTown_PlayersHouse_2F_EventScript_NESRepelCharmAlreadyOwned
+    goto_if_eq VAR_RESULT, TRUE, NewBarkTown_PlayersHouse_2F_EventScript_NESMarkCodeAlreadyEntered
     giveitem ITEM_REPEL_CHARM, 1
+    @ A full Bag must not permanently redeem the code.
+    goto_if_eq VAR_RESULT, FALSE, NewBarkTown_PlayersHouse_2F_EventScript_NESExit
+    setflag FLAG_WAYTOOBUSY_REDEEMED
     goto NewBarkTown_PlayersHouse_2F_EventScript_NESExit
 
-NewBarkTown_PlayersHouse_2F_EventScript_NESRepelCharmAlreadyOwned::
-    msgbox NewBarkTown_PlayersHouse_2F_Text_NESRepelCharmAlreadyOwned, MSGBOX_DEFAULT
+NewBarkTown_PlayersHouse_2F_EventScript_NESMarkCodeAlreadyEntered::
+    setflag FLAG_WAYTOOBUSY_REDEEMED
+
+NewBarkTown_PlayersHouse_2F_EventScript_NESCodeAlreadyEntered::
+    msgbox NewBarkTown_PlayersHouse_2F_Text_NESCodeAlreadyEntered, MSGBOX_DEFAULT
     goto NewBarkTown_PlayersHouse_2F_EventScript_NESExit
 
 NewBarkTown_PlayersHouse_2F_EventScript_NESSampleCode::
@@ -135,9 +143,9 @@ NewBarkTown_PlayersHouse_2F_Text_NESCodeEnabled:
 NewBarkTown_PlayersHouse_2F_Text_NESCodeDisabled:
     .string "Cheat code deactivated!$"
 
-NewBarkTown_PlayersHouse_2F_Text_NESRepelCharmAlreadyOwned:
-    .string "You already have the\n"
-    .string "Repel Charm!$"
+NewBarkTown_PlayersHouse_2F_Text_NESCodeAlreadyEntered:
+    .string "You've already entered\n"
+    .string "that cheat code.$"
 
 NewBarkTown_PlayersHouse_2F_Text_NESNoRoom:
     .string "Your party and PC boxes\n"
