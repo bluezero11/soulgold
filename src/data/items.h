@@ -15472,6 +15472,23 @@ const struct ItemInfo gItemsInfo[] =
         .iconPalette = gItemIconPalette_PowderJar,
     },
 
+    [ITEM_REPEL_CHARM] =
+    {
+        .name = ITEM_NAME("Repel Charm"),
+        .price = 0,
+        .description = COMPOUND_STRING(
+            "A reusable charm\n"
+            "that stops random\n"
+            "wild encounters."),
+        .importance = 1,
+        .pocket = POCKET_KEY_ITEMS,
+        .type = ITEM_USE_FIELD,
+        .fieldUseFunc = ItemUseOutOfBattle_RepelCharm,
+        // Reuse existing charm artwork until a dedicated icon is added.
+        .iconPic = gItemIcon_OvalCharm,
+        .iconPalette = gItemIconPalette_OvalCharm,
+    },
+
     [ITEM_CANDY_JAR] =
     {
         .name = ITEM_NAME("Candy Jar"),
