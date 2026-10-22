@@ -2947,7 +2947,9 @@ static void SetPartyMonFieldSelectionActions(struct Pokemon *mons, u8 slotId)
             }
         }
     }
-    AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_EDIT_STATS);
+    // BW and HGSS menu styles share this source; legacy saves keep Stat Editor access.
+    if (!FlagGet(FLAG_QOL_NEW_GAME_REQUIRES_UNLOCK) || FlagGet(FLAG_QOLUNLOCK_REDEEMED))
+        AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_EDIT_STATS);
     AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_CANCEL1);
 }
 
