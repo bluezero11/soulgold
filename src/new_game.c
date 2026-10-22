@@ -303,6 +303,9 @@ void NewGameInitData(void)
     ResetLotteryCorner();
     WarpToTruck();
     RunScriptImmediately(EventScript_ResetAllMapFlags);
+    // Older saves lack this flag and retain the previously available Stat Editor.
+    // Saves started with this build require giveallqol to unlock it.
+    FlagSet(FLAG_QOL_NEW_GAME_REQUIRES_UNLOCK);
     ResetMiniGamesRecords();
     InitUnionRoomChatRegisteredTexts();
     InitLilycoveLady();
