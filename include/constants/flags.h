@@ -709,8 +709,8 @@
 #define FLAG_MET_STEVEN  0x295 // Kitakami flags
 #define FLAG_EXP_SHARE_OPTION  0x296 // exp. share
 #define FLAG_WONDERTRADE1  0x297 // Wonder Trade
-#define FLAG_WONDERTRADE2  0x298 // Unused Flag
-#define FLAG_WAYTOOBUSY_REDEEMED  0x299 // Persistent SNES cheat-code redemption (formerly unused Wonder Trade flag)
+#define FLAG_QOLUNLOCK_REDEEMED  0x298 // Permanent giveallqol cheat redemption / feature unlock
+#define FLAG_LEGACY_WAYTOOBUSY_REDEEMED  0x299 // Prior Repel Charm code; preserved for save compatibility
 #define FLAG_VISITED_BATTLE_FRONTIER  0x29A // Unused Flag
 #define FLAG_FRONTIER_SECOND_CLERK  0x29B // Unused Flag
 #define FLAG_ALLOW_SOUTH_JOHTO_PASS  0x29C
@@ -1406,7 +1406,7 @@
 #define FLAG_SYS_CRUISE_MODE                        (SYSTEM_FLAGS + 0x2D)
 
 #define FLAG_STARTED_VICTINI_QUEST                  (SYSTEM_FLAGS + 0x2E)
-#define FLAG_UNUSED_0x88F                           (SYSTEM_FLAGS + 0x2F) // Unused Flag
+#define FLAG_QOL_NEW_GAME_REQUIRES_UNLOCK          (SYSTEM_FLAGS + 0x2F) // Only new saves gate Stat Editor behind giveallqol
 
 #define FLAG_SYS_TV_HOME                            (SYSTEM_FLAGS + 0x30)
 #define FLAG_SYS_TV_WATCH                           (SYSTEM_FLAGS + 0x31)
