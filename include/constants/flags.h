@@ -44,7 +44,8 @@
 #define NUM_TEMP_FLAGS   (TEMP_FLAGS_END - TEMP_FLAGS_START + 1)
 
 #define FLAG_SYS_NO_COLLISION                   0x20 // Unused Flag //DEBUG
-#define FLAG_SYS_NO_ENCOUNTER                   0x21 // Unused Flag //DEBUG
+#define FLAG_SYS_NO_ENCOUNTER                   0x21 // Persistent no-encounter flag
+#define FLAG_REPEL_CHARM_ACTIVE                 FLAG_SYS_NO_ENCOUNTER
 #define FLAG_SYS_NO_TRAINER_SEE                 0x22 // Unused Flag //DEBUG
 #define FLAG_SYS_NO_BAG_USE                     0x23 // Unused Flag //DEBUG
 #define FLAG_SYS_NO_CATCHING                    0x24 // Unused Flag //DEBUG
