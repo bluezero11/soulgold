@@ -4089,7 +4089,9 @@ static void SetPartyMonFieldSelectionActions(struct Pokemon *mons, u8 slotId)
             }
         }
     }
-    AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_EDIT_STATS);
+    // New saves must redeem giveallqol; legacy saves retain existing editor access.
+    if (!FlagGet(FLAG_QOL_NEW_GAME_REQUIRES_UNLOCK) || FlagGet(FLAG_QOLUNLOCK_REDEEMED))
+        AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_EDIT_STATS);
     AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_CANCEL1);
 }
 
