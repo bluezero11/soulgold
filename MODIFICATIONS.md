@@ -10,15 +10,15 @@ These notes distinguish **ported**, **adapted/reference-based**, **already-prese
 
 | Feature | Donor / reference | How SoulGold uses it |
 | --- | --- | --- |
-| **Original EV/IV Stat Editor** | `fakuzatsu/verdant` ([historical GitHub URL](https://github.com/fakuzatsu/verdant), currently unavailable/unverified) | **Transplanted and adapted** editor controls, graphics and EV/IV editing for SoulGold's party menus, ability data and graphics/animation APIs. |
-| **Expanded Stat Editor** | Verdant foundation; nature/ability UX cross-checked against [PCG06/pokeemerald's `feat/stat_editor`](https://github.com/PCG06/pokeemerald/tree/feat/stat_editor) | **Reference-assisted and custom** nature/ability controls, gender and PID-preservation algorithm, staged changes, sprite preview and UI fixes. The gender algorithm is not attributed to PCG06. |
+| **Original EV/IV Stat Editor** | **Archie / TeamAquasHideout:** [original March 2024 stat-editor commit](https://github.com/TeamAquasHideout/pokeemerald/commit/317d345a33ae) and [installation tutorial](https://github.com/pret/pokeemerald/wiki/Add-a-EV---IV-Stat-Editor-UI). **Jaizu:** original editor graphics ([Team Aqua's feature credits](https://github.com/TeamAquasHideout/Team-Aquas-Asset-Repo/wiki/Feature-Branches)). | **Ported and adapted** editor controls, graphics and EV/IV editing for SoulGold's party menus, ability data and animation/graphics APIs. |
+| **Expanded Stat Editor** | Archie's original editor foundation; nature/ability UX cross-checked against [PCG06/pokeemerald's `feat/stat_editor`](https://github.com/PCG06/pokeemerald/tree/feat/stat_editor) | **Reference-assisted and custom** nature/ability controls, gender and PID-preservation algorithm, staged changes, sprite preview and UI fixes. The gender algorithm is not attributed to PCG06. |
 | **Poké Vial** | [evilchinesefood/PKMN-World](https://github.com/evilchinesefood/PKMN-World), [`src/pokevial.c`](https://github.com/evilchinesefood/PKMN-World/blob/master/src/pokevial.c) | **Adapted mechanic** with SoulGold event-variable charge storage, item confirmations, nurse refills and redemption. |
 | **Repel Charm** | [pokeemerald-expansion Infinite Repel Item guide](https://github.com/rh-hideout/pokeemerald-expansion/wiki/Infinite-Repel-Item), contributed by `jtebbe` | **Adapted no-encounter flag and reusable item toggle**, with SoulGold-specific texts, art choice and reward script. |
-| **Cheat-code foundation** | Already in [SoulGold `master`: `src/field_specials.c`](https://github.com/bluezero11/soulgold/blob/master/src/field_specials.c), including `EnterCode`, `GetCodeFeedback`, and replay-option codes | **Preexisting SoulGold functionality**, not newly transplanted from another hack. The original SNES was flavor text only. |
-| **SNES cheats and gifts** | Existing code entry above; user-curated `soulgold_stage1.xlsx` Pokémon pool | **Custom SoulGold work:** SNES script UI, `ROLLTHEDIE`/monotype selection, 3/6 gifting, cosmetic-form rolls, gift-to-PC handling, and `giveallqol` unlock/redeem logic. |
+| **Cheat-code foundation** | **Creative inspiration:** [Nemo622's Pokémon Lazarus](https://ko-fi.com/nemo622/shop), especially its in-game cheat-code rewards and gifts. **Implementation foundation:** existing [SoulGold `master` `src/field_specials.c`](https://github.com/bluezero11/soulgold/blob/master/src/field_specials.c), with `EnterCode`, `GetCodeFeedback`, naming-screen input and replay-option codes. | **Lazarus inspired the idea; the implementation is based on existing SoulGold code**, not imported or reverse-engineered from Lazarus. The original SNES was flavor text only. |
+| **SNES cheats and gifts** | Inspired by [Nemo622's Pokémon Lazarus](https://ko-fi.com/nemo622/shop); independently implemented with existing SoulGold code entry and the user-curated `soulgold_stage1.xlsx` Pokémon pool | **Custom SoulGold work:** SNES script UI, `ROLLTHEDIE`/monotype selection, 3/6 gifting, cosmetic-form rolls, gift-to-PC handling, and `giveallqol` unlock/redeem logic. |
 | **Pokémon Box Link** | Already implemented in SoulGold and the [pokeemerald-expansion Box Link feature](https://github.com/rh-hideout/pokeemerald-expansion/blob/master/FEATURES.md) | **New distribution only:** reused existing item ID, field-use callback and storage script, adding code redemption and nurse catch-up; no Box Link mechanics ported. |
 
-If an upstream repository becomes inaccessible, retain the recorded attribution and mark the old URL unverified rather than guessing a replacement. The chronological feature sections below describe later SoulGold modifications separately from the original ports.
+The chronological feature sections below describe SoulGold-specific modifications separately from the original authors' work. Crediting creative inspiration is not the same as attributing borrowed code.
 
 ## Build status
 
@@ -60,7 +60,7 @@ This branch was created from a clean, compiling `dev` state so the stat-editor t
 
 ### Overview
 
-A reusable Pokémon stat editor was transplanted from the historically credited `fakuzatsu/verdant`, a pokeemerald-expansion-based project. Its original repository URL is currently unavailable; see the attribution section above.
+The original EV/IV Stat Editor was developed by **Archie (TeamAquasHideout)**, with original graphics credited to **Jaizu**. SoulGold ports and adapts their work. Verified references: the [March 2024 implementation commit](https://github.com/TeamAquasHideout/pokeemerald/commit/317d345a33ae) and the [installation tutorial](https://github.com/pret/pokeemerald/wiki/Add-a-EV---IV-Stat-Editor-UI).
 
 The editor is accessible directly from the normal field party menu. After selecting a Pokémon, the action list now includes:
 
@@ -118,13 +118,13 @@ src/data/swsh_party_menu.h
 
 ### SoulGold compatibility adaptations
 
-The Verdant editor was not copied completely unchanged because SoulGold has diverged from the donor's pokeemerald-expansion revision.
+The imported EV/IV editor required changes because SoulGold has diverged from the older source's pokeemerald APIs.
 
 Important compatibility fixes made during the transplant:
 
 1. **Ability-info declaration**
 
-   Verdant's header declared:
+   The imported editor's header declared:
 
    ```c
    extern const struct Ability gAbilitiesInfo[];
@@ -140,7 +140,7 @@ Important compatibility fixes made during the transplant:
 
 2. **Pokémon summary animation API**
 
-   Verdant called an older four-argument form:
+   The imported editor called an older four-argument form:
 
    ```c
    PokemonSummaryDoMonAnimation(sprite, sprite->sSpecies, isEgg, sprite->sIsShadow);
@@ -158,9 +158,9 @@ Important compatibility fixes made during the transplant:
    PokemonSummaryDoMonAnimation(sprite, sprite->sSpecies, isEgg);
    ```
 
-3. **Verdant scrolling-background dependency**
+3. **Imported scrolling-background dependency**
 
-   The donor editor relied on Verdant-specific `gScrollBgTiles`, `gScrollBgTilemap`, and `gScrollBgPalette` globals that SoulGold does not contain.
+   The imported variant referenced `gScrollBgTiles`, `gScrollBgTilemap`, and `gScrollBgPalette` globals that SoulGold does not contain. This describes the imported variant's compatibility issue rather than attributing those symbols to the original author.
 
    Rather than importing unrelated UI systems, that scrolling layer was removed. The stat editor retains its own primary background and interface graphics.
 
@@ -969,7 +969,7 @@ The ROM is produced in the repository root as `Soulgold.gba`.
 
 ## Expanded stat editor (feature/expanded-editor)
 
-Based on the working editor transplanted from `fakuzatsu/verdant`, with the nature/ability cycling approach cross-checked against [PCG06/pokeemerald's `feat/stat_editor` branch](https://github.com/PCG06/pokeemerald/tree/feat/stat_editor). Gender/PID-preservation and additional SoulGold UI fixes are not attributed as direct copies from that branch. This branch extends the existing SoulGold stat editor, preserving its graphics, original EV/IV grid, party switching, and START confirmation behavior.
+Built on the original EV/IV editor by Archie / TeamAquasHideout (graphics credited to Jaizu), with the nature/ability cycling approach cross-checked against [PCG06/pokeemerald's `feat/stat_editor` branch](https://github.com/PCG06/pokeemerald/tree/feat/stat_editor). Gender/PID-preservation and additional SoulGold UI fixes are not attributed as direct copies from that branch. This branch extends the existing SoulGold stat editor, preserving its graphics, original EV/IV grid, party switching, and START confirmation behavior.
 
 - **Natural D-pad movement:** From the EV column, press Left to enter the left-hand details panel; press Right to return to EVs, then Right again for IVs. Up/Down cycles between **Gender**, **Ability**, and **Nature**, ordered top-to-bottom to match the UI. The new gender cursor brackets the Lv./gender row at y=113, with the working magenta arrow positions unchanged.
 - **A-to-edit, A-to-stage:** Press A on a detail to enter edit mode, adjust with Left/Right (Up/Down jumps to first/last ability or nature; either toggles gender), and press A to return to selection mode. Gender, ability, nature, EV and IV changes remain staged until START or party switching.
@@ -996,6 +996,7 @@ Adapted [Pokémon World's Poké Vial](https://github.com/evilchinesefood/PKMN-Wo
 
 ## QOL unlock bundle / Repel Charm and Box Link (feature/repel-charm)
 
+- **Creative inspiration:** Playing [Nemo622's Pokémon Lazarus](https://ko-fi.com/nemo622/shop) inspired the idea of using in-game cheat codes for useful tools and themed Pokémon gifts. SoulGold's code entry, SNES integration and reward logic were built from its own codebase; no Lazarus source code was ported.
 - **SNES cheat:** After receiving a Pokémon, enter `giveallqol` (case-insensitive, ten characters) at the SNES in the upstairs New Bark Town bedroom. The former `waytoobusy` code no longer matches. Successful first redemption shows four separate messages: **Stat Editor unlocked!**, **Poké Vial unlocked! Visit a Pokémon Center to claim it!**, **Repel Charm unlocked!**, and **Pokémon Box Link unlocked!**.
 - **Redemption and retry:** `FLAG_QOLUNLOCK_REDEEMED = 0x298` tracks the QOL bundle. The SNES checks `ITEM_REPEL_CHARM` and `ITEM_POKEMON_BOX_LINK` before awarding them, so either item can already exist in the Bag (including a Repel Charm from the older code). It sets the flag and displays the four messages **only after both items are present**. If either `giveitem` fails due to bag space, it leaves the flag unset so the code can be retried; any item already received remains in the Bag. Re-entering after successful redemption normally says **You've already entered that cheat code.** The previous `waytoobusy` flag name was removed, and its bit 0x299 is again marked unused; that historical flag is not a prerequisite.
 - **Poké Vial:** The charm and Box Link are awarded at the SNES, but the Poké Vial is not. On the next Pokémon Center nurse heal after QOL redemption, a missing `ITEM_POKE_VIAL` is granted and its charges refilled. A failed nurse grant is retried later. Players who owned the vial before this change keep it and keep their nurse refills even if their old save has no QOL redemption flag. Persistent `VAR_POKEVIAL_*` charge/capacity storage and prior two-to-five-charge migration are unchanged. Adapted from [Pokémon World](https://github.com/evilchinesefood/PKMN-World/blob/master/src/pokevial.c), not a direct copy of its save format.
