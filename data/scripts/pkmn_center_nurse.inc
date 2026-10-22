@@ -43,9 +43,18 @@ EventScript_PkmnCenterNurse_TakeAndHealPkmn::
 	callnative UpdateFollowingPokemon
 	return
 
-@ The first Pokémon Center visit grants this key item (including on old saves).
-@ Both values use existing save vars, avoiding any SaveBlock layout changes.
+@ Existing vial owners keep their item and get refills, even on older saves.
+@ Without a vial, only giveallqol redemption allows the nurse to award one.
+@ Do not initialize charges for saves that have neither the item nor the unlock.
 EventScript_PokeVial_Refill::
+	checkitem ITEM_POKE_VIAL, 1
+	goto_if_eq VAR_RESULT, TRUE, EventScript_PokeVial_RefillCharges
+	goto_if_unset FLAG_QOLUNLOCK_REDEEMED, EventScript_PokeVial_Done
+	giveitem ITEM_POKE_VIAL, 1
+	goto_if_eq VAR_RESULT, FALSE, EventScript_PokeVial_Done
+	msgbox gText_PokeVialInstructions, MSGBOX_DEFAULT
+
+EventScript_PokeVial_RefillCharges::
 	goto_if_ne VAR_POKEVIAL_MAX_CHARGES, 0, EventScript_PokeVial_CheckLegacyCapacity
 	setvar VAR_POKEVIAL_MAX_CHARGES, 5
 EventScript_PokeVial_CheckLegacyCapacity::
@@ -53,11 +62,6 @@ EventScript_PokeVial_CheckLegacyCapacity::
 	setvar VAR_POKEVIAL_MAX_CHARGES, 5
 EventScript_PokeVial_HasCapacity::
 	copyvar VAR_POKEVIAL_CHARGES, VAR_POKEVIAL_MAX_CHARGES
-	checkitem ITEM_POKE_VIAL, 1
-	goto_if_eq VAR_RESULT, TRUE, EventScript_PokeVial_Done
-	giveitem ITEM_POKE_VIAL, 1
-	goto_if_eq VAR_RESULT, FALSE, EventScript_PokeVial_Done
-	msgbox gText_PokeVialInstructions, MSGBOX_DEFAULT
 EventScript_PokeVial_Done::
 	return
 
