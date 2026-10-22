@@ -60,6 +60,7 @@ NewBarkTown_PlayersHouse_2F_EventScript_NES::
     special GetCodeFeedback
     switch VAR_RESULT
     case 4, NewBarkTown_PlayersHouse_2F_EventScript_NESMonotypeGift
+    case 5, NewBarkTown_PlayersHouse_2F_EventScript_NESRepelCharm
     case 1, NewBarkTown_PlayersHouse_2F_EventScript_NESSampleCode
     case 2, NewBarkTown_PlayersHouse_2F_EventScript_NESCodeEnabled
     case 3, NewBarkTown_PlayersHouse_2F_EventScript_NESCodeDisabled
@@ -80,6 +81,16 @@ NewBarkTown_PlayersHouse_2F_EventScript_NESMonotypeGift::
 
 NewBarkTown_PlayersHouse_2F_EventScript_NESNoRoom::
     msgbox NewBarkTown_PlayersHouse_2F_Text_NESNoRoom, MSGBOX_DEFAULT
+    goto NewBarkTown_PlayersHouse_2F_EventScript_NESExit
+
+NewBarkTown_PlayersHouse_2F_EventScript_NESRepelCharm::
+    checkitem ITEM_REPEL_CHARM, 1
+    goto_if_eq VAR_RESULT, TRUE, NewBarkTown_PlayersHouse_2F_EventScript_NESRepelCharmAlreadyOwned
+    giveitem ITEM_REPEL_CHARM, 1
+    goto NewBarkTown_PlayersHouse_2F_EventScript_NESExit
+
+NewBarkTown_PlayersHouse_2F_EventScript_NESRepelCharmAlreadyOwned::
+    msgbox NewBarkTown_PlayersHouse_2F_Text_NESRepelCharmAlreadyOwned, MSGBOX_DEFAULT
     goto NewBarkTown_PlayersHouse_2F_EventScript_NESExit
 
 NewBarkTown_PlayersHouse_2F_EventScript_NESSampleCode::
@@ -123,6 +134,10 @@ NewBarkTown_PlayersHouse_2F_Text_NESCodeEnabled:
 
 NewBarkTown_PlayersHouse_2F_Text_NESCodeDisabled:
     .string "Cheat code deactivated!$"
+
+NewBarkTown_PlayersHouse_2F_Text_NESRepelCharmAlreadyOwned:
+    .string "You already have the\n"
+    .string "Repel Charm!$"
 
 NewBarkTown_PlayersHouse_2F_Text_NESNoRoom:
     .string "Your party and PC boxes\n"
