@@ -4960,6 +4960,7 @@ void GetCodeFeedback(void)
     static const u8 sText_EasyIvs[] = _("easyivs");
     static const u8 sText_NoInnates[] = _("noinnates");
     static const u8 sText_RollTheDie[] = _("ROLLTHEDIE");
+    static const u8 sText_WayTooBusy[] = _("WAYTOOBUSY");
     u8 uppercaseCode[CODE_NAME_LENGTH + 1];
     u32 i;
     u16 codeLength;
@@ -4967,6 +4968,13 @@ void GetCodeFeedback(void)
 
     // The naming screen opens on uppercase letters. Accept either case.
     StringCopyUppercase(uppercaseCode, gStringVar2);
+
+    // A one-time Key Item reward; it does not accept a gift-count suffix.
+    if (StringCompare(uppercaseCode, sText_WayTooBusy) == 0)
+    {
+        gSpecialVar_Result = 5;
+        return;
+    }
 
     // Optional final digit requests 3 or 6 distinct Pokemon instead of one.
     codeLength = StringLength(uppercaseCode);
