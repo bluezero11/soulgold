@@ -4893,12 +4893,15 @@ static EWRAM_DATA u16 sRandomizerGiftSpecies[MAX_RANDOMIZER_GIFTS] = {0};
 static EWRAM_DATA u8 sRandomizerGiftCount = 0;
 static EWRAM_DATA u8 sRandomizerGiftIndex = 0;
 
-// Select 1, 3, or 6 different species uniformly without replacement.
-static void SetRandomizerCheatGift(u32 typeMask, u8 giftCount)
+// Select 1, 3, or 6 different species without replacement.
+// ROLLTHEDIE3/6 additionally prevent any primary/secondary type overlap.
+// Monotype codes and single-species ROLLTHEDIE retain the original selection rules.
+static void SetRandomizerCheatGift(u32 typeMask, u8 giftCount, bool8 disallowSharedTypes)
 {
-    u16 eligibleSpecies[ARRAY_COUNT(sRandomizerMons)];
+    u16 eligibleTickets[ARRAY_COUNT(sRandomizerMons)];
     u32 eligibleCount = 0;
-    u32 i;
+    u32 usedTypes = 0;
+    u32 i, j;
 
     sRandomizerGiftCount = 0;
     sRandomizerGiftIndex = 0;
@@ -4911,7 +4914,7 @@ static void SetRandomizerCheatGift(u32 typeMask, u8 giftCount)
     for (i = 0; i < ARRAY_COUNT(sRandomizerMons); i++)
     {
         if (typeMask == 0 || (sRandomizerMons[i].typeMask & typeMask))
-            eligibleSpecies[eligibleCount++] = sRandomizerMons[i].species;
+            eligibleTickets[eligibleCount++] = i;
     }
 
     // Fail rather than repeat a species if a pool is ever reduced below giftCount.
@@ -4921,13 +4924,42 @@ static void SetRandomizerCheatGift(u32 typeMask, u8 giftCount)
         return;
     }
 
+    // Preselect the full batch before giving anything; no partial gifts on failure.
     for (i = 0; i < giftCount; i++)
     {
-        u32 remaining = eligibleCount - i;
-        u32 chosen = Random() % remaining;
+        if (disallowSharedTypes)
+        {
+            // Compact the remaining tickets to those sharing no previously chosen type.
+            // Both types count; cosmetic forms are rolled only after choosing a ticket.
+            u32 compatibleCount = 0;
 
-        sRandomizerGiftSpecies[i] = ResolveRandomizerGiftForm(eligibleSpecies[chosen]);
-        eligibleSpecies[chosen] = eligibleSpecies[remaining - 1];
+            for (j = 0; j < eligibleCount; j++)
+            {
+                if (!(sRandomizerMons[eligibleTickets[j]].typeMask & usedTypes))
+                    eligibleTickets[compatibleCount++] = eligibleTickets[j];
+            }
+            eligibleCount = compatibleCount;
+        }
+
+        if (eligibleCount == 0)
+        {
+            // Future pool edits might make six disjoint types impossible.
+            // No gifts have been delivered yet, so fail the entire code cleanly.
+            gSpecialVar_Result = 0;
+            return;
+        }
+
+        // Each ticket is equally likely among the currently compatible choices.
+        // Remove it without replacement so an entry can never appear twice.
+        {
+            u32 chosen = Random() % eligibleCount;
+            u16 ticket = eligibleTickets[chosen];
+
+            sRandomizerGiftSpecies[i] = ResolveRandomizerGiftForm(sRandomizerMons[ticket].species);
+            if (disallowSharedTypes)
+                usedTypes |= sRandomizerMons[ticket].typeMask;
+            eligibleTickets[chosen] = eligibleTickets[--eligibleCount];
+        }
     }
 
     sRandomizerGiftCount = giftCount;
@@ -4988,7 +5020,7 @@ void GetCodeFeedback(void)
 
     if (StringCompare(uppercaseCode, sText_RollTheDie) == 0)
     {
-        SetRandomizerCheatGift(0, giftCount);
+        SetRandomizerCheatGift(0, giftCount, giftCount > 1);
         return;
     }
 
@@ -4996,7 +5028,7 @@ void GetCodeFeedback(void)
     {
         if (StringCompare(uppercaseCode, sMonotypeCheatCodes[i].code) == 0)
         {
-            SetRandomizerCheatGift(sMonotypeCheatCodes[i].typeMask, giftCount);
+            SetRandomizerCheatGift(sMonotypeCheatCodes[i].typeMask, giftCount, FALSE);
             return;
         }
     }
