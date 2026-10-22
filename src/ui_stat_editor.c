@@ -1,5 +1,8 @@
-// Stat editor adapted from fakuzatsu/verdant (pokeemerald-expansion based).
-// Original feature transplanted for SoulGold's feature/stat-editor branch.
+// Original EV/IV Stat Editor by Archie (TeamAquasHideout); original UI graphics by Jaizu.
+// https://github.com/TeamAquasHideout/pokeemerald/commit/317d345a33ae
+// https://github.com/pret/pokeemerald/wiki/Add-a-EV---IV-Stat-Editor-UI
+// Ported and adapted for SoulGold's feature/stat-editor branch, then expanded
+// with SoulGold-specific nature, ability and gender editing.
 #include "global.h"
 #include "ui_stat_editor.h"
 #include "strings.h"
