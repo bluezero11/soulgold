@@ -90,6 +90,8 @@ NewBarkTown_PlayersHouse_2F_EventScript_NESQOLUnlock::
     goto_if_eq VAR_RESULT, TRUE, NewBarkTown_PlayersHouse_2F_EventScript_NESCodeAlreadyEntered
 
 NewBarkTown_PlayersHouse_2F_EventScript_NESGiveQOLRewards::
+    @ Announce all four features before the item-acquisition messages.
+    msgbox NewBarkTown_PlayersHouse_2F_Text_NESQOLUnlocked, MSGBOX_DEFAULT
     @ A legacy save can already own one or both items.
     checkitem ITEM_REPEL_CHARM, 1
     goto_if_eq VAR_RESULT, TRUE, NewBarkTown_PlayersHouse_2F_EventScript_NESGiveBoxLink
@@ -108,10 +110,7 @@ NewBarkTown_PlayersHouse_2F_EventScript_NESGiveBoxLink::
 NewBarkTown_PlayersHouse_2F_EventScript_NESFinishQOLUnlock::
     @ The Poké Vial is deliberately claimed on the next nurse visit.
     setflag FLAG_QOLUNLOCK_REDEEMED
-    msgbox NewBarkTown_PlayersHouse_2F_Text_NESStatEditorUnlocked, MSGBOX_DEFAULT
-    msgbox NewBarkTown_PlayersHouse_2F_Text_NESPokeVialUnlocked, MSGBOX_DEFAULT
-    msgbox NewBarkTown_PlayersHouse_2F_Text_NESRepelCharmUnlocked, MSGBOX_DEFAULT
-    msgbox NewBarkTown_PlayersHouse_2F_Text_NESBoxLinkUnlocked, MSGBOX_DEFAULT
+    msgbox NewBarkTown_PlayersHouse_2F_Text_NESPokeVialClaim, MSGBOX_DEFAULT
     goto NewBarkTown_PlayersHouse_2F_EventScript_NESExit
 
 NewBarkTown_PlayersHouse_2F_EventScript_NESCodeAlreadyEntered::
@@ -160,19 +159,14 @@ NewBarkTown_PlayersHouse_2F_Text_NESCodeEnabled:
 NewBarkTown_PlayersHouse_2F_Text_NESCodeDisabled:
     .string "Cheat code deactivated!$"
 
-NewBarkTown_PlayersHouse_2F_Text_NESStatEditorUnlocked:
-    .string "Stat Editor unlocked!$"
+NewBarkTown_PlayersHouse_2F_Text_NESQOLUnlocked:
+    .string "Unlocked:\n"
+    .string "Stat Editor, Poké Vial,\l"
+    .string "Repel Charm, {PKMN} Box Link!$"
 
-NewBarkTown_PlayersHouse_2F_Text_NESPokeVialUnlocked:
-    .string "Poké Vial unlocked!\p"
-    .string "Visit a Pokémon Center\n"
-    .string "to claim it!$"
-
-NewBarkTown_PlayersHouse_2F_Text_NESRepelCharmUnlocked:
-    .string "Repel Charm unlocked!$"
-
-NewBarkTown_PlayersHouse_2F_Text_NESBoxLinkUnlocked:
-    .string "{PKMN} Box Link unlocked!$"
+NewBarkTown_PlayersHouse_2F_Text_NESPokeVialClaim:
+    .string "Claim your Poké Vial from\n"
+    .string "a Pokémon Center nurse!$"
 
 NewBarkTown_PlayersHouse_2F_Text_NESCodeAlreadyEntered:
     .string "You've already entered\n"
