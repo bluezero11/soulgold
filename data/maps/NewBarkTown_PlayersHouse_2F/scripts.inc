@@ -155,8 +155,8 @@ NewBarkTown_PlayersHouse_2F_Text_NESStatEditorUnlocked:
     .string "Stat Editor unlocked!$"
 
 NewBarkTown_PlayersHouse_2F_Text_NESPokeVialUnlocked:
-    .string "Poké Vial unlocked!\\p"
-    .string "Visit a Pokémon Center\\n"
+    .string "Poké Vial unlocked!\p"
+    .string "Visit a Pokémon Center\n"
     .string "to claim it!$"
 
 NewBarkTown_PlayersHouse_2F_Text_NESRepelCharmUnlocked:
