@@ -710,7 +710,7 @@
 #define FLAG_EXP_SHARE_OPTION  0x296 // exp. share
 #define FLAG_WONDERTRADE1  0x297 // Wonder Trade
 #define FLAG_WONDERTRADE2  0x298 // Unused Flag
-#define FLAG_WONDERTRADE3  0x299 // Unused Flag
+#define FLAG_WAYTOOBUSY_REDEEMED  0x299 // Persistent SNES cheat-code redemption (formerly unused Wonder Trade flag)
 #define FLAG_VISITED_BATTLE_FRONTIER  0x29A // Unused Flag
 #define FLAG_FRONTIER_SECOND_CLERK  0x29B // Unused Flag
 #define FLAG_ALLOW_SOUTH_JOHTO_PASS  0x29C
