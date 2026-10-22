@@ -106,6 +106,8 @@ static const u8 sText_ItemFinderOnTop[] = _("Oh!\nThe ITEMFINDER's shaking wildl
 static const u8 sText_ItemFinderNothing[] = _("… … … …Nope!\nThere's no response.{PAUSE_UNTIL_PRESS}");
 static const u8 sText_CoinCase[] = _("Your coins:\n{STR_VAR_1}{PAUSE_UNTIL_PRESS}");
 static const u8 sText_PowderQty[] = _("Powder qty: {STR_VAR_1}{PAUSE_UNTIL_PRESS}");
+static const u8 sText_RepelCharmOn[] = _("Repel Charm is ON.\nRandom encounters stopped.{PAUSE_UNTIL_PRESS}");
+static const u8 sText_RepelCharmOff[] = _("Repel Charm is OFF.\nWild encounters restored.{PAUSE_UNTIL_PRESS}");
 static const u8 sText_PokeVialHealed[] = _("Your party was fully healed!\n{STR_VAR_1} heals remaining.{PAUSE_UNTIL_PRESS}");
 static const u8 sText_PokeVialHealedOne[] = _("Your party was fully healed!\n1 heal remaining.{PAUSE_UNTIL_PRESS}");
 static const u8 sText_PokeVialConfirm[] = _("{STR_VAR_1} heals remaining.\nContinue to use?");
@@ -1146,6 +1148,30 @@ static void RemoveUsedItem(void)
         UpdatePyramidBagList();
         UpdatePyramidBagCursorPos();
     }
+}
+
+// Unlike a normal Repel, the charm does not consume steps or check the lead's level.
+// The flag is save-backed and is checked by CheckStandardWildEncounter.
+void ItemUseOutOfBattle_RepelCharm(u8 taskId)
+{
+    bool8 enable = !FlagGet(FLAG_REPEL_CHARM_ACTIVE);
+    const u8 *message = enable ? sText_RepelCharmOn : sText_RepelCharmOff;
+
+    if (enable)
+    {
+        FlagSet(FLAG_REPEL_CHARM_ACTIVE);
+        PlaySE(SE_REPEL);
+    }
+    else
+    {
+        FlagClear(FLAG_REPEL_CHARM_ACTIVE);
+        PlaySE(SE_PC_OFF);
+    }
+
+    if (gTasks[taskId].tUsingRegisteredKeyItem)
+        DisplayItemMessageOnField(taskId, message, Task_CloseCantUseKeyItemMessage);
+    else
+        DisplayItemMessage(taskId, FONT_NORMAL, message, CloseItemMessage);
 }
 
 void ItemUseOutOfBattle_Repel(u8 taskId)
