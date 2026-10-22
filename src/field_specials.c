@@ -4522,6 +4522,8 @@ void EnterCode(void)
     DoNamingScreen(NAMING_SCREEN_CODE, gStringVar2, 0, 0, 0, FALSE, CB2_ReturnToFieldContinueScript);
 }
 
+// SNES cheat/gift ideas inspired by Nemo622's Pokemon Lazarus (concept only).
+// SoulGold's implementation uses its own existing code-entry system.
 // Master list for SNES randomizer gifts, curated in soulgold_stage1.xlsx.
 // One ticket per entry, with separate form rolls for Shellos, Flabebe and Tatsugiri.
 // Each eligible species is tagged with the types specified in the curated sheet.
