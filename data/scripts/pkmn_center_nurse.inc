@@ -40,6 +40,7 @@ EventScript_PkmnCenterNurse_TakeAndHealPkmn::
 	waitmovement 0
 	special HealPlayerParty
 	call EventScript_PokeVial_Refill
+	call EventScript_QOL_BoxLink_Grant
 	callnative UpdateFollowingPokemon
 	return
 
@@ -63,6 +64,17 @@ EventScript_PokeVial_CheckLegacyCapacity::
 EventScript_PokeVial_HasCapacity::
 	copyvar VAR_POKEVIAL_CHARGES, VAR_POKEVIAL_MAX_CHARGES
 EventScript_PokeVial_Done::
+	return
+
+@ Catch-up for players who already redeemed giveallqol in an older build.
+@ New redemptions get Box Link at the SNES; existing owners are never duplicated.
+@ The nurse can retry a failed gift on the next healing visit.
+EventScript_QOL_BoxLink_Grant::
+	goto_if_unset FLAG_QOLUNLOCK_REDEEMED, EventScript_QOL_BoxLink_Done
+	checkitem ITEM_POKEMON_BOX_LINK, 1
+	goto_if_eq VAR_RESULT, TRUE, EventScript_QOL_BoxLink_Done
+	giveitem ITEM_POKEMON_BOX_LINK, 1
+EventScript_QOL_BoxLink_Done::
 	return
 
 EventScript_PkmnCenterNurse_CheckTrainerHillAndUnionRoom::
