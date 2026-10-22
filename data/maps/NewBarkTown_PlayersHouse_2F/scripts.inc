@@ -92,9 +92,17 @@ NewBarkTown_PlayersHouse_2F_EventScript_NESQOLUnlock::
 NewBarkTown_PlayersHouse_2F_EventScript_NESGiveQOLRewards::
     @ A legacy save can already own one or both items.
     checkitem ITEM_REPEL_CHARM, 1
-    goto_if_eq VAR_RESULT, TRUE, NewBarkTown_PlayersHouse_2F_EventScript_NESFinishQOLUnlock
+    goto_if_eq VAR_RESULT, TRUE, NewBarkTown_PlayersHouse_2F_EventScript_NESGiveBoxLink
     giveitem ITEM_REPEL_CHARM, 1
     @ Do not permanently redeem when the Bag cannot accept the charm.
+    goto_if_eq VAR_RESULT, FALSE, NewBarkTown_PlayersHouse_2F_EventScript_NESExit
+
+NewBarkTown_PlayersHouse_2F_EventScript_NESGiveBoxLink::
+    @ Use the existing Box Link item/field script; never duplicate an owned copy.
+    checkitem ITEM_POKEMON_BOX_LINK, 1
+    goto_if_eq VAR_RESULT, TRUE, NewBarkTown_PlayersHouse_2F_EventScript_NESFinishQOLUnlock
+    giveitem ITEM_POKEMON_BOX_LINK, 1
+    @ If the Key Items pocket is full, the code remains redeemable.
     goto_if_eq VAR_RESULT, FALSE, NewBarkTown_PlayersHouse_2F_EventScript_NESExit
 
 NewBarkTown_PlayersHouse_2F_EventScript_NESFinishQOLUnlock::
@@ -103,6 +111,7 @@ NewBarkTown_PlayersHouse_2F_EventScript_NESFinishQOLUnlock::
     msgbox NewBarkTown_PlayersHouse_2F_Text_NESStatEditorUnlocked, MSGBOX_DEFAULT
     msgbox NewBarkTown_PlayersHouse_2F_Text_NESPokeVialUnlocked, MSGBOX_DEFAULT
     msgbox NewBarkTown_PlayersHouse_2F_Text_NESRepelCharmUnlocked, MSGBOX_DEFAULT
+    msgbox NewBarkTown_PlayersHouse_2F_Text_NESBoxLinkUnlocked, MSGBOX_DEFAULT
     goto NewBarkTown_PlayersHouse_2F_EventScript_NESExit
 
 NewBarkTown_PlayersHouse_2F_EventScript_NESCodeAlreadyEntered::
@@ -161,6 +170,9 @@ NewBarkTown_PlayersHouse_2F_Text_NESPokeVialUnlocked:
 
 NewBarkTown_PlayersHouse_2F_Text_NESRepelCharmUnlocked:
     .string "Repel Charm unlocked!$"
+
+NewBarkTown_PlayersHouse_2F_Text_NESBoxLinkUnlocked:
+    .string "{PKMN} Box Link unlocked!$"
 
 NewBarkTown_PlayersHouse_2F_Text_NESCodeAlreadyEntered:
     .string "You've already entered\n"
