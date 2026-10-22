@@ -1111,6 +1111,7 @@ enum __attribute__((packed)) Item
     ITEM_DULL_HERB = 928,
     ITEM_SOGGY_HERB = 929,
     ITEM_POKE_VIAL = 930,
+    ITEM_REPEL_CHARM = 931,
 
     ITEMS_COUNT,
     ITEM_FIELD_ARROW = ITEMS_COUNT,
