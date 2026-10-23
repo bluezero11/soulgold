@@ -292,12 +292,12 @@ The visible highest shiny-rate option was also relabeled to reflect 1-in-64 odds
 
 ## Player selection labels
 
-The opening character-selection question is now written as **one line**: "Which kid do you want to play as?" (33 characters, with no explicit `\\n` break). The two choice labels read:
+The opening character-selection question is written on **one line**: "Which kid do you want to play as?" (33 characters, with no explicit `\\n` break). The compact two-option menu now reads:
 
-- **Left one** (the character displayed on the left)
-- **Right one** (the character displayed on the right)
+- **Left** (the character displayed on the left)
+- **Right** (the character displayed on the right)
 
-This is a display/text change only; the underlying gender/player-character assignment and naming flow are unchanged. The follow-up name question uses the same updated labels. In `src/main_menu.c`, the choice window is widened from 6 to 11 tiles to fit "Right one", and the following window's VRAM base is moved from `0x85` to `0x99` to prevent the two window allocations from overlapping. The next window still ends at `0xF3`, leaving the existing menu-border tiles undisturbed.
+The confirmation dialogue now reads "So, you'd like to play as the" followed by an explicit line break and "left kid then?" or "right kid then?", with **left/right in lowercase**, then "Please tell me your name." The lowercase `sText_GenderBoy` / `sText_GenderGirl` labels are inserted into `gText_Birch_WhatsYourName` while the menu labels remain capitalized. The selection window is back to its original **6-tile width** and the subsequent window's tile allocation starts at `0x85` (not `0x99`). This preserves the original compact layout without graphics-memory overlap. The underlying character/gender selection and naming logic are unchanged.
 
 Relevant files include:
 
@@ -859,7 +859,7 @@ Now that the ROM compiles, useful runtime checks include:
 ### New game
 
 - Starting money is ₽150,000
-- The question "Which kid do you want to play as?" displays on a single line without clipping; Left one / Right one labels display correctly and select the corresponding left/right character
+- The question "Which kid do you want to play as?" displays on one line; **Left / Right** options fit in the restored 6-tile menu and select the corresponding characters; the confirmation says **"So, you'd like to play as the" / "left kid then?"** (or right) with a deliberate line break and lowercase left/right
 - Initial 9-starter UI still works
 - Second-starter selector appears after the first starter
 - "No thanks!" is first
