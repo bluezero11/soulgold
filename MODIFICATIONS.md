@@ -434,7 +434,9 @@ data/maps/NewBarkTown_Lab/scripts.inc
 
 ### 3.13 Catch rates
 
-Catch rates were increased globally by **8×**, capped at 255.
+Catch rates were increased globally by **8×**, capped at 255. 
+
+Multiplier is applied during capture-odds calculation after the flat ball bonus and before the later HP/ball calculations.
 
 Implemented in:
 
@@ -442,12 +444,11 @@ Implemented in:
 src/battle_script_commands.c
 ```
 
-The multiplier is applied during capture-odds calculation after the flat ball bonus and before the later HP/ball calculations.
 
 ### 3.14 Oak's intro and player selection
 
-- Oak now displays **Rufflet** instead of Paldean Wooper (both the Poké Ball release and displayed front sprite).
-- Player selection now uses **Left / Right** instead of **Kid A / Kid B**, with a 6-tile menu. The prompt is a single line, and the confirmation reads "So, you'd like to play as the left/right kid then?" (lowercase left/right, with a line break after "the").
+- Oak now displays **Rufflet** instead -- both the Poké Ball release and displayed front sprite. 
+- Player selection now uses **Left / Right** instead, with prompts before and after adjusted to match. 
 
 Relevant files:
 
