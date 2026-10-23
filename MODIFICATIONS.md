@@ -292,7 +292,7 @@ The visible highest shiny-rate option was also relabeled to reflect 1-in-64 odds
 
 ## Player selection labels
 
-The opening player-character choice labels now read:
+The opening character-selection question is now written as **one line**: "Which kid do you want to play as?" (33 characters, with no explicit `\\n` break). The two choice labels read:
 
 - **Left one** (the character displayed on the left)
 - **Right one** (the character displayed on the right)
@@ -302,7 +302,7 @@ This is a display/text change only; the underlying gender/player-character assig
 Relevant files include:
 
 ```text
-data/text/birch_speech.inc (question remains unchanged)
+data/text/birch_speech.inc (character-selection question now one line)
 src/main_menu.c (labels and window dimensions)
 ```
 
@@ -859,7 +859,7 @@ Now that the ROM compiles, useful runtime checks include:
 ### New game
 
 - Starting money is ₽150,000
-- Left one / Right one labels display without clipping and select the corresponding left/right character
+- The question "Which kid do you want to play as?" displays on a single line without clipping; Left one / Right one labels display correctly and select the corresponding left/right character
 - Initial 9-starter UI still works
 - Second-starter selector appears after the first starter
 - "No thanks!" is first
