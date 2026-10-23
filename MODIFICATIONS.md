@@ -292,18 +292,18 @@ The visible highest shiny-rate option was also relabeled to reflect 1-in-64 odds
 
 ## Player selection labels
 
-The opening player-character choice labels were changed to:
+The opening player-character choice labels now read:
 
-- **Kid A**
-- **Kid B**
+- **Left one** (the character displayed on the left)
+- **Right one** (the character displayed on the right)
 
-This is a display/text change only; the game's underlying gender/player-character mechanics were not removed.
+This is a display/text change only; the underlying gender/player-character assignment and naming flow are unchanged. The follow-up name question uses the same updated labels. In `src/main_menu.c`, the choice window is widened from 6 to 11 tiles to fit "Right one", and the following window's VRAM base is moved from `0x85` to `0x99` to prevent the two window allocations from overlapping. The next window still ends at `0xF3`, leaving the existing menu-border tiles undisturbed.
 
 Relevant files include:
 
 ```text
-data/text/birch_speech.inc
-src/main_menu.c
+data/text/birch_speech.inc (question remains unchanged)
+src/main_menu.c (labels and window dimensions)
 ```
 
 ---
@@ -859,7 +859,7 @@ Now that the ROM compiles, useful runtime checks include:
 ### New game
 
 - Starting money is ₽150,000
-- Kid A / Kid B labels display correctly
+- Left one / Right one labels display without clipping and select the corresponding left/right character
 - Initial 9-starter UI still works
 - Second-starter selector appears after the first starter
 - "No thanks!" is first
