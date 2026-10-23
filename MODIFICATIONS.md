@@ -377,8 +377,10 @@ Mid grey accent:      RGB 166, 172, 182
 - ROLLTHEDIE3 / 6 batch type diversity 
    - When selected, a mon's types are masked from next selections. 
    - All mons are preselected before the SNES gift script starts.
-   - Current pool guarantees batch of 6 will always complete. If an edited future pool cannot complete a batch, the code fails rather than delivering a partial batch. 
+   - Current pool guarantees batch of 6 will always complete. If an edited future pool cannot complete a batch, the code fails rather than delivering a partial batch.
 
+- **MONO[TYPE] gifts:** Uses the same full curated `sRandomizerMons` list as `ROLLTHEDIE`, filtered by the requested primary **or** secondary type (no separate monotype pools). Each eligible entry has an equal chance; suffix `3` or `6` selects distinct entries without replacement.
+- **Relevant files:** `src/field_specials.c` (species list, type filters, selection logic); `data/maps/NewBarkTown_PlayersHouse_2F/scripts.inc` (SNES code entry and gift delivery).
 
 ### 3.11 Mart changes
 
