@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Build the SoulGold docs generation pipeline."""
 
 from __future__ import annotations
 
@@ -26,7 +25,7 @@ from tools.soulgold_docs.parsers.gifts import (
     add_gift_species_locations,
     add_master_gachapon_species_locations,
     add_odd_egg_species_locations,
-    add_scripted_legendary_species_locations,
+    add_scripted_encounter_species_locations,
 )
 from tools.soulgold_docs.parsers.hidden_grottos import parse_hidden_grottos
 from tools.soulgold_docs.parsers.trades import add_johto_trade_species_locations
@@ -101,7 +100,7 @@ def build() -> None:
     species_locations = build_species_locations(encounters)
     add_hidden_grotto_species_locations(species_locations, hidden_grottos)
     add_gift_species_locations(species_locations, species_data.by_constant)
-    add_scripted_legendary_species_locations(species_locations, species_data.by_constant)
+    add_scripted_encounter_species_locations(species_locations, species_data.by_constant)
     add_master_gachapon_species_locations(species_locations, species_data.by_constant)
     add_odd_egg_species_locations(species_locations, species_data.by_constant)
     add_johto_trade_species_locations(species_locations, species_data.by_constant)
@@ -147,7 +146,7 @@ def build() -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser()
     parser.add_argument("--static-only", action="store_true", help="Refresh website UI and existing routes without rebuilding game data")
     args = parser.parse_args()
     if args.static_only:

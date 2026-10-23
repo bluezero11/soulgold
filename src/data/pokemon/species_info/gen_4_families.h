@@ -1006,7 +1006,9 @@ const struct SpeciesInfo gSpeciesInfoGen4[] =
         //.backAnimId = BACK_ANIM_NONE,
         .palette = gMonPalette_StaraptorMega,
         .shinyPalette = gMonShinyPalette_StaraptorMega,
-        //.iconSprite = gMonIcon_QuestionMark,
+        .iconSprite = gMonIcon_StaraptorMega,
+        .iconPalette = gMonIconPalette_StaraptorMega,
+        .shinyIconPalette = gMonShinyIconPalette_StaraptorMega,
         //.iconPalIndex = 0,
         .pokemonJumpType = PKMN_JUMP_TYPE_NONE,
         FOOTPRINT(Staraptor)
@@ -3646,7 +3648,7 @@ const struct SpeciesInfo gSpeciesInfoGen4[] =
         .growthRate = GROWTH_MEDIUM_FAST,
         .eggGroups = MON_EGG_GROUPS(EGG_GROUP_FIELD, EGG_GROUP_HUMAN_LIKE),
         .abilities = { ABILITY_SCRAPPY, ABILITY_SCRAPPY, ABILITY_SCRAPPY },
-        .innates = { ABILITY_ADRENALINE, ABILITY_LUNAR_CYCLE, ABILITY_STEEL_FEET },
+        .innates = { ABILITY_IRON_FIST, ABILITY_LUNAR_CYCLE, ABILITY_STEEL_FEET },
         .bodyColor = BODY_COLOR_BROWN,
         .speciesName = _("Lopunny"),
     #if P_MODIFIED_MEGA_CRIES
