@@ -20,19 +20,24 @@ Route33Kyogre_4:
 
 Route33Kyogre_5:
 	finditem ITEM_BLUE_ORB
-	setflag FLAG_GOT_BLUEORB
+	compare VAR_0x8007, TRUE
+	goto_if_eq Route33Kyogre_9
 	goto Route33Kyogre_4
 
 Route33Kyogre_7:
 	compare VAR_POSTGAME_RIVAL_LEGENDARYQ, 7
-	goto_if_eq Route33Kyogre_10
+	goto_if_eq Route33Kyogre_12
 	compare VAR_POSTGAME_RIVAL_LEGENDARYQ, 8
-	goto_if_eq Route33Kyogre_10
-Route33Kyogre_9:
+	goto_if_eq Route33Kyogre_12
+Route33Kyogre_11:
 	setflag FLAG_ONETIME_KYOGRE
 	goto Route33Kyogre_1
 
-Route33Kyogre_10:
+Route33Kyogre_9:
+	setflag FLAG_GOT_BLUEORB
+	goto Route33Kyogre_4
+
+Route33Kyogre_12:
 	addvar VAR_POSTGAME_RIVAL_LEGENDARYQ, 1
-	goto Route33Kyogre_9
+	goto Route33Kyogre_11
 

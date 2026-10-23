@@ -20,19 +20,24 @@ GroudonEncounter_4:
 
 GroudonEncounter_5:
 	finditem ITEM_RED_ORB
-	setflag FLAG_GOT_REDORB
+	compare VAR_0x8007, TRUE
+	goto_if_eq GroudonEncounter_9
 	goto GroudonEncounter_4
 
 GroudonEncounter_7:
 	compare VAR_POSTGAME_RIVAL_LEGENDARYQ, 7
-	goto_if_eq GroudonEncounter_10
+	goto_if_eq GroudonEncounter_12
 	compare VAR_POSTGAME_RIVAL_LEGENDARYQ, 8
-	goto_if_eq GroudonEncounter_10
-GroudonEncounter_9:
+	goto_if_eq GroudonEncounter_12
+GroudonEncounter_11:
 	setflag FLAG_ONETIME_GROUDON
 	goto GroudonEncounter_1
 
-GroudonEncounter_10:
+GroudonEncounter_9:
+	setflag FLAG_GOT_REDORB
+	goto GroudonEncounter_4
+
+GroudonEncounter_12:
 	addvar VAR_POSTGAME_RIVAL_LEGENDARYQ, 1
-	goto GroudonEncounter_9
+	goto GroudonEncounter_11
 
