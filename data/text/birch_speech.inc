@@ -32,8 +32,8 @@ gText_Birch_BoyOrGirl::
 	.string "Which kid do you want to play as?$"
 
 gText_Birch_WhatsYourName::
-	.string "So, you'd like to play as a\n"
-	.string "{STR_VAR_1} then?\p"
+	.string "So, you'd like to play as the\n"
+	.string "{STR_VAR_1} kid then?\p"
 	.string "Please tell me your name.$"
 
 gText_Birch_SoItsPlayer::
