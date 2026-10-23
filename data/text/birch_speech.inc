@@ -29,8 +29,7 @@ gText_Birch_AndYouAre::
 	.string "bit about yourself?$"
 
 gText_Birch_BoyOrGirl::
-	.string "Which kid do you want to\n"
-	.string "play as?$"
+	.string "Which kid do you want to play as?$"
 
 gText_Birch_WhatsYourName::
 	.string "So, you'd like to play as a\n"
