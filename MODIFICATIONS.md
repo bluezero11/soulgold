@@ -444,3 +444,14 @@ src/battle_script_commands.c
 
 The multiplier is applied during capture-odds calculation after the flat ball bonus and before the later HP/ball calculations.
 
+### 3.14 Oak's intro and player selection
+
+- Oak now displays **Rufflet** instead of Paldean Wooper (both the Poké Ball release and displayed front sprite).
+- Player selection now uses **Left / Right** instead of **Kid A / Kid B**, with a 6-tile menu. The prompt is a single line, and the confirmation reads "So, you'd like to play as the left/right kid then?" (lowercase left/right, with a line break after "the").
+
+Relevant files:
+
+```text
+src/main_menu.c
+data/text/birch_speech.inc
+```
