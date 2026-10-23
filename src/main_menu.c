@@ -422,7 +422,7 @@ static const struct WindowTemplate sNewGameBirchSpeechTextWindows[] =
         .bg = 0,
         .tilemapLeft = 3,
         .tilemapTop = 5,
-        .width = 6,
+        .width = 11, // Allow "Right one" to fit without clipping.
         .height = 4,
         .paletteNum = 15,
         .baseBlock = 0x6D
@@ -434,7 +434,8 @@ static const struct WindowTemplate sNewGameBirchSpeechTextWindows[] =
         .width = 9,
         .height = 10,
         .paletteNum = 15,
-        .baseBlock = 0x85
+        .baseBlock = 0x99 // After the wider character-choice menu (11 * 4 tiles).
+
     },
     DUMMY_WIN_TEMPLATE
 };
@@ -501,12 +502,12 @@ static const union AffineAnimCmd *const sSpriteAffineAnimTable_PlayerShrink[] =
 };
 
 static const struct MenuAction sMenuActions_Gender[] = {
-    {COMPOUND_STRING("Kid A"), {NULL}},
-    {COMPOUND_STRING("Kid B"), {NULL}}
+    {COMPOUND_STRING("Left one"), {NULL}},
+    {COMPOUND_STRING("Right one"), {NULL}}
 };
 
-static const u8 sText_GenderBoy[] = _("Kid A");
-static const u8 sText_GenderGirl[] = _("Kid B");
+static const u8 sText_GenderBoy[] = _("Left one");
+static const u8 sText_GenderGirl[] = _("Right one");
 
 static const u8 *const sMalePresetNames[] = {
     COMPOUND_STRING("Ethan"),
