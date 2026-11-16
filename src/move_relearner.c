@@ -515,12 +515,18 @@ static void PrintMessageWithPlaceholders(const u8 *src)
     MoveRelearnerPrintMessage(gStringVar4);
 }
 
+// Enable the existing TM/HM relearner list without requiring machine ownership.
+static bool32 AreAllMachineMovesUnlocked(void)
+{
+    return P_ENABLE_ALL_TM_MOVES || FlagGet(FLAG_ALL_TM_MOVES_UNLOCKED);
+}
+
 // If reusable TMs is off, remove the TM from the bag
 static void RemoveRelearnerTMFromBag(enum Move move)
 {
     enum Item item = GetTMHMItemIdFromMoveId(move);
 
-    if (!I_REUSABLE_TMS && !P_ENABLE_ALL_TM_MOVES
+    if (!I_REUSABLE_TMS && !AreAllMachineMovesUnlocked()
      && gMoveRelearnerState == MOVE_RELEARNER_TM_MOVES && GetItemTMHMIndex(item) <= NUM_TECHNICAL_MACHINES)
     {
         RemoveBagItem(item, 1);
@@ -1393,7 +1399,7 @@ static u32 GetRelearnerTMMoves(struct BoxPokemon *mon, u16 *moves)
         if (move == MOVE_NONE)
             continue;
 
-        if (!P_ENABLE_ALL_TM_MOVES && !CheckBagHasItem(item, 1))
+        if (!AreAllMachineMovesUnlocked() && !CheckBagHasItem(item, 1))
             continue;
 
         if (!CanLearnTeachableMove(species, move))
@@ -1535,7 +1541,7 @@ static bool32 HasRelearnerTMMoves(struct BoxPokemon *boxMon)
         if (move == MOVE_NONE)
             continue;
 
-        if (!P_ENABLE_ALL_TM_MOVES && !CheckBagHasItem(item, 1))
+        if (!AreAllMachineMovesUnlocked() && !CheckBagHasItem(item, 1))
             continue;
 
         if (!CanLearnTeachableMove(species, move))
