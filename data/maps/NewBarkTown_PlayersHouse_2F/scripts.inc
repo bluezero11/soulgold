@@ -61,6 +61,7 @@ NewBarkTown_PlayersHouse_2F_EventScript_NES::
     switch VAR_RESULT
     case 4, NewBarkTown_PlayersHouse_2F_EventScript_NESMonotypeGift
     case 5, NewBarkTown_PlayersHouse_2F_EventScript_NESQOLUnlock
+    case 6, NewBarkTown_PlayersHouse_2F_EventScript_NESMovesUnlock
     case 1, NewBarkTown_PlayersHouse_2F_EventScript_NESSampleCode
     case 2, NewBarkTown_PlayersHouse_2F_EventScript_NESCodeEnabled
     case 3, NewBarkTown_PlayersHouse_2F_EventScript_NESCodeDisabled
@@ -113,6 +114,17 @@ NewBarkTown_PlayersHouse_2F_EventScript_NESFinishQOLUnlock::
     msgbox NewBarkTown_PlayersHouse_2F_Text_NESPokeVialClaim, MSGBOX_DEFAULT
     goto NewBarkTown_PlayersHouse_2F_EventScript_NESExit
 
+NewBarkTown_PlayersHouse_2F_EventScript_NESMovesUnlock::
+    @ The two purchase flags make the Olivine and Blackthorn masters
+    @ use their existing post-purchase dialogue without charging money.
+    goto_if_set FLAG_ALL_TM_MOVES_UNLOCKED, NewBarkTown_PlayersHouse_2F_EventScript_NESCodeAlreadyEntered
+    setflag FLAG_TUTOR_MOVES_UNLOCKED
+    setflag FLAG_EGG_MOVES_UNLOCKED
+    setflag FLAG_ALL_TM_MOVES_UNLOCKED
+    special Achievement_CheckAll
+    msgbox NewBarkTown_PlayersHouse_2F_Text_NESMovesUnlocked, MSGBOX_DEFAULT
+    goto NewBarkTown_PlayersHouse_2F_EventScript_NESExit
+
 NewBarkTown_PlayersHouse_2F_EventScript_NESCodeAlreadyEntered::
     msgbox NewBarkTown_PlayersHouse_2F_Text_NESCodeAlreadyEntered, MSGBOX_DEFAULT
     goto NewBarkTown_PlayersHouse_2F_EventScript_NESExit
@@ -163,6 +175,11 @@ NewBarkTown_PlayersHouse_2F_Text_NESQOLUnlocked:
     .string "Unlocked:\n"
     .string "Stat Editor, Poké Vial,\l"
     .string "Repel Charm, {PKMN} Box Link!$"
+
+NewBarkTown_PlayersHouse_2F_Text_NESMovesUnlocked:
+    .string "Unlocked:\\n"
+    .string "Tutor Moves, Egg Moves,\\l"
+    .string "all compatible TM/HM Moves!$"
 
 NewBarkTown_PlayersHouse_2F_Text_NESPokeVialClaim:
     .string "Claim your Poké Vial from\n"
