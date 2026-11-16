@@ -1751,6 +1751,7 @@
 #define FLAG_RECEIVED_VIOLET_ACADEMY_GIFT           0x103E
 #define FLAG_QOLUNLOCK_REDEEMED                      0x103F // Persistent giveallqol redemption; dedicated unused custom flag
 
+#define FLAG_ALL_TM_MOVES_UNLOCKED                   0x1040 // GOTTHEMOVES: all compatible machine moves, even when not owned
 #define FLAG_PYRAMID_ACHIEVEMENT_MIGRATION_COMPLETE 0x1041
 #define CUSTOM_FLAGS_END                            FLAG_PYRAMID_ACHIEVEMENT_MIGRATION_COMPLETE
 
