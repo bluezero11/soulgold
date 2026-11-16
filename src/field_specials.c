@@ -4995,6 +4995,7 @@ void GetCodeFeedback(void)
     static const u8 sText_NoInnates[] = _("noinnates");
     static const u8 sText_RollTheDie[] = _("ROLLTHEDIE");
     static const u8 sText_GiveAllQol[] = _("GIVEALLQOL");
+    static const u8 sText_GotTheMoves[] = _("GOTTHEMOVES");
     u8 uppercaseCode[CODE_NAME_LENGTH + 1];
     u32 i;
     u16 codeLength;
@@ -5007,6 +5008,13 @@ void GetCodeFeedback(void)
     if (StringCompare(uppercaseCode, sText_GiveAllQol) == 0)
     {
         gSpecialVar_Result = 5;
+        return;
+    }
+
+    // Unlock Tutor, Egg, and all compatible machine moves through the SNES.
+    if (StringCompare(uppercaseCode, sText_GotTheMoves) == 0)
+    {
+        gSpecialVar_Result = 6;
         return;
     }
 
