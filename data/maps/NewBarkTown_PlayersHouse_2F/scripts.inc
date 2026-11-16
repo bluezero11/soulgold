@@ -177,8 +177,8 @@ NewBarkTown_PlayersHouse_2F_Text_NESQOLUnlocked:
     .string "Repel Charm, {PKMN} Box Link!$"
 
 NewBarkTown_PlayersHouse_2F_Text_NESMovesUnlocked:
-    .string "Unlocked:\\n"
-    .string "Tutor Moves, Egg Moves,\\l"
+    .string "Unlocked:\n"
+    .string "Tutor Moves, Egg Moves,\l"
     .string "all compatible TM/HM Moves!$"
 
 NewBarkTown_PlayersHouse_2F_Text_NESPokeVialClaim:
