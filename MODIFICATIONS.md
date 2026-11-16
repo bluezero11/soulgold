@@ -24,6 +24,7 @@ This mod is intended to make a pure-doubles run easier. Lots of personal choices
    - ROLLTHEDIE gives random mon
    - Add 3 or 6 to above to get batch of randoms with no duplicates. ROLLTHEDIE[3/6] ensures different types for all within batch.
    - GIVEALLQOL to get QOL items
+   - GOTTHEMOVES unlocks Tutor, Egg and all compatible TM/HM moves on the Summary Screen
 - QOL items
    - Stat editor: EV, IV, nature, ability, gender
    - Repel charm
@@ -392,6 +393,15 @@ src/field_specials.c
 data/maps/NewBarkTown_PlayersHouse_2F/scripts.inc 
 (SNES code entry and gift delivery)
 ```
+- GOTTHEMOVES sets the existing Tutor/Egg purchase flags and a new persistent machine-move flag (0x1040). The Tutor/Egg masters use their normal already-purchased dialogue; machine moves no longer require individual TM/HM ownership, but retain ordinary move compatibility and list behaviour.
+
+Relevant files:
+
+```text
+src/move_relearner.c
+include/constants/flags.h
+```
+
 ### 3.11 Mart changes
 
 Ether made available in shops once Great Balls are available.
