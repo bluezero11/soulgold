@@ -259,6 +259,15 @@ const struct SpeciesInfo gSpeciesInfoGen9[] =
         .pokemonJumpType = PKMN_JUMP_TYPE_NONE,
         FOOTPRINT(Meowscarada)
         SHADOW(-3, 14, SHADOW_SIZE_S)
+        OVERWORLD(
+            sPicTable_MeowscaradaMega,
+            SIZE_32x32,
+            SHADOW_SIZE_M,
+            TRACKS_FOOT,
+            sAnimTable_Following,
+            gOverworldPalette_MeowscaradaMega,
+            gShinyOverworldPalette_MeowscaradaMega
+        )
         .isMegaEvolution = TRUE,
         .levelUpLearnset = sMeowscaradaLevelUpLearnset,
         .teachableLearnset = sMeowscaradaTeachableLearnset,
@@ -7742,7 +7751,7 @@ const struct SpeciesInfo gSpeciesInfoGen9[] =
         .growthRate = GROWTH_SLOW,
         .eggGroups = MON_EGG_GROUPS(EGG_GROUP_NO_EGGS_DISCOVERED),
         .abilities = { ABILITY_QUARK_DRIVE, ABILITY_NONE, ABILITY_NONE },
-        .innates = { ABILITY_LEAF_GUARD, ABILITY_NATURAL_CURE, ABILITY_PLANTATION },
+        .innates = { ABILITY_AFTERMATH, ABILITY_NATURAL_CURE, ABILITY_PLANTATION },
         .bodyColor = BODY_COLOR_GREEN,
         .speciesName = _("Iron Leaves"),
         .cryId = CRY_IRON_LEAVES,
