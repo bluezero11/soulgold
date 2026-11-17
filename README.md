@@ -1,3 +1,6 @@
+# Note about the status of repo
+- This repo is slightly behind the released version, as I've moved on to work on version 2.0 in my dev branch, from which I released 1.2.0 and 1.2.1.
+
 # Johto focused expansion hack
 # Features:
 - Explore expanded Johto with new areas and biomes
@@ -28,7 +31,7 @@ https://eemeliri.github.io/soulgold/
 ## CREDITS
 - [HnS Dev Team](https://github.com/PokemonHnS-Development/pokemonHnS) for their amazing work!
 - [smithk200](https://github.com/smithk200/Gold-And-Silver-Gen-3-Decomp) for porting most of HnS to expansion!
-- Rafael Sanna for amazing custom mega sprites for typhlosion, primarina and meowscarada and mugshots for Kris, Archer and Ariana!
+- Rafael Sanna for amazing custom mega sprites for typhlosion, primarina and meowscarada, mugshots for Kris, Archer and Ariana and mega follower sprites for starters!
 - RHH and pokeemerald expansion dev team for the expansion base and support
 - [TeamAquaHideout](https://github.com/TeamAquasHideout/Team-Aquas-Asset-Repo/wiki) for help, resources and feature branches
 - [Estellar](https://github.com/estellarc/pokeemerald) for pathfinding
